@@ -1,0 +1,39 @@
+{
+  "name": "rabbit",
+  "version": "0.1.0",
+  "description": "Testing with Canteen",
+  "main": "?",
+  "scripts": {
+    "test": "node node_modules/karma/bin/karma start --single-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cristiingineru/rabbit.git"
+  },
+  "keywords": [
+    "canteen",
+    "testing",
+    "canvas"
+  ],
+  "author": "Cristi Ingineru",
+  "contributors": [
+    {
+      "name": "?"
+    }
+  ],
+  "license": "?",
+  "bugs": {
+    "url": "https://github.com/cristiingineru/rabbit/issues"
+  },
+  "homepage": "https://github.com/cristiingineru/rabbit",
+  "devDependencies": {
+    "Canteen": "1.0.5",
+    "jasmine-core": "^2.5.0",
+    "karma": "^1.2.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-jasmine-jquery": "^0.1.1",
+    "karma-phantomjs-launcher": "^1.0.2"
+  }
+}
