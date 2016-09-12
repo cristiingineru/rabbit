@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/cristiingineru/rabbit",
   "devDependencies": {
-    "Canteen": "1.0.5",
+    "Canteen": "1.0.4",
     "jasmine-core": "^2.5.0",
     "karma": "^1.2.0",
     "karma-firefox-launcher": "^1.0.0",
