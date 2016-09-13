@@ -15,6 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/canteen/build/canteen.min.js',
       'jquery.js',
 	  //jasmine,
 	  'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
