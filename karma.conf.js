@@ -17,11 +17,9 @@ module.exports = function(config) {
     files: [
       'node_modules/canteen/build/canteen.min.js',
       'jquery.js',
-	  //jasmine,
-	  'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
-      //{pattern: 'spec/*Test.js', included: false}
-	  'app.js',
-	  'spec/*Test.js'
+	    'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
+	    'app.js',
+	    'spec/*Test.js'
     ],
 
 
@@ -40,8 +38,6 @@ module.exports = function(config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress', 'kjhtml'],
-	//reporters: ['kjhtml', 'html'],
-	//reporters: ['dots', 'progress'],
 
 
     // web server port
