@@ -4,15 +4,17 @@
 describe('Face', function () {
     'use strict';
 
-    var placeholder, ctx, face;
+    var fixture, placeholder, ctx, face;
 
     beforeEach(function () {
-        var fixture = setFixtures('<div id="demo-container" style="width: 400px;height: 300px">').find('#demo-container').get(0);
+      jasmine.addMatchers(customMatchers);
 
-        placeholder = $('<canvas id="placeholder"  />');
-        placeholder.appendTo(fixture);
-        ctx = placeholder[0].getContext('2d');
-        face = new Face(ctx);
+      fixture = setFixtures('<div id="demo-container" style="width: 400px;height: 300px">').find('#demo-container').get(0);
+
+      placeholder = $('<canvas id="placeholder"  />');
+      placeholder.appendTo(fixture);
+      ctx = placeholder[0].getContext('2d');
+      face = new Face(ctx);
     });
 
     afterEach(function () {
@@ -59,6 +61,42 @@ describe('Face', function () {
           expect(eyes.length).toBe(1);
       });
     });
+
+    it('should render blurry eye when drunk', function () {
+      face.draw({mood: 'drunk'});
+      var drunkFace = ctx.stack();
+
+      var eyeCtx = newCtx();
+      var eye = new Eye(eyeCtx);
+      eye.draw({style: 'blurry'});
+      var blurryEye = eyeCtx.stack({style: 'blurry'});
+
+      expect(blurryEye).toBeIn(drunkFace);
+    });
+
+    var customMatchers = {
+      toBeIn: function (util, customEqualityTesters) {
+        return {
+          compare: function (actual, expected) {
+            var match = false;
+            for (var i = 0; i < expected.length - actual.length; i++) {
+              match = true;
+              for (var j = 0; j < actual.length; j++) {
+                if (JSON.stringify(expected[i + j]) !== JSON.stringify(actual[j])) {
+                  match = false;
+                  break;
+                }
+              }
+              if (match === true) {
+                break;
+              }
+            }
+            var result = match ? {pass: true} : {pass: false, message: 'Array not included'};
+            return result;
+          }
+        }
+      }
+    };
 
     function circles(stack) {
       return stack.filter(function(element) {
@@ -120,5 +158,12 @@ describe('Face', function () {
       });
 
       return isInside;
+    }
+
+    function newCtx() {
+      var placeholder = $('<canvas />');
+      placeholder.appendTo(fixture);
+      var ctx = placeholder[0].getContext('2d');
+      return ctx;
     }
 });
