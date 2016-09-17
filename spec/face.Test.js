@@ -36,7 +36,7 @@ describe('Face', function () {
         var eyes = circles(ctx.stack());
 
         expect(eyes.length).toBe(2);
-        expect(position(eyes[0])).toEqual(position(eyes[1]));
+        expect(position(eyes[0]).cy).toEqual(position(eyes[1]).cy);
     });
 
     it('should contain the eyes inside it`s area', function () {
@@ -71,18 +71,18 @@ describe('Face', function () {
       eye.draw({style: 'blurry'});
       var blurryEye = eyeCtx.stack({style: 'blurry'});
 
-      expect(blurryEye).toBeIn(drunkFace);
+      expect(blurryEye).toBeInWhileIgnoringArguments(drunkFace);
     });
 
     var customMatchers = {
-      toBeIn: function (util, customEqualityTesters) {
+      toBeInWhileIgnoringArguments: function (util, customEqualityTesters) {
         return {
           compare: function (actual, expected) {
             var match = false;
             for (var i = 0; i < expected.length - actual.length; i++) {
               match = true;
               for (var j = 0; j < actual.length; j++) {
-                if (JSON.stringify(expected[i + j]) !== JSON.stringify(actual[j])) {
+                if (expected[i + j].method !== actual[j].method) {
                   match = false;
                   break;
                 }
@@ -123,7 +123,7 @@ describe('Face', function () {
     }
 
     function position(circle) {
-      return {x: circle.arguments[0], y: circle.arguments[1]};
+      return {cx: circle.arguments[0], cy: circle.arguments[1]};
     }
 
     // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
