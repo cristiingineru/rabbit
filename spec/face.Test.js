@@ -24,31 +24,41 @@ describe('Face', function () {
     it('should have 2 eyes of the same size', function () {
         face.draw();
 
-        var eyes = circles(ctx.stack());
+        var eyeCtx = newCtx();
+        new Eye(eyeCtx).draw();
+        var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-        expect(eyes.length).toBe(2);
-        expect(radius(eyes[0])).toBe(radius(eyes[1]));
+        expect(found.length).toBe(2);
+        expect(shapeSize(found[0])).toEqual(shapeSize(found[1]));
     });
 
     it('should have the eyes aligned', function () {
         face.draw();
 
-        var eyes = circles(ctx.stack());
+        var eyeCtx = newCtx();
+        new Eye(eyeCtx).draw();
+        var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-        expect(eyes.length).toBe(2);
-        expect(position(eyes[0]).cy).toEqual(position(eyes[1]).cy);
+        expect(found.length).toBe(2);
+        expect(shapePosition(found[0]).y).toBe(shapePosition(found[1]).y);
     });
 
     it('should contain the eyes inside it`s area', function () {
         face.draw();
 
-        var eyes = circles(ctx.stack());
-        var area = rectangles(ctx.stack())[0];
+        var eyeCtx = newCtx();
+        new Eye(eyeCtx).draw();
+        var foundEyes = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-        eyes.forEach(function(eye) {
-          var point = {x: eye.arguments[0], y: eye.arguments[1]},
-            rectangle = {x: area.arguments[0], y: area.arguments[1], width: area.arguments[2], height: area.arguments[3]};
-          expect(isPointInsideRectangle(point, rectangle)).toBe(true);
+        var faceNoEyes = removeShapes(foundEyes, ctx.stack()),
+          facePostion = shapePosition(faceNoEyes),
+          faceSize = shapeSize(faceNoEyes),
+          rectangle = {x: facePostion.x, y: facePostion.y, width: faceSize.width, height: faceSize.height};
+        foundEyes.forEach(function(eye) {
+          var position = shapePosition(eye),
+            size = shapeSize(eye),
+            center = {x: position.x + size.width / 2, y: position.y + size.height / 2};
+            expect(isPointInsideRectangle(center, rectangle)).toBe(true);
         });
     });
 
@@ -56,9 +66,11 @@ describe('Face', function () {
       it('should have 1 eye when looked from a ' + side, function () {
           face.draw({side: side});
 
-          var eyes = arcs(ctx.stack());
+          var eyeCtx = newCtx();
+          new Eye(eyeCtx).draw();
+          var foundEyes = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-          expect(eyes.length).toBe(1);
+          expect(foundEyes.length).toBe(1);
       });
     });
 
@@ -67,15 +79,14 @@ describe('Face', function () {
       var drunkFace = ctx.stack();
 
       var eyeCtx = newCtx();
-      var eye = new Eye(eyeCtx);
-      eye.draw({style: 'blurry'});
-      var blurryEye = eyeCtx.stack({style: 'blurry'});
+      new Eye(eyeCtx).draw({style: 'blurry'});
+      var blurryEye = eyeCtx.stack();
 
-      expect(blurryEye).toBeInWhileIgnoringArguments(drunkFace);
+      expect(blurryEye).toBePartOf(drunkFace);
     });
 
     var customMatchers = {
-      toBeInWhileIgnoringArguments: function (util, customEqualityTesters) {
+      toBePartOf: function (util, customEqualityTesters) {
         return {
           compare: function (actual, expected) {
             var match = false;
@@ -91,12 +102,103 @@ describe('Face', function () {
                 break;
               }
             }
-            var result = match ? {pass: true} : {pass: false, message: 'Array not included'};
+            var result = match ? {pass: true} : {pass: false, message: 'Shape not part of'};
             return result;
           }
         }
       }
     };
+
+    function findAllShapesIgnoringArguments(shape, where) {
+      var found = [], index = 0;
+      do {
+        index = findShapeIgnoringArguments(shape, where, index);
+        if (index !== -1) {
+          found.push(where.slice(index, index + shape.length));
+          index += shape.length;
+        }
+      } while (index !== -1 && index < where.length);
+      return found;
+    }
+
+    function findShapeIgnoringArguments(shape, where, startIndex) {
+      startIndex = startIndex || 0;
+      var match = false, index = -1;
+      for (var i = startIndex; i <= where.length - shape.length; i++) {
+        match = true;
+        for (var j = 0; j < shape.length; j++) {
+          if (where[i + j].method !== shape[j].method) {
+            match = false;
+            break;
+          }
+        }
+        if (match === true) {
+          index = i;
+          break;
+        }
+      }
+      return index;
+    }
+
+    function removeShapes(shapes, from) {
+      var copy = from.slice(0, from.length);
+      shapes.forEach(function(shape) {
+        var index = -1;
+        do {
+          index = findShapeIgnoringArguments(shape, copy);
+          if (index !== -1) {
+            copy.splice(index, shape.length);
+          }
+        } while (index !== -1);
+      });
+      return copy;
+    }
+
+    function shapeSize(shape) {
+      var size = {width: 0, height: 0};
+      shape.forEach(function (call) {
+        var cx, cy, r;
+        switch(call.method) {
+          case 'arc':
+            cx = call.arguments[0];
+            cy = call.arguments[1];
+            r = call.arguments[2];
+            size = maxSize(size, r * 2, r * 2);
+            break;
+        };
+      });
+      return size;
+    }
+
+    function shapePosition(shape) {
+      var position = {x: NaN, y: NaN};
+      shape.forEach(function (call) {
+        var cx, cy, r;
+        switch(call.method) {
+          case 'arc':
+            cx = call.arguments[0];
+            cy = call.arguments[1];
+            r = call.arguments[2];
+            position = minPosition(position, cx - r, cy - r);
+            break;
+        };
+      });
+      return position;
+    }
+
+    function maxSize(size, width, height) {
+      return {
+        width: Math.max(size.width, width),
+        height: Math.max(size.height, height)
+      };
+    }
+
+    function minPosition(position, x, y) {
+      return {
+        x: isNaN(position.x) ? x : Math.min(position.x, x),
+        y: isNaN(position.y) ? y : Math.min(position.x, y)
+      };
+    }
 
     function circles(stack) {
       return stack.filter(function(element) {

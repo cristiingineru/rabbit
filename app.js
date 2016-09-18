@@ -3,6 +3,7 @@
 jQuery = $;
 
 function Eye(ctx) {
+
   this.draw = function (opt) {
     opt = Object.assign({
       cx: 0,
@@ -24,11 +25,16 @@ function Eye(ctx) {
 
     if (opt.style === 'blurry') {
       ctx.setLineDash([1, 2]);
+    } else {
+      ctx.setLineDash([0, 1]);
     }
     ctx.beginPath();
     ctx.arc(opt.cx, opt.cy, 10, startAngle, endAngle);
     ctx.stroke();
+    ctx.closePath();
   }
+
+  return this;
 }
 
 function Face(ctx) {
@@ -49,7 +55,14 @@ function Face(ctx) {
     else if (opt.side === 'right') {
       eye2.draw({side: 'right'});
     } else {
-      ctx.strokeRect(opt.x, opt.y, opt.x + opt.width, opt.x + opt.height);
+      ctx.save();
+      ctx.scale(0.75, 1);
+      ctx.beginPath();
+      ctx.arc(opt.x + opt.width / 2, opt.y + opt.height / 2, opt.height / 2, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.closePath();
+      ctx.restore();
+
       eye1.draw({
         cx: 1 * (opt.x + opt.width) / 4,
         cy: (opt.y + opt.width) / 2,
@@ -65,5 +78,7 @@ function Face(ctx) {
         style: opt.mood = opt.mood === 'drunk' ? 'blurry' : undefined
       });
     }
+
+    return this;
   }
 }
