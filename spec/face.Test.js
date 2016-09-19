@@ -50,15 +50,9 @@ describe('Face', function () {
         new Eye(eyeCtx).draw();
         var foundEyes = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-        var faceNoEyes = removeShapes(foundEyes, ctx.stack()),
-          facePostion = shapePosition(faceNoEyes),
-          faceSize = shapeSize(faceNoEyes),
-          rectangle = {x: facePostion.x, y: facePostion.y, width: faceSize.width, height: faceSize.height};
-        foundEyes.forEach(function(eye) {
-          var position = shapePosition(eye),
-            size = shapeSize(eye),
-            center = {x: position.x + size.width / 2, y: position.y + size.height / 2};
-            expect(isPointInsideRectangle(center, rectangle)).toBe(true);
+        var justTheFaceShape = removeShapes(foundEyes, ctx.stack())
+        foundEyes.forEach(function(foundEye) {
+          expect(foundEye).toBeInsideTheAreaOf(justTheFaceShape);
         });
     });
 
@@ -86,6 +80,7 @@ describe('Face', function () {
     });
 
     var customMatchers = {
+
       toBePartOf: function (util, customEqualityTesters) {
         return {
           compare: function (actual, expected) {
@@ -106,7 +101,26 @@ describe('Face', function () {
             return result;
           }
         }
+      },
+
+      toBeInsideTheAreaOf: function (util, customEqualityTesters) {
+        return {
+          compare: function (actual, expected) {
+            var smallShape = actual,
+              bigShape = expected,
+              bigShapePostion = shapePosition(bigShape),
+              bigShapeSize = shapeSize(bigShape),
+              rectangle = {x: bigShapePostion.x, y: bigShapePostion.y, width: bigShapePostion.x + bigShapeSize.width, height: bigShapePostion.y + bigShapeSize.height},
+              smallShapePosition = shapePosition(smallShape),
+              smallShapeSize = shapeSize(smallShape),
+              center = {x: smallShapePosition.x + smallShapeSize.width / 2, y: smallShapePosition.y + smallShapeSize.height / 2},
+              isCenterInside = isPointInsideRectangle(center, rectangle),
+              result = isCenterInside ? {pass: true} : {pass: false, message: 'Shape is not inside the area of'};
+            return result;
+          }
+        }
       }
+
     };
 
     function findAllShapesIgnoringArguments(shape, where) {
