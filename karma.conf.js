@@ -19,7 +19,7 @@ module.exports = function(config) {
       'jquery.js',
 	    'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
 	    'app.js',
-	    'spec/*Test.js'
+	    'spec/*test.js'
     ],
 
 
