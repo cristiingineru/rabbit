@@ -26,12 +26,22 @@ function Eye(ctx) {
     if (opt.style === 'blurry') {
       ctx.setLineDash([1, 2]);
     } else {
-      ctx.setLineDash([0, 1]);
+      ctx.setLineDash([1, 0]);
     }
+
+    var scale = opt.width / opt.height;
+    ctx.save();
+    ctx.translate(opt.cx, opt.cy);
+    ctx.scale(scale, 1);
     ctx.beginPath();
-    ctx.arc(opt.cx, opt.cy, 10, startAngle, endAngle);
+    ctx.arc(0, 0, opt.width / 2, startAngle, endAngle);
     ctx.stroke();
     ctx.closePath();
+    ctx.beginPath();
+    ctx.arc(0, 0, 1, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.closePath();
+    ctx.restore();
   }
 
   return this;
@@ -44,9 +54,9 @@ function Face(ctx) {
 
   this.draw = function (opt) {
     opt = Object.assign({
-      x: 0,
-      y: 0,
-      width: 60,
+      x: 10,
+      y: 10,
+      width: 90,
       height: 100
     }, opt || {});
     if (opt.side === 'left') {
@@ -55,27 +65,30 @@ function Face(ctx) {
     else if (opt.side === 'right') {
       eye2.draw({side: 'right'});
     } else {
+      var scale = opt.width / opt.height;
+
       ctx.save();
-      ctx.scale(0.75, 1);
+      ctx.translate(opt.x + opt.width / 2, opt.y + opt.height / 2);
+      ctx.scale(scale, 1);
       ctx.beginPath();
-      ctx.arc(opt.x + opt.width / 2, opt.y + opt.height / 2, opt.height / 2, 0, 2 * Math.PI);
+      ctx.arc(0, 0, opt.width / 2, 0, 2 * Math.PI);
       ctx.stroke();
       ctx.closePath();
       ctx.restore();
 
       eye1.draw({
-        cx: 1 * (opt.x + opt.width) / 4,
-        cy: (opt.y + opt.width) / 2,
-        width: opt.width / 4,
+        cx: opt.x + 1 * opt.width / 4,
+        cy: opt.y + opt.height / 2,
+        width: 1.5 * opt.width / 8,
         height: opt.height / 8,
-        style: opt.mood = opt.mood === 'drunk' ? 'blurry' : undefined
+        style: opt.mood === 'drunk' ? 'blurry' : undefined
       });
       eye2.draw({
-        cx: 3 * (opt.x + opt.width) / 4,
-        cy: (opt.y + opt.width) / 2,
-        width: opt.width / 4,
+        cx: opt.x + 3 * opt.width / 4,
+        cy: opt.y + opt.height / 2,
+        width: 1.5 * opt.width / 8,
         height: opt.height / 8,
-        style: opt.mood = opt.mood === 'drunk' ? 'blurry' : undefined
+        style: opt.mood === 'drunk' ? 'blurry' : undefined
       });
     }
 
