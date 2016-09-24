@@ -79,6 +79,16 @@ describe('Face', function () {
       expect(blurryEye).toBePartOf(drunkFace);
     });
 
+    it('should have 1 mouth', function () {
+        face.draw();
+
+        var mouthCtx = newCtx();
+        new Mouth(mouthCtx).draw();
+        var found = findAllShapesIgnoringArguments(mouthCtx.stack(), ctx.stack());
+
+        expect(found.length).toBe(1);
+    });
+
     var customMatchers = {
 
       toBePartOf: function (util, customEqualityTesters) {

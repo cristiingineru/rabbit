@@ -2,6 +2,47 @@
 
 jQuery = $;
 
+function Mouth(ctx) {
+
+  this.draw = function(opt) {
+    opt = Object.assign({
+      cx: 20,
+      cy: 20,
+      width: 30
+    }, opt || {});
+
+    var startAngle = 0 * Math.PI / 4,
+      endAngle = 4 * Math.PI / 4;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(opt.cx, opt.cy, opt.width / 2, startAngle, endAngle);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(opt.cx - opt.width / 2, opt.cy);
+    ctx.beginPath();
+    ctx.moveTo(-opt.width / 16, -opt.width / 16)
+    ctx.lineTo(2 * opt.width / 16, 2 * opt.width / 16);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(opt.cx + opt.width / 2, opt.cy);
+    ctx.beginPath();
+    ctx.moveTo(opt.width / 16, -opt.width / 16)
+    ctx.lineTo(-2 * opt.width / 16, 2 * opt.width / 16);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.restore();
+  }
+
+  return this;
+}
+
 function Eye(ctx) {
 
   this.draw = function (opt) {
@@ -49,7 +90,8 @@ function Eye(ctx) {
 
 function Face(ctx) {
 
-  var eye1 = new Eye(ctx),
+  var mouth = new Mouth(ctx),
+    eye1 = new Eye(ctx),
     eye2 = new Eye(ctx);
 
   this.draw = function (opt) {
@@ -76,18 +118,23 @@ function Face(ctx) {
       ctx.closePath();
       ctx.restore();
 
+      mouth.draw({
+        cx: opt.x + opt.width / 2,
+        cy: opt.y + 10 * opt.height / 16,
+        width: 7 * opt.width / 16
+      });
       eye1.draw({
-        cx: opt.x + 1 * opt.width / 4,
-        cy: opt.y + opt.height / 2,
-        width: 1.5 * opt.width / 8,
-        height: opt.height / 8,
+        cx: opt.x + 5 * opt.width / 16,
+        cy: opt.y + 3 * opt.height / 8,
+        width: 2 * opt.width / 8,
+        height: 2 * opt.height / 8,
         style: opt.mood === 'drunk' ? 'blurry' : undefined
       });
       eye2.draw({
-        cx: opt.x + 3 * opt.width / 4,
-        cy: opt.y + opt.height / 2,
-        width: 1.5 * opt.width / 8,
-        height: opt.height / 8,
+        cx: opt.x + 11 * opt.width / 16,
+        cy: opt.y + 3 * opt.height / 8,
+        width: 2 * opt.width / 8,
+        height: 2 * opt.height / 8,
         style: opt.mood === 'drunk' ? 'blurry' : undefined
       });
     }
