@@ -89,6 +89,40 @@ describe('Face', function () {
         expect(found.length).toBe(1);
     });
 
+    describe('crazy mood', function () {
+
+      beforeEach(function () {
+        jasmine.clock().install();
+      });
+
+      afterEach(function () {
+        jasmine.clock().uninstall();
+      });
+
+      it('should animate in the next frame', function () {
+          var window = {
+              requestAnimationFrame: jasmine.createSpy('requestAnimationFrame')
+            },
+            face = new Face(ctx, window);
+
+          face.draw({mood: 'crazy'});
+
+          expect(window.requestAnimationFrame).toHaveBeenCalled();
+      });
+
+      it('should animate each frame', function (done) {
+        spyOn(window, 'requestAnimationFrame');
+
+        var face = new Face(ctx, window);
+        face.draw({mood: 'crazy'});
+        jasmine.clock().tick(300);
+
+        expect(window.requestAnimationFrame.calls.count()).toBeGreaterThan(1);
+        done();
+      });
+
+    });
+
     var customMatchers = {
 
       toBePartOf: function (util, customEqualityTesters) {

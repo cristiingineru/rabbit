@@ -88,7 +88,9 @@ function Eye(ctx) {
   return this;
 }
 
-function Face(ctx) {
+function Face(ctx, window) {
+
+  window = window || {requestAnimationFrame: function () {}};
 
   var mouth = new Mouth(ctx),
     eye1 = new Eye(ctx),
@@ -101,6 +103,17 @@ function Face(ctx) {
       width: 90,
       height: 100
     }, opt || {});
+
+    var step = function () {
+      draw_core(opt);
+      window.requestAnimationFrame(step)
+    };
+    step();
+
+    return this;
+  }
+
+  var draw_core = function (opt){
     if (opt.side === 'left') {
       eye1.draw({side: 'left'});
     }
@@ -138,7 +151,5 @@ function Face(ctx) {
         style: opt.mood === 'drunk' ? 'blurry' : undefined
       });
     }
-
-    return this;
   }
 }
