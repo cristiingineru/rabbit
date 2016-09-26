@@ -18,6 +18,7 @@ module.exports = function(config) {
       'node_modules/canteen/build/canteen.min.js',
       'jquery.js',
 	    'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
+      'lib/mock-raf.js',
 	    'app.js',
 	    'spec/*test.js'
     ],

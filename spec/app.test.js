@@ -110,15 +110,16 @@ describe('Face', function () {
           expect(window.requestAnimationFrame).toHaveBeenCalled();
       });
 
-      it('should animate each frame', function (done) {
-        spyOn(window, 'requestAnimationFrame');
+      it('should animate each frame', function () {
+        var rafMock = window.createRafMock();
+        spyOn(window, 'requestAnimationFrame').and.callFake(rafMock.raf);
 
         var face = new Face(ctx, window);
         face.draw({mood: 'crazy'});
-        jasmine.clock().tick(300);
 
-        expect(window.requestAnimationFrame.calls.count()).toBeGreaterThan(1);
-        done();
+        var frameCount = 5;
+        rafMock.step({count: frameCount});
+        expect(window.requestAnimationFrame.calls.count()).toBe(frameCount + 1);
       });
 
     });
