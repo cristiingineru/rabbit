@@ -117,9 +117,10 @@ describe('Face', function () {
         var face = new Face(ctx, window);
         face.draw({mood: 'crazy'});
 
-        var frameCount = 5;
-        rafMock.step({count: frameCount});
-        expect(window.requestAnimationFrame.calls.count()).toBe(frameCount + 1);
+        var frameCount = 5,
+          initCount = 1;
+        rafMock.step(frameCount);
+        expect(window.requestAnimationFrame.calls.count()).toBe(frameCount + initCount);
       });
 
     });
