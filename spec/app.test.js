@@ -123,6 +123,42 @@ describe('Face', function () {
         expect(window.requestAnimationFrame.calls.count()).toBe(frameCount + initCount);
       });
 
+      it('should stop the animation when a non-animated draw is requested', function () {
+        var rafMock = window.createRafMock();
+        spyOn(window, 'requestAnimationFrame').and.callFake(rafMock.raf);
+
+        var face = new Face(ctx, window),
+          frameCount = 5,
+          initCount = 1;;
+        face.draw({mood: 'crazy'});
+        rafMock.step(frameCount);
+
+        face.draw();
+
+        var largeFrameCount = 10;
+        rafMock.step(largeFrameCount);
+        expect(window.requestAnimationFrame.calls.count()).toBe(frameCount + initCount);
+      });
+
+      it('should change the position of the eyes each frame', function () {
+        var rafMock = window.createRafMock();
+        spyOn(window, 'requestAnimationFrame').and.callFake(rafMock.raf);
+
+        var face = new Face(ctx, window);
+        face.draw({mood: 'crazy'});
+        rafMock.step(5);
+
+        var eyeCtx = newCtx();
+        new Eye(eyeCtx).draw();
+        var eyeStack = eyeCtx.stack();
+
+        var foundEyeStacks = findAllShapesIgnoringArguments(eyeStack, ctx.stack()),
+          firstEye = foundEyeStacks.shift();
+        foundEyeStacks.forEach(function (currentEye) {
+          expect(shapePosition(currentEye)).not.toEqual(shapePosition(firstEye));
+        });
+      });
+
     });
 
     var customMatchers = {

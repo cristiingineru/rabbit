@@ -94,7 +94,11 @@ function Face(ctx, window) {
 
   var mouth = new Mouth(ctx),
     eye1 = new Eye(ctx),
-    eye2 = new Eye(ctx);
+    eye2 = new Eye(ctx),
+    animationInProgressId = undefined,
+    shouldAnimate = function (opt) {
+      return opt.mood === 'crazy';
+    };
 
   this.draw = function (opt) {
     opt = Object.assign({
@@ -102,11 +106,14 @@ function Face(ctx, window) {
       y: 10,
       width: 90,
       height: 100
-    }, opt || {});
+    }, opt || {}),
+    newRafNeeded = shouldAnimate(opt);
 
     var step = function () {
       draw_core(opt);
-      window.requestAnimationFrame(step)
+      if (newRafNeeded) {
+        animationInProgressId = window.requestAnimationFrame(step);
+      }
     };
     step();
 
