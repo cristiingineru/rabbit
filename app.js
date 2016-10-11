@@ -127,6 +127,14 @@ function Face(ctx, window) {
     else if (opt.side === 'right') {
       eye2.draw({side: 'right'});
     } else {
+
+      this.eye1YOffset = this.eye1YOffset || 0,
+      this.eye2YOffset = this.eye2YOffset || 0;
+      if (opt.mood === 'crazy') {
+        this.eye1YOffset += 1;
+        this.eye2YOffset -= 1;
+      }
+
       var scale = opt.width / opt.height;
 
       ctx.save();
@@ -145,14 +153,14 @@ function Face(ctx, window) {
       });
       eye1.draw({
         cx: opt.x + 5 * opt.width / 16,
-        cy: opt.y + 3 * opt.height / 8,
+        cy: opt.y + 3 * opt.height / 8 + eye1YOffset,
         width: 2 * opt.width / 8,
         height: 2 * opt.height / 8,
         style: opt.mood === 'drunk' ? 'blurry' : undefined
       });
       eye2.draw({
         cx: opt.x + 11 * opt.width / 16,
-        cy: opt.y + 3 * opt.height / 8,
+        cy: opt.y + 3 * opt.height / 8 + eye2YOffset,
         width: 2 * opt.width / 8,
         height: 2 * opt.height / 8,
         style: opt.mood === 'drunk' ? 'blurry' : undefined

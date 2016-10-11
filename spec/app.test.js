@@ -153,9 +153,12 @@ describe('Face', function () {
         var eyeStack = eyeCtx.stack();
 
         var foundEyeStacks = findAllShapesIgnoringArguments(eyeStack, ctx.stack()),
-          firstEye = foundEyeStacks.shift();
+          lastEye = foundEyeStacks.shift();
         foundEyeStacks.forEach(function (currentEye) {
-          expect(shapePosition(currentEye)).not.toEqual(shapePosition(firstEye));
+          // actually here i'm comparing the left eye with the right one
+          // rewrite this!
+          expect(shapePosition(currentEye)).not.toEqual(shapePosition(lastEye));
+          lastEye = currentEye;
         });
       });
 
@@ -267,19 +270,38 @@ describe('Face', function () {
     }
 
     function shapePosition(shape) {
-      var position = {x: NaN, y: NaN};
+      var position = {x: NaN, y: NaN},
+        translates = [];
       shape.forEach(function (call) {
-        var cx, cy, r;
+        var cx, cy, r,
+          translate = calculateTotalTranslation(translates);
         switch(call.method) {
           case 'arc':
-            cx = call.arguments[0];
-            cy = call.arguments[1];
+            cx = call.arguments[0] + translate.x;
+            cy = call.arguments[1] + translate.y;
             r = call.arguments[2];
             position = minPosition(position, cx - r, cy - r);
+            break;
+          case 'restore':
+            // refactor this since there can be multiple translations rolled back
+            // by a single .restore()
+            translates.pop();
+            break;
+          case 'translate':
+            translates.push({x: call.arguments[0], y: call.arguments[1]});
             break;
         };
       });
       return position;
+    }
+
+    function calculateTotalTranslation(translates) {
+      return translates.reduce(function(previousValue, currentValue) {
+        return {
+          x: previousValue.x + currentValue.x,
+          y: previousValue.y + currentValue.y
+        };
+      }, {x: 0, y: 0});
     }
 
     function maxSize(size, width, height) {
@@ -292,7 +314,7 @@ describe('Face', function () {
     function minPosition(position, x, y) {
       return {
         x: isNaN(position.x) ? x : Math.min(position.x, x),
-        y: isNaN(position.y) ? y : Math.min(position.x, y)
+        y: isNaN(position.y) ? y : Math.min(position.y, y)
       };
     }
 
