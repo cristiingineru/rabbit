@@ -271,7 +271,7 @@ describe('Face', function () {
 
     function shapePosition(shape) {
       var position = {x: NaN, y: NaN},
-        translates = [];
+        translates = [[]];
       shape.forEach(function (call) {
         var cx, cy, r,
           translate = calculateTotalTranslation(translates);
@@ -282,26 +282,39 @@ describe('Face', function () {
             r = call.arguments[2];
             position = minPosition(position, cx - r, cy - r);
             break;
+          case 'save':
+            translates.push([]);
+            break;
           case 'restore':
-            // refactor this since there can be multiple translations rolled back
-            // by a single .restore()
             translates.pop();
             break;
           case 'translate':
-            translates.push({x: call.arguments[0], y: call.arguments[1]});
+            translates
+              .last()
+              .push({x: call.arguments[0], y: call.arguments[1]});
             break;
         };
       });
       return position;
     }
 
+    if (!Array.prototype.last) {
+      Array.prototype.last = function() {
+        return this[this.length - 1];
+      };
+    };
+
     function calculateTotalTranslation(translates) {
-      return translates.reduce(function(previousValue, currentValue) {
-        return {
-          x: previousValue.x + currentValue.x,
-          y: previousValue.y + currentValue.y
-        };
-      }, {x: 0, y: 0});
+      return translates
+        .reduce(function(previousArray, currentArray) {
+          return previousArray.concat(currentArray);
+        }, [])
+        .reduce(function(previousValue, currentValue) {
+          return {
+            x: previousValue.x + currentValue.x,
+            y: previousValue.y + currentValue.y
+          };
+        }, {x: 0, y: 0});
     }
 
     function maxSize(size, width, height) {
