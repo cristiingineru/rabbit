@@ -155,6 +155,7 @@ describe('Face', function () {
         var foundEyeStacks = findAllShapesIgnoringArguments(eyeStack, ctx.stack()),
           lastLeftEye = foundEyeStacks.shift(),
           lastRightEye = foundEyeStacks.shift();
+
         for(var i = 0; i < 5; i++) {
           ctx.clear();
           rafMock.step();
@@ -169,6 +170,34 @@ describe('Face', function () {
           lastLeftEye = leftEye;
           lastRightEye = rightEye;
         }
+      });
+
+      it('should change the position of the eyes inside the face area', function () {
+        var rafMock = window.createRafMock();
+        spyOn(window, 'requestAnimationFrame').and.callFake(rafMock.raf);
+
+        var eyeCtx = newCtx();
+        new Eye(eyeCtx).draw();
+        var eyeStack = eyeCtx.stack();
+
+        var face = new Face(ctx, window);
+        face.draw({mood: 'crazy'});
+
+        for(var i = 0; i < 300; i++) {
+          ctx.clear();
+          rafMock.step();
+
+          var foundEyeStacks = findAllShapesIgnoringArguments(eyeStack, ctx.stack()),
+            justTheFaceShape = removeShapes(foundEyeStacks, ctx.stack()),
+            leftEye = foundEyeStacks.shift(),
+            rightEye = foundEyeStacks.shift();
+
+          expect(leftEye).toBeInsideTheAreaOf(justTheFaceShape);
+          expect(rightEye).toBeInsideTheAreaOf(justTheFaceShape);
+        }
+
+        // this test should fail, most likely the isPointInsideRectangle is broken
+        expect(true).toBe(false);
       });
 
     });
