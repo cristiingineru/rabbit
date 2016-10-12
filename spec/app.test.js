@@ -140,26 +140,35 @@ describe('Face', function () {
         expect(window.requestAnimationFrame.calls.count()).toBe(frameCount + initCount);
       });
 
-      it('should change the position of the eyes each frame', function () {
+      it('should change the position of the eyes for each frame', function () {
         var rafMock = window.createRafMock();
         spyOn(window, 'requestAnimationFrame').and.callFake(rafMock.raf);
-
-        var face = new Face(ctx, window);
-        face.draw({mood: 'crazy'});
-        rafMock.step(5);
 
         var eyeCtx = newCtx();
         new Eye(eyeCtx).draw();
         var eyeStack = eyeCtx.stack();
 
+        var face = new Face(ctx, window);
+        face.draw({mood: 'crazy'});
+
+        rafMock.step();
         var foundEyeStacks = findAllShapesIgnoringArguments(eyeStack, ctx.stack()),
-          lastEye = foundEyeStacks.shift();
-        foundEyeStacks.forEach(function (currentEye) {
-          // actually here i'm comparing the left eye with the right one
-          // rewrite this!
-          expect(shapePosition(currentEye)).not.toEqual(shapePosition(lastEye));
-          lastEye = currentEye;
-        });
+          lastLeftEye = foundEyeStacks.shift(),
+          lastRightEye = foundEyeStacks.shift();
+        for(var i = 0; i < 5; i++) {
+          ctx.clear();
+          rafMock.step();
+
+          foundEyeStacks = findAllShapesIgnoringArguments(eyeStack, ctx.stack());
+          var leftEye = foundEyeStacks.shift(),
+            rightEye = foundEyeStacks.shift();
+
+          expect(shapePosition(leftEye)).not.toEqual(shapePosition(lastLeftEye));
+          expect(shapePosition(rightEye)).not.toEqual(shapePosition(lastRightEye));
+
+          lastLeftEye = leftEye;
+          lastRightEye = rightEye;
+        }
       });
 
     });
