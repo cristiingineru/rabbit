@@ -183,7 +183,7 @@ describe('Face', function () {
         var face = new Face(ctx, window);
         face.draw({mood: 'crazy'});
 
-        for(var i = 0; i < 300; i++) {
+        for(var i = 0; i < 100; i++) {
           ctx.clear();
           rafMock.step();
 
@@ -195,9 +195,6 @@ describe('Face', function () {
           expect(leftEye).toBeInsideTheAreaOf(justTheFaceShape);
           expect(rightEye).toBeInsideTheAreaOf(justTheFaceShape);
         }
-
-        // this test should fail, most likely the isPointInsideRectangle is broken
-        expect(true).toBe(false);
       });
 
     });
@@ -424,7 +421,7 @@ describe('Face', function () {
           C = -(A * segment.x1 + B * segment.y1),
           D = A * point.x + B * point.y + C;
           return D;
-      }).some(function(D) {
+      }).every(function(D) {
         return D > 0;
       });
 
