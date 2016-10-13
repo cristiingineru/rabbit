@@ -120,7 +120,10 @@ function Face(ctx, window) {
     return this;
   }
 
-  var draw_core = function (opt){
+  var draw_core = function (opt) {
+
+    ctx.clearRect(0, 0, 300, 300);
+
     if (opt.side === 'left') {
       eye1.draw({side: 'left'});
     }
@@ -128,11 +131,20 @@ function Face(ctx, window) {
       eye2.draw({side: 'right'});
     } else {
 
-      this.eye1YOffset = this.eye1YOffset || 0,
-      this.eye2YOffset = this.eye2YOffset || 0;
+      var eye1YOffset = 0, eye2YOffset = 0;
       if (opt.mood === 'crazy') {
-        this.eye1YOffset += 1;
-        this.eye2YOffset -= 1;
+        if (this.animationDirection === 'alpha') {
+          this.animationDistance += 0.5;
+        } else if (this.animationDirection === 'beta') {
+          this.animationDistance -= 0.5;
+        } else {
+          this.animationDirection = 'alpha';
+          this.animationDistance = 0;
+        }
+        eye1YOffset = this.animationDistance;
+        eye2YOffset = -this.animationDistance;
+        if (this.animationDistance ===  6) this.animationDirection = 'beta';
+        if (this.animationDistance === -6) this.animationDirection = 'alpha';
       }
 
       var scale = opt.width / opt.height;

@@ -10,6 +10,11 @@ var examples = [
   function(ctx) {
     var face = new Face(ctx);
     face.draw({mood: 'drunk'});
+  },
+
+  function(ctx) {
+    var face = new Face(ctx, window);
+    face.draw({mood: 'crazy'});
   }
 
 ];
