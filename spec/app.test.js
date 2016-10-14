@@ -29,7 +29,7 @@ describe('Face', function () {
         var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
         expect(found.length).toBe(2);
-        expect(shapeSize(found[0])).toEqual(shapeSize(found[1]));
+        expect(found[0]).toHaveTheSizeWith(found[1]);
     });
 
     it('should have the eyes aligned', function () {
@@ -40,7 +40,7 @@ describe('Face', function () {
         var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
         expect(found.length).toBe(2);
-        expect(shapePosition(found[0]).y).toBe(shapePosition(found[1]).y);
+        expect(found[0]).toBeHorizontallyAlignWith(found[1]);
     });
 
     it('should contain the eyes inside it`s area', function () {
@@ -129,7 +129,7 @@ describe('Face', function () {
 
         var face = new Face(ctx, window),
           frameCount = 5,
-          initCount = 1;;
+          initCount = 1;
         face.draw({mood: 'crazy'});
         rafMock.step(frameCount);
 
@@ -164,8 +164,8 @@ describe('Face', function () {
           var leftEye = foundEyeStacks.shift(),
             rightEye = foundEyeStacks.shift();
 
-          expect(shapePosition(leftEye)).not.toEqual(shapePosition(lastLeftEye));
-          expect(shapePosition(rightEye)).not.toEqual(shapePosition(lastRightEye));
+          expect(leftEye).not.toHaveTheSamePositionWith(lastLeftEye);
+          expect(rightEye).not.toHaveTheSamePositionWith(lastRightEye);
 
           lastLeftEye = leftEye;
           lastRightEye = rightEye;
@@ -236,6 +236,54 @@ describe('Face', function () {
               center = {x: smallShapePosition.x + smallShapeSize.width / 2, y: smallShapePosition.y + smallShapeSize.height / 2},
               isCenterInside = isPointInsideRectangle(center, rectangle),
               result = isCenterInside ? {pass: true} : {pass: false, message: 'Shape is not inside the area of'};
+            return result;
+          }
+        }
+      },
+      
+      toHaveTheSamePositionWith: function (util, customEqualityTesters) {
+        return {
+          compare: function (actual, expected) {
+            var actualPosition = shapePosition(actual),
+              expectedPosition = shapePosition(expected),
+              haveTheSamePosition = actualPosition.x === expectedPosition.x && actualPosition.y === expectedPosition.y,
+              result = haveTheSamePosition ? {pass: true} : {pass: false, message: 'Shapes don`t have the same position'};
+            return result;
+          }
+        }
+      },
+      
+      toBeHorizontallyAlignWith: function (util, customEqualityTesters) {
+        return {
+          compare: function (actual, expected) {
+            var actualPosition = shapePosition(actual),
+              expectedPosition = shapePosition(expected),
+              haveTheSameAlignment = actualPosition.y === expectedPosition.y,
+              result = haveTheSameAlignment ? {pass: true} : {pass: false, message: 'Shapes don`t have the same horizontal position'};
+            return result;
+          }
+        }
+      },
+      
+      toBeVerticallyAlignWith: function (util, customEqualityTesters) {
+        return {
+          compare: function (actual, expected) {
+            var actualPosition = shapePosition(actual),
+              expectedPosition = shapePosition(expected),
+              haveTheSameAlignment = actualPosition.x === expectedPosition.x,
+              result = haveTheSameAlignment ? {pass: true} : {pass: false, message: 'Shapes don`t have the same vertical position'};
+            return result;
+          }
+        }
+      },
+      
+      toHaveTheSizeWith: function (util, customEqualityTesters) {
+        return {
+          compare: function (actual, expected) {
+            var actualSize = shapeSize(actual),
+              expectedSize = shapeSize(expected),
+              haveTheSameSize = actualSize.width === expectedSize.width && actualSize.height === expectedSize.height,
+              result = haveTheSameSize ? {pass: true} : {pass: false, message: 'Shapes don`t have the same size'};
             return result;
           }
         }
