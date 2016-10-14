@@ -96,8 +96,12 @@ function Face(ctx, window) {
     eye1 = new Eye(ctx),
     eye2 = new Eye(ctx),
     animationInProgressId = undefined,
-    shouldAnimate = function (opt) {
+    shouldAnimate = function(opt) {
       return opt.mood === 'crazy';
+    },
+    clearCanvas = function(ctx) {
+      if (ctx.canvas) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      else ctx.clearRect(0, 0, ctx.context.canvas.width, ctx.context.canvas.height);
     };
 
   this.draw = function (opt) {
@@ -122,7 +126,7 @@ function Face(ctx, window) {
 
   var draw_core = function (opt) {
 
-    ctx.clearRect(0, 0, 300, 300);
+    clearCanvas(ctx);
 
     if (opt.side === 'left') {
       eye1.draw({side: 'left'});
