@@ -10,17 +10,17 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine-jquery', 'jasmine'],
 
 
     // list of files / patterns to load in the browser
     files: [
       'node_modules/canteen/build/canteen.min.js',
       'jquery.js',
-	    'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
+      'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
       'lib/mock-raf.js',
-	    'app.js',
-	    'spec/*test.js'
+	  'app.js',
+	  'spec/*test.js'
     ],
 
 
