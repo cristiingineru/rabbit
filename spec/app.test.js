@@ -20,74 +20,89 @@ describe('Face', function () {
     afterEach(function () {
         $('#demo-container').empty();
     });
+    
+  
+    describe('with default options', function() {
 
-    it('should have 2 eyes of the same size', function () {
-        face.draw();
+        it('should have 2 eyes of the same size', function () {
+            face.draw();
 
-        var eyeCtx = newCtx();
-        new Eye(eyeCtx).draw();
-        var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+            var eyeCtx = newCtx();
+            new Eye(eyeCtx).draw();
+            var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-        expect(found.length).toBe(2);
-        expect(found[0]).toHaveTheSizeWith(found[1]);
-    });
-
-    it('should have the eyes aligned', function () {
-        face.draw();
-
-        var eyeCtx = newCtx();
-        new Eye(eyeCtx).draw();
-        var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
-
-        expect(found.length).toBe(2);
-        expect(found[0]).toBeHorizontallyAlignWith(found[1]);
-    });
-
-    it('should contain the eyes inside it`s area', function () {
-        face.draw();
-
-        var eyeCtx = newCtx();
-        new Eye(eyeCtx).draw();
-        var foundEyes = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
-
-        var justTheFaceShape = removeShapes(foundEyes, ctx.stack())
-        foundEyes.forEach(function(foundEye) {
-          expect(foundEye).toBeInsideTheAreaOf(justTheFaceShape);
+            expect(found.length).toBe(2);
+            expect(found[0]).toHaveTheSizeWith(found[1]);
         });
-    });
 
-    ['left', 'right'].forEach(function (side) {
-      it('should have 1 eye when looked from a ' + side, function () {
-          face.draw({side: side});
+        it('should have the eyes aligned', function () {
+            face.draw();
+
+            var eyeCtx = newCtx();
+            new Eye(eyeCtx).draw();
+            var found = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+
+            expect(found[0]).toBeHorizontallyAlignWith(found[1]);
+        });
+
+        it('should contain the eyes inside it`s area', function () {
+            face.draw();
+
+            var eyeCtx = newCtx();
+            new Eye(eyeCtx).draw();
+            var foundEyes = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+
+            var justTheFaceShape = removeShapes(foundEyes, ctx.stack())
+            foundEyes.forEach(function(foundEye) {
+              expect(foundEye).toBeInsideTheAreaOf(justTheFaceShape);
+            });
+        });
+        
+        it('should have 1 mouth', function () {
+            face.draw();
+
+            var mouthCtx = newCtx();
+            new Mouth(mouthCtx).draw();
+            var found = findAllShapesIgnoringArguments(mouthCtx.stack(), ctx.stack());
+
+            expect(found.length).toBe(1);
+        });
+        
+    });
+    
+    
+    describe('side', function () {
+
+        ['left', 'right'].forEach(function (side) {
+          it('should have 1 eye when looked from ' + side, function () {
+              face.draw({side: side});
+
+              var eyeCtx = newCtx();
+              new Eye(eyeCtx).draw();
+              var foundEyes = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+
+              expect(foundEyes.length).toBe(1);
+          });
+        });
+        
+    });
+    
+    
+    describe('drunk mood', function () {
+
+        it('should render blurry eye when drunk', function () {
+          face.draw({mood: 'drunk'});
+          var drunkFace = ctx.stack();
 
           var eyeCtx = newCtx();
-          new Eye(eyeCtx).draw();
-          var foundEyes = findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+          new Eye(eyeCtx).draw({style: 'blurry'});
+          var blurryEye = eyeCtx.stack();
 
-          expect(foundEyes.length).toBe(1);
-      });
+          expect(blurryEye).toBePartOf(drunkFace);
+        });
+        
     });
-
-    it('should render blurry eye when drunk', function () {
-      face.draw({mood: 'drunk'});
-      var drunkFace = ctx.stack();
-
-      var eyeCtx = newCtx();
-      new Eye(eyeCtx).draw({style: 'blurry'});
-      var blurryEye = eyeCtx.stack();
-
-      expect(blurryEye).toBePartOf(drunkFace);
-    });
-
-    it('should have 1 mouth', function () {
-        face.draw();
-
-        var mouthCtx = newCtx();
-        new Mouth(mouthCtx).draw();
-        var found = findAllShapesIgnoringArguments(mouthCtx.stack(), ctx.stack());
-
-        expect(found.length).toBe(1);
-    });
+    
 
     describe('crazy mood', function () {
 
