@@ -21,7 +21,7 @@ module.exports = function(config) {
       'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
       'lib/mock-raf.js',
       'rabbit.js',
-	    'examples/face/*.js',
+	    'examples/face/face.js',
 	    'examples/face/*.spec.js'
     ],
 
