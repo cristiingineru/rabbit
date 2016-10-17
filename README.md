@@ -47,4 +47,4 @@ expect(referenceCanvasStack).toBePartOf(canvasUnderTestStack);
 
 # API
 
-Under construction. For now check these [example specs](https://rawgit.com/cristiingineru/rabbit/master/examples/face/face.spec.js).
+Under construction. For now check these [example specs](https://github.com/cristiingineru/rabbit/blob/master/examples/face/face.spec.js).
