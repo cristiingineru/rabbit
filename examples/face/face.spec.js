@@ -20,10 +20,6 @@ describe('Face', function () {
       face = new Face(ctx);
     });
 
-    afterEach(function () {
-        $('#demo-container').empty();
-    });
-
 
     describe('with default options', function() {
 
@@ -108,14 +104,6 @@ describe('Face', function () {
 
 
     describe('crazy mood', function () {
-
-      beforeEach(function () {
-        jasmine.clock().install();
-      });
-
-      afterEach(function () {
-        jasmine.clock().uninstall();
-      });
 
       it('should animate in the next frame', function () {
           var window = {
