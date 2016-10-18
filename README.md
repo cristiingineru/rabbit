@@ -21,7 +21,7 @@ Then the test writer can assert that the found instances have certain properties
 * Set up [Canteen](https://github.com/platfora/Canteen/blob/master/README.md)
 * Create a Rabbit object. One per test suite is enough:
 ```js
-rabbit = new Rabbit();
+var rabbit = new Rabbit();
 ```
 * Optional: add the Rabbit matchers to Jasmine:
 ```js
