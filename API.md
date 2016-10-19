@@ -46,4 +46,4 @@ The core functionality of Rabbit is based on the **shapePosition** and **shapeSi
 |strokeRect| | |
 |strokeText| | |
 |transform| | |
-|translate| | |
+|translate|✓| |
