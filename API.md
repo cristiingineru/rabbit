@@ -33,7 +33,7 @@ The core functionality of Rabbit is based on the **shapePosition** and **shapeSi
 |moveTo| | |
 |putImageData| | |
 |quadraticCurveTo| | |
-|rect| | |
+|rect|✓| |
 |resetTransform| | |
 |restore|✓| |
 |rotate| | |

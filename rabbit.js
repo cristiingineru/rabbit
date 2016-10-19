@@ -81,6 +81,11 @@ function Rabbit() {
             r = call.arguments[2];
             position = minPosition(position, cx - r, cy - r);
             break;
+          case 'rect':
+              x = call.arguments[0] + translate.x;
+              y = call.arguments[1] + translate.y;
+              position = minPosition(position, x, y);
+              break;
           case 'save':
             translates.push([]);
             break;
@@ -163,6 +168,7 @@ function Rabbit() {
     this.findShapeIgnoringArguments = findShapeIgnoringArguments;
     this.removeShapes = removeShapes;
     this.shapeSize = shapeSize;
+    this.shapePosition = shapePosition;
     this.isPointInsideRectangle = isPointInsideRectangle;
     this.customMatchers = {
 
