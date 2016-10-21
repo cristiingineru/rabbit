@@ -64,6 +64,76 @@ describe('getBBox', function () {
         expect(box.width).toBe(7);
       });
 
+      it('.rect(1, 0, 5, 0), .rect(5, 0, 3, 0) => {x: 1, y: 0, width: 7, height: 0}', function () {
+        ctx.rect(1, 0, 5, 0);
+        ctx.rect(5, 0, 3, 0);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(1);
+        expect(box.width).toBe(7);
+      });
+
+      it('.rect(1, 0, 7, 0), .rect(5, 0, 3, 0) => {x: 1, y: 0, width: 7, height: 0}', function () {
+        ctx.rect(1, 0, 7, 0);
+        ctx.rect(5, 0, 3, 0);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(1);
+        expect(box.width).toBe(7);
+      });
+
+      it('.rect(1, 0, 7, 0), .rect(2, 0, 3, 0) => {x: 1, y: 0, width: 7, height: 0}', function () {
+        ctx.rect(1, 0, 7, 0);
+        ctx.rect(2, 0, 3, 0);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(1);
+        expect(box.width).toBe(7);
+      });
+
+      it('.rect(1, 0, 7, 0), .rect(1, 0, 3, 0) => {x: 1, y: 0, width: 7, height: 0}', function () {
+        ctx.rect(1, 0, 7, 0);
+        ctx.rect(1, 0, 3, 0);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(1);
+        expect(box.width).toBe(7);
+      });
+
+      it('.rect(2, 0, 7, 0), .rect(1, 0, 3, 0) => {x: 1, y: 0, width: 7, height: 0}', function () {
+        ctx.rect(1, 0, 7, 0);
+        ctx.rect(1, 0, 3, 0);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(1);
+        expect(box.width).toBe(7);
+      });
+
+      it('.rect(5, 0, 2, 0), .rect(1, 0, 5, 0) => {x: 1, y: 0, width: 7, height: 0}', function () {
+        ctx.rect(1, 0, 7, 0);
+        ctx.rect(1, 0, 3, 0);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(1);
+        expect(box.width).toBe(7);
+      });
+
+      it('.rect(5, 0, 3, 0), .rect(1, 0, 2, 0) => {x: 1, y: 0, width: 7, height: 0}', function () {
+        ctx.rect(1, 0, 7, 0);
+        ctx.rect(1, 0, 3, 0);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(1);
+        expect(box.width).toBe(7);
+      });
+
     });
 
 });

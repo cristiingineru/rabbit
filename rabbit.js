@@ -157,7 +157,9 @@ function Rabbit() {
       var result = {
         x: Math.min(box1.x, box2.x),
         y: Math.min(box1.y, box2.y),
-        width: box1.width + box2.width,
+        width: Math.max(box1.width, box2.width, box1.x < box2.x
+          ? box1.width + box2.width + (box2.x - (box1.x + box1.width))
+          : box1.width + box2.width + (box1.x - (box2.x + box2.width))),
         height: box1.height + box2.height
       };
       return result;
