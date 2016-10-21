@@ -52,6 +52,45 @@ function Rabbit() {
       return copy;
     }
 
+    function getBBox(shape) {
+      var box = {x: NaN, y: NaN, width: NaN, height: NaN};
+        translates = [[]];
+      shape.forEach(function (call) {
+        var cx, cy, r, x, y, width, height, newBox,
+          translate = calculateTotalTranslation(translates);
+        switch(call.method) {
+          case 'arc':
+            cx = call.arguments[0] + translate.x;
+            cy = call.arguments[1] + translate.y;
+            r = call.arguments[2];
+            newBox = {x: cx - r, y: cy - r, width: 2 * r, height: 2 * r};
+            //box = union(box, newBox);
+            box = newBox;
+            break;
+          case 'rect':
+            x = call.arguments[0] + translate.x;
+            y = call.arguments[1] + translate.y;
+            width = call.arguments[2];
+            height = call.arguments[3];
+            newBox = {x: x, y: y, width: width, height: height};
+            box = union(box, newBox);
+            break;
+          case 'save':
+            translates.push([]);
+            break;
+          case 'restore':
+            translates.pop();
+            break;
+          case 'translate':
+            translates
+              .last()
+              .push({x: call.arguments[0], y: call.arguments[1]});
+            break;
+        };
+      });
+      return box;
+    };
+
     function shapeSize(shape) {
       var size = {width: 0, height: 0};
       shape.forEach(function (call) {
@@ -100,6 +139,28 @@ function Rabbit() {
         };
       });
       return position;
+    }
+
+    function union(box1, box2) {
+      box1 = {
+        x: box1.x || box2.x,
+        y: box1.y || box2.y,
+        width: box1.width || box2.width,
+        height: box1.height || box2.height
+      };
+      box2 = {
+        x: box2.x || box1.x,
+        y: box2.y || box1.y,
+        width: box2.width || box1.width,
+        height: box2.height || box1.height
+      };
+      var result = {
+        x: Math.min(box1.x, box2.x),
+        y: Math.min(box1.y, box2.y),
+        width: box1.width + box2.width,
+        height: box1.height + box2.height
+      };
+      return result;
     }
 
     function calculateTotalTranslation(translates) {
@@ -167,6 +228,7 @@ function Rabbit() {
     this.findAllShapesIgnoringArguments = findAllShapesIgnoringArguments;
     this.findShapeIgnoringArguments = findShapeIgnoringArguments;
     this.removeShapes = removeShapes;
+    this.getBBox = getBBox;
     this.shapeSize = shapeSize;
     this.shapePosition = shapePosition;
     this.isPointInsideRectangle = isPointInsideRectangle;
