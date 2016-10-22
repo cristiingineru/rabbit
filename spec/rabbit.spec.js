@@ -117,6 +117,55 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r);
       });
 
+      it('should translate the box of an arc based on a previous scale', function () {
+        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
+        ctx.scale(xScale, yScale);
+        ctx.translate(xTranslate, yTranslate);
+        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe((cx - r + xTranslate) * xScale);
+        expect(box.y).toBe((cy - r + yTranslate) * yScale);
+        expect(box.width).toBe(2 * r * xScale);
+        expect(box.height).toBe(2 * r * yScale);
+      });
+
+      it('should translate the box of an arc based on all previous scales', function () {
+        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17, xTranslate = 18, yTranslate = 19;
+        ctx.scale(xScale1, yScale1);
+        ctx.scale(xScale2, yScale2);
+        ctx.translate(xTranslate, yTranslate);
+        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe((cx - r + xTranslate) * xScale1 * xScale2);
+        expect(box.y).toBe((cy - r + yTranslate) * yScale1 * yScale2);
+        expect(box.width).toBe(2 * r * xScale1 * xScale2);
+        expect(box.height).toBe(2 * r * yScale1 * yScale2);
+      });
+
+      it('should translate the box of an arc multiple times based on all previous scales', function () {
+        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17,
+          xTranslate1 = 18, yTranslate1 = 19, xTranslate2 = 20, yTranslate2 = 21;
+        ctx.scale(xScale1, yScale1);
+        ctx.translate(xTranslate1, yTranslate1);
+        ctx.scale(xScale2, yScale2);
+        ctx.translate(xTranslate2, yTranslate2);
+        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(xTranslate1 * xScale1 + (cx - r + xTranslate2) * xScale1 * xScale2);
+        expect(box.y).toBe(yTranslate1 * yScale1 + (cy - r + yTranslate2) * yScale1 * yScale2);
+        expect(box.width).toBe(2 * r * xScale1 * xScale2);
+        expect(box.height).toBe(2 * r * yScale1 * yScale2);
+      });
+
       it('should return the box of a rect', function () {
         var x = 11, y = 12, width = 13, height = 14;
         ctx.rect(x, y, width, height);
