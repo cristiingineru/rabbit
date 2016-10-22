@@ -64,8 +64,7 @@ function Rabbit() {
             cy = call.arguments[1] + translate.y;
             r = call.arguments[2];
             newBox = {x: cx - r, y: cy - r, width: 2 * r, height: 2 * r};
-            //box = union(box, newBox);
-            box = newBox;
+            box = union(box, newBox);
             break;
           case 'rect':
             x = call.arguments[0] + translate.x;

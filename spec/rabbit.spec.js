@@ -1,15 +1,18 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
-describe('getBBox', function () {
+describe('rabbit', function () {
     'use strict';
 
-    var rabbit, fixture, placeholder, ctx;
+    var rabbit;
 
     beforeAll(function() {
       rabbit = new Rabbit();
-      jasmine.addMatchers(rabbit.customMatchers);
     });
+
+    describe('getBBox', function() {
+
+      var fixture, placeholder, ctx;
 
     beforeEach(function () {
       fixture = setFixtures('<div id="demo-container" style="width: 400px;height: 300px">').find('#demo-container').get(0);
@@ -19,37 +22,67 @@ describe('getBBox', function () {
       ctx = placeholder[0].getContext('2d');
     });
 
-    it('empty canvas => {x: NaN, y: NaN, width: NaN, height: NaN}', function () {
+      it('should return {x: NaN, y: NaN, width: NaN, height: NaN} for an empty canvas', function () {
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
+      });
+
+      it('should return the box of an arc', function () {
+        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
+        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+
         var box = rabbit.getBBox(ctx.stack());
 
-        expect(box.x).toEqual(NaN);
-        expect(box.y).toEqual(NaN);
-        expect(box.width).toEqual(NaN);
-        expect(box.height).toEqual(NaN);
-    });
+        expect(box.x).toBe(cx - r);
+        expect(box.y).toBe(cy - r);
+        expect(box.width).toBe(2 * r);
+        expect(box.height).toBe(2 * r);
+      });
 
-    it('.arc(cx, cy, r, sAngle, eAngle, counterclockwise) => {x: cx - r, y: cy - r, width: 2 * r, height: 2 * r}', function () {
-      var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
-      ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+      it('should union the boxes of two arcs that are far from each other', function () {
+        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          toRightShift = 40, toBottomShift = 50;
+        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+        ctx.arc(cx + toRightShift, cy + toBottomShift, r, sAngle, eAngle, counterclockwise);
 
-      var box = rabbit.getBBox(ctx.stack());
+        var box = rabbit.getBBox(ctx.stack());
 
-      expect(box.x).toBe(cx - r);
-      expect(box.y).toBe(cy - r);
-      expect(box.width).toBe(2 * r);
-      expect(box.height).toBe(2 * r);
-    });
+        expect(box.x).toBe(cx - r);
+        expect(box.y).toBe(cy - r);
+        expect(box.width).toBe(2 * r + toRightShift);
+        expect(box.height).toBe(2 * r + toBottomShift);
+      });
 
-    it('.rect(x, y, width, height) => {x: x, y: y, width: width, height: height}', function () {
-      var x = 11, y = 12, width = 13, height = 14;
-      ctx.rect(x, y, width, height);
+      it('should return the box of a rect', function () {
+        var x = 11, y = 12, width = 13, height = 14;
+        ctx.rect(x, y, width, height);
 
-      var box = rabbit.getBBox(ctx.stack());
+        var box = rabbit.getBBox(ctx.stack());
 
-      expect(box.x).toBe(x);
-      expect(box.y).toBe(y);
-      expect(box.width).toBe(width);
-      expect(box.height).toBe(height);
+        expect(box.x).toBe(x);
+        expect(box.y).toBe(y);
+        expect(box.width).toBe(width);
+        expect(box.height).toBe(height);
+      });
+
+      it('should union the boxes of two rects that are far from each other', function () {
+        var x = 11, y = 12, width = 13, height = 14,
+          toRightShift = 40, toBottomShift = 50;
+        ctx.rect(x, y, width, height);
+        ctx.rect(x + toRightShift, y + toBottomShift, width, height);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(x);
+        expect(box.y).toBe(y);
+        expect(box.width).toBe(width + toRightShift);
+        expect(box.height).toBe(height + toBottomShift);
+      });
+
     });
 
     describe('union', function() {
