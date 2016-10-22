@@ -54,16 +54,19 @@ function Rabbit() {
 
     function getBBox(shape) {
       var box = {x: NaN, y: NaN, width: NaN, height: NaN};
-        translates = [[]];
+        translates = [[]],
+        scalings = [[]];
       shape.forEach(function (call) {
-        var cx, cy, r, x, y, width, height, newBox,
-          translate = calculateTotalTranslation(translates);
+        var cx, cy, rx, ry, x, y, width, height, newBox,
+          translate = calculateTotalTranslation(translates),
+          scale = calculateTotalScaling(scalings);
         switch(call.method) {
           case 'arc':
-            cx = call.arguments[0] + translate.x;
-            cy = call.arguments[1] + translate.y;
-            r = call.arguments[2];
-            newBox = {x: cx - r, y: cy - r, width: 2 * r, height: 2 * r};
+            cx = (call.arguments[0] + translate.x) * scale.x;
+            cy = (call.arguments[1] + translate.y) * scale.y;
+            rx = call.arguments[2] * scale.x;
+            ry = call.arguments[2] * scale.y
+            newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
             box = union(box, newBox);
             break;
           case 'rect':
@@ -76,15 +79,21 @@ function Rabbit() {
             break;
           case 'save':
             translates.push([]);
+            scalings.push([]);
             break;
           case 'restore':
             translates.pop();
+            scalings.pop();
             break;
           case 'translate':
             translates
               .last()
               .push({x: call.arguments[0], y: call.arguments[1]});
             break;
+          case 'scale':
+            scalings
+              .last()
+              .push({x: call.arguments[0], y: call.arguments[1]});
         };
       });
       return box;
@@ -177,6 +186,19 @@ function Rabbit() {
             y: previousValue.y + currentValue.y
           };
         }, {x: 0, y: 0});
+    }
+
+    function calculateTotalScaling(scalings) {
+      return scalings
+        .reduce(function(previousArray, currentArray) {
+          return previousArray.concat(currentArray);
+        }, [])
+        .reduce(function(previousValue, currentValue) {
+          return {
+            x: previousValue.x * currentValue.x,
+            y: previousValue.y * currentValue.y
+          };
+        }, {x: 1, y: 1});
     }
 
     function maxSize(size, width, height) {
