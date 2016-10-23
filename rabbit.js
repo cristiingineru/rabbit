@@ -55,23 +55,25 @@ function Rabbit() {
     function getBBox(shape) {
       var box = {x: NaN, y: NaN, width: NaN, height: NaN};
         translates = [[]],
-        scalings = [[]];
+        scalings = [[]],
+        transforms = [[]];
       shape.forEach(function (call) {
         var cx, cy, rx, ry, x, y, width, height, newBox,
           translate = calculateTotalTranslation(translates),
-          scale = calculateTotalScaling(scalings);
+          scale = calculateTotalScaling(scalings),
+          transform = totalTransformOfAnArrayOfArrays(transforms);
         switch(call.method) {
           case 'arc':
-            cx = (call.arguments[0] + translate.x) * scale.x;
-            cy = (call.arguments[1] + translate.y) * scale.y;
-            rx = call.arguments[2] * scale.x;
-            ry = call.arguments[2] * scale.y
+            cx = call.arguments[0] + transform.xTranslate;
+            cy = call.arguments[1] + transform.yTranslate;
+            rx = call.arguments[2] * transform.xScale;
+            ry = call.arguments[2] * transform.yScale
             newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
             box = union(box, newBox);
             break;
           case 'rect':
-            x = call.arguments[0] + translate.x;
-            y = call.arguments[1] + translate.y;
+            x = call.arguments[0] + transform.xTranslate;
+            y = call.arguments[1] + transform.yTranslate;
             width = call.arguments[2];
             height = call.arguments[3];
             newBox = {x: x, y: y, width: width, height: height};
@@ -80,20 +82,28 @@ function Rabbit() {
           case 'save':
             translates.push([]);
             scalings.push([]);
+            transforms.push([]);
             break;
           case 'restore':
             translates.pop();
             scalings.pop();
+            transforms.pop();
             break;
           case 'translate':
             translates
               .last()
               .push({x: call.arguments[0], y: call.arguments[1]});
+            transforms
+              .last()
+              .push({xTranslate: call.arguments[0], yTranslate: call.arguments[1]});
             break;
           case 'scale':
             scalings
               .last()
               .push({x: call.arguments[0], y: call.arguments[1]});
+            transforms
+              .last()
+              .push({xScale: call.arguments[0], yScale: call.arguments[1]});
         };
       });
       return box;
@@ -201,11 +211,17 @@ function Rabbit() {
         }, {x: 1, y: 1});
     }
 
-    function totalTransform(transforms) {
-      return transforms
+    function totalTransformOfAnArrayOfArrays(transforms) {
+      var flattenArray = transforms
         .reduce(function(previousArray, currentArray) {
           return previousArray.concat(currentArray);
-        }, [])
+        }, []);
+
+      return totalTransform(flattenArray);
+    }
+
+    function totalTransform(transforms) {
+      return transforms
         .map(function(value) {
           return {
             xTranslate: typeof value.xTranslate === 'number' ? value.xTranslate : 0,
