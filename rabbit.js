@@ -64,8 +64,8 @@ function Rabbit() {
           transform = totalTransformOfAnArrayOfArrays(transforms);
         switch(call.method) {
           case 'arc':
-            cx = call.arguments[0] + transform.xTranslate;
-            cy = call.arguments[1] + transform.yTranslate;
+            cx = call.arguments[0] * transform.xScale + transform.xTranslate;
+            cy = call.arguments[1] * transform.yScale + transform.yTranslate;
             rx = call.arguments[2] * transform.xScale;
             ry = call.arguments[2] * transform.yScale
             newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
