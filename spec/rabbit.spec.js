@@ -14,13 +14,13 @@ describe('rabbit', function () {
 
       var fixture, placeholder, ctx;
 
-    beforeEach(function () {
-      fixture = setFixtures('<div id="demo-container" style="width: 400px;height: 300px">').find('#demo-container').get(0);
+      beforeEach(function () {
+        fixture = setFixtures('<div id="demo-container" style="width: 400px;height: 300px">').find('#demo-container').get(0);
 
-      placeholder = $('<canvas id="placeholder"  />');
-      placeholder.appendTo(fixture);
-      ctx = placeholder[0].getContext('2d');
-    });
+        placeholder = $('<canvas id="placeholder"  />');
+        placeholder.appendTo(fixture);
+        ctx = placeholder[0].getContext('2d');
+      });
 
       it('should return {x: NaN, y: NaN, width: NaN, height: NaN} for an empty canvas', function () {
           var box = rabbit.getBBox(ctx.stack());
@@ -407,4 +407,131 @@ describe('rabbit', function () {
 
     });
 
+    describe('totalTransform', function() {
+
+      it('[[]] => {xTranslate: 0, yTranslate: 0, xScale: 1, yScale: 1}', function() {
+        var transforms = [[]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(0);
+        expect(result.yTranslate).toBe(0);
+        expect(result.xScale).toBe(1);
+        expect(result.yScale).toBe(1);
+      });
+
+      it('[[t1]] => {xTranslate: t1.x, yTranslate: t1.y, xScale: 1, yScale: 1}', function() {
+        var transforms = [[
+          {xTranslate: 10, yTranslate: 11}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(10);
+        expect(result.yTranslate).toBe(11);
+        expect(result.xScale).toBe(1);
+        expect(result.yScale).toBe(1);
+      });
+
+      it('[[t1, t2]] => {xTranslate: t1.x + t2.x, yTranslate: t1.y + t2.y, xScale: 1, yScale: 1}', function() {
+        var transforms = [[
+          {xTranslate: 10, yTranslate: 11},
+          {xTranslate: 12, yTranslate: 13}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(10 + 12);
+        expect(result.yTranslate).toBe(11 + 13);
+        expect(result.xScale).toBe(1);
+        expect(result.yScale).toBe(1);
+      });
+
+      it('[[s1]] => {xTranslate: 0, yTranslate: 0, xScale: s1.x, yScale: s1.y}', function() {
+        var transforms = [[
+          {xScale: 10, yScale: 11}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(0);
+        expect(result.yTranslate).toBe(0);
+        expect(result.xScale).toBe(10);
+        expect(result.yScale).toBe(11);
+      });
+
+      it('[[s1, s2]] => {xTranslate: 0, yTranslate: 0, xScale: s1.x * s2.x, yScale: s1.y * s2.y}', function() {
+        var transforms = [[
+          {xScale: 10, yScale: 11},
+          {xScale: 12, yScale: 13}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(0);
+        expect(result.yTranslate).toBe(0);
+        expect(result.xScale).toBe(10 * 12);
+        expect(result.yScale).toBe(11 * 13);
+      });
+
+      it('[[t1, s1]] => {xTranslate: t1.x, yTranslate: t1.y, xScale: s1.x, yScale: s1.y}', function() {
+        var transforms = [[
+          {xTranslate: 10, yTranslate: 11},
+          {xScale: 12, yScale: 13}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(10);
+        expect(result.yTranslate).toBe(11);
+        expect(result.xScale).toBe(12);
+        expect(result.yScale).toBe(13);
+      });
+
+      it('[[s1, t1]] => {xTranslate: t1.x * s1.x, yTranslate: t1.y * s1.y, xScale: s1.x, yScale: s1.y}', function() {
+        var transforms = [[
+          {xScale: 10, yScale: 11},
+          {xTranslate: 12, yTranslate: 13}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(12 * 10);
+        expect(result.yTranslate).toBe(13 * 11);
+        expect(result.xScale).toBe(10);
+        expect(result.yScale).toBe(11);
+      });
+
+      it('[[s1, t1, s2]] => {xTranslate: t1.x * s1.x, yTranslate: t1.y * s1.y, xScale: s1.x * s2.x, yScale: s1.y * s2.y}', function() {
+        var transforms = [[
+          {xScale: 10, yScale: 11},
+          {xTranslate: 12, yTranslate: 13},
+          {xScale: 14, yScale: 15}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(12 * 10);
+        expect(result.yTranslate).toBe(13 * 11);
+        expect(result.xScale).toBe(10 * 14);
+        expect(result.yScale).toBe(11 * 15);
+      });
+
+      it('[[s1, t1, s2, t2]] => {xTranslate: t1.x * s1.x + t2.x * s1.x * s2.x, yTranslate: t1.y * s1.y + t2.t * s1.y * s2.y, xScale: s1.x * s2.x, yScale: s1.y * s2.y}', function() {
+        var transforms = [[
+          {xScale: 10, yScale: 11},
+          {xTranslate: 12, yTranslate: 13},
+          {xScale: 14, yScale: 15},
+          {xTranslate: 16, yTranslate: 17}
+        ]];
+
+        var result = rabbit.totalTransform(transforms);
+
+        expect(result.xTranslate).toBe(12 * 10 + 16 * 10 * 14);
+        expect(result.yTranslate).toBe(13 * 11 + 17 * 11 * 15);
+        expect(result.xScale).toBe(10 * 14);
+        expect(result.yScale).toBe(11 * 15);
+      });
+
+    });
 });

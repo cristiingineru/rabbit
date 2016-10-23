@@ -201,6 +201,29 @@ function Rabbit() {
         }, {x: 1, y: 1});
     }
 
+    function totalTransform(transforms) {
+      return transforms
+        .reduce(function(previousArray, currentArray) {
+          return previousArray.concat(currentArray);
+        }, [])
+        .map(function(value) {
+          return {
+            xTranslate: typeof value.xTranslate === 'number' ? value.xTranslate : 0,
+            yTranslate: typeof value.yTranslate === 'number' ? value.yTranslate : 0,
+            xScale: typeof value.xScale === 'number' ? value.xScale : 1,
+            yScale: typeof value.yScale === 'number' ? value.yScale : 1
+          };
+        })
+        .reduce(function(previousValue, currentValue) {
+          return {
+            xTranslate: previousValue.xTranslate + currentValue.xTranslate * previousValue.xScale,
+            yTranslate: previousValue.yTranslate + currentValue.yTranslate * previousValue.yScale,
+            xScale: previousValue.xScale * currentValue.xScale,
+            yScale: previousValue.yScale * currentValue.yScale
+          };
+        }, {xTranslate: 0, yTranslate: 0, xScale: 1, yScale: 1});
+    }
+
     function maxSize(size, width, height) {
       return {
         width: Math.max(size.width, width),
@@ -255,6 +278,7 @@ function Rabbit() {
     this.removeShapes = removeShapes;
     this.getBBox = getBBox;
     this.union = union;
+    this.totalTransform = totalTransform;
     this.shapeSize = shapeSize;
     this.shapePosition = shapePosition;
     this.isPointInsideRectangle = isPointInsideRectangle;
