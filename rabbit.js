@@ -77,10 +77,10 @@ function Rabbit() {
             box = union(box, newBox);
             break;
           case 'rect':
-            x = call.arguments[0] + transform.translate.x;
-            y = call.arguments[1] + transform.translate.y;
-            width = call.arguments[2];
-            height = call.arguments[3];
+            x = call.arguments[0] * transform.scale.x + transform.translate.x;
+            y = call.arguments[1] * transform.scale.y + transform.translate.y;
+            width = call.arguments[2] * transform.scale.x;
+            height = call.arguments[3] * transform.scale.y;
             newBox = {x: x, y: y, width: width, height: height};
             box = union(box, newBox);
             break;

@@ -222,9 +222,88 @@ describe('rabbit', function () {
         expect(box.height).toBe(height);
       });
       
-      //should scale the box of an arc
-      //should not scale the box of an arc after restoring
-      //should translate the box of an arc based on a previous scale
+      it('should scale the box of a rect', function () {
+        var x = 11, y = 12, width = 13, height = 14,
+          xScale = 15, yScale = 16;
+        ctx.scale(xScale, yScale);
+        ctx.rect(x, y, width, height);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(x * xScale);
+        expect(box.y).toBe(y * yScale);
+        expect(box.width).toBe(width * xScale);
+        expect(box.height).toBe(height * yScale);
+      });
+      
+      it('should not scale the box of a rect after restoring', function () {
+        var x = 11, y = 12, width = 13, height = 14,
+          xScale = 15, yScale = 16;
+        ctx.save();
+        ctx.scale(xScale, yScale);
+        ctx.restore();
+        ctx.rect(x, y, width, height);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(x);
+        expect(box.y).toBe(y);
+        expect(box.width).toBe(width);
+        expect(box.height).toBe(height);
+      });
+      
+      it('should translate the box of a rect based on a previous scale', function () {
+        var x = 11, y = 12, width = 13, height = 14,
+          xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
+        ctx.scale(xScale, yScale);
+        ctx.translate(xTranslate, yTranslate);
+        ctx.rect(x, y, width, height);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe((x + xTranslate) * xScale);
+        expect(box.y).toBe((y + yTranslate) * yScale);
+        expect(box.width).toBe(width * xScale);
+        expect(box.height).toBe(height * yScale);
+      });
+      
+      it('should translate the box of a rect based on all previous scales', function () {
+        var x = 11, y = 12, width = 13, height = 14,
+          xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
+          xTranslate = 19, yTranslate = 20;
+        ctx.scale(xScale1, yScale1);
+        ctx.scale(xScale2, yScale2);
+        ctx.translate(xTranslate, yTranslate);
+        ctx.rect(x, y, width, height);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe((x + xTranslate) * xScale1 * xScale2);
+        expect(box.y).toBe((y + yTranslate) * yScale1 * yScale2);
+        expect(box.width).toBe(width * xScale1 * xScale2);
+        expect(box.height).toBe(height * yScale1 * yScale2);
+      });
+      
+      it('should translate the box of a rect multiple times based on all previous scales', function () {
+        var x = 11, y = 12, width = 13, height = 14,
+          xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
+          xTranslate1 = 19, yTranslate1 = 20, xTranslate2 = 21, yTranslate2 = 22;
+        ctx.scale(xScale1, yScale1);
+        ctx.translate(xTranslate1, yTranslate1);
+        ctx.scale(xScale2, yScale2);
+        ctx.translate(xTranslate2, yTranslate2);
+        ctx.rect(x, y, width, height);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(xTranslate1 * xScale1 + (x + xTranslate2) * xScale1 * xScale2);
+        expect(box.y).toBe(yTranslate1 * yScale1 + (y + yTranslate2) * yScale1 * yScale2);
+        expect(box.width).toBe(width * xScale1 * xScale2);
+        expect(box.height).toBe(height * yScale1 * yScale2);
+      });
+      
+
+
       //should translate the box of an arc based on all previous scales
       //should translate the box of an arc multiple times based on all previous scales
 
