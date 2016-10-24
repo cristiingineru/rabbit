@@ -31,9 +31,10 @@ describe('rabbit', function () {
           expect(box.height).toEqual(NaN);
       });
 
-      it('should return the box of an arc', function () {
+      it('should return the box of a filled arc', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
         ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+        ctx.fill();
 
         var box = rabbit.getBBox(ctx.stack());
 
@@ -41,6 +42,31 @@ describe('rabbit', function () {
         expect(box.y).toBe(cy - r);
         expect(box.width).toBe(2 * r);
         expect(box.height).toBe(2 * r);
+      });
+
+      it('should return the box of a stroked arc', function () {
+        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
+        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+        ctx.stroke();
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toBe(cx - r);
+        expect(box.y).toBe(cy - r);
+        expect(box.width).toBe(2 * r);
+        expect(box.height).toBe(2 * r);
+      });
+
+      it('should not return the box of just an arc', function () {
+        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
+        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+
+        var box = rabbit.getBBox(ctx.stack());
+
+        expect(box.x).toEqual(NaN);
+        expect(box.y).toEqual(NaN);
+        expect(box.width).toEqual(NaN);
+        expect(box.height).toEqual(NaN);
       });
 
       it('should union the boxes of two arcs that are far from each other', function () {
@@ -221,7 +247,7 @@ describe('rabbit', function () {
         expect(box.width).toBe(width);
         expect(box.height).toBe(height);
       });
-      
+
       it('should scale the box of a rect', function () {
         var x = 11, y = 12, width = 13, height = 14,
           xScale = 15, yScale = 16;
@@ -235,7 +261,7 @@ describe('rabbit', function () {
         expect(box.width).toBe(width * xScale);
         expect(box.height).toBe(height * yScale);
       });
-      
+
       it('should not scale the box of a rect after restoring', function () {
         var x = 11, y = 12, width = 13, height = 14,
           xScale = 15, yScale = 16;
@@ -251,7 +277,7 @@ describe('rabbit', function () {
         expect(box.width).toBe(width);
         expect(box.height).toBe(height);
       });
-      
+
       it('should translate the box of a rect based on a previous scale', function () {
         var x = 11, y = 12, width = 13, height = 14,
           xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
@@ -266,7 +292,7 @@ describe('rabbit', function () {
         expect(box.width).toBe(width * xScale);
         expect(box.height).toBe(height * yScale);
       });
-      
+
       it('should translate the box of a rect based on all previous scales', function () {
         var x = 11, y = 12, width = 13, height = 14,
           xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
@@ -283,7 +309,7 @@ describe('rabbit', function () {
         expect(box.width).toBe(width * xScale1 * xScale2);
         expect(box.height).toBe(height * yScale1 * yScale2);
       });
-      
+
       it('should translate the box of a rect multiple times based on all previous scales', function () {
         var x = 11, y = 12, width = 13, height = 14,
           xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
@@ -301,7 +327,7 @@ describe('rabbit', function () {
         expect(box.width).toBe(width * xScale1 * xScale2);
         expect(box.height).toBe(height * yScale1 * yScale2);
       });
-      
+
 
 
       //should translate the box of an arc based on all previous scales
@@ -310,13 +336,13 @@ describe('rabbit', function () {
     });
 
     describe('union', function() {
-      
+
       /*
-      
+
       ** How to read the following specs **
-      
+
       Two rectangles that don't overlap have a projection on the x axis like this:
-      
+
         +--------+
         |        |
         |        |    +-----------+
@@ -345,7 +371,7 @@ describe('rabbit', function () {
           The projection of a single rectangle is marked with the --- signs.
           The overlapping section is marked with the ==== signs.
           The => sign is showing the projection of the bounding box of the rectangles.
-        
+
         The same conventions are valid for the y axis as well but they will be rotated by 90 degrees clockwise.
 
       */
