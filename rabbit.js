@@ -4,6 +4,15 @@ if (!Array.prototype.last) {
   };
 };
 
+if (!Array.prototype.flatten) {
+  Array.prototype.flatten = function() {
+    return this
+      .reduce(function(previousArray, currentArray) {
+        return previousArray.concat(currentArray);
+      }, []);
+  }
+}
+
 
 function Rabbit() {
 
@@ -54,56 +63,42 @@ function Rabbit() {
 
     function getBBox(shape) {
       var box = {x: NaN, y: NaN, width: NaN, height: NaN};
-        translates = [[]],
-        scalings = [[]],
         transforms = [[]];
       shape.forEach(function (call) {
         var cx, cy, rx, ry, x, y, width, height, newBox,
-          translate = calculateTotalTranslation(translates),
-          scale = calculateTotalScaling(scalings),
-          transform = totalTransformOfAnArrayOfArrays(transforms);
+          transform = totalTransform(transforms.flatten());
         switch(call.method) {
           case 'arc':
-            cx = call.arguments[0] * transform.xScale + transform.xTranslate;
-            cy = call.arguments[1] * transform.yScale + transform.yTranslate;
-            rx = call.arguments[2] * transform.xScale;
-            ry = call.arguments[2] * transform.yScale
+            cx = call.arguments[0] * transform.scale.x + transform.translate.x;
+            cy = call.arguments[1] * transform.scale.y + transform.translate.y;
+            rx = call.arguments[2] * transform.scale.x;
+            ry = call.arguments[2] * transform.scale.y
             newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
             box = union(box, newBox);
             break;
           case 'rect':
-            x = call.arguments[0] + transform.xTranslate;
-            y = call.arguments[1] + transform.yTranslate;
+            x = call.arguments[0] + transform.translate.x;
+            y = call.arguments[1] + transform.translate.y;
             width = call.arguments[2];
             height = call.arguments[3];
             newBox = {x: x, y: y, width: width, height: height};
             box = union(box, newBox);
             break;
           case 'save':
-            translates.push([]);
-            scalings.push([]);
             transforms.push([]);
             break;
           case 'restore':
-            translates.pop();
-            scalings.pop();
             transforms.pop();
             break;
           case 'translate':
-            translates
-              .last()
-              .push({x: call.arguments[0], y: call.arguments[1]});
             transforms
               .last()
-              .push({xTranslate: call.arguments[0], yTranslate: call.arguments[1]});
+              .push({translate: {x: call.arguments[0], y: call.arguments[1]}});
             break;
           case 'scale':
-            scalings
-              .last()
-              .push({x: call.arguments[0], y: call.arguments[1]});
             transforms
               .last()
-              .push({xScale: call.arguments[0], yScale: call.arguments[1]});
+              .push({scale: {x: call.arguments[0], y: call.arguments[1]}});
         };
       });
       return box;
@@ -198,46 +193,26 @@ function Rabbit() {
         }, {x: 0, y: 0});
     }
 
-    function calculateTotalScaling(scalings) {
-      return scalings
-        .reduce(function(previousArray, currentArray) {
-          return previousArray.concat(currentArray);
-        }, [])
-        .reduce(function(previousValue, currentValue) {
-          return {
-            x: previousValue.x * currentValue.x,
-            y: previousValue.y * currentValue.y
-          };
-        }, {x: 1, y: 1});
-    }
-
-    function totalTransformOfAnArrayOfArrays(transforms) {
-      var flattenArray = transforms
-        .reduce(function(previousArray, currentArray) {
-          return previousArray.concat(currentArray);
-        }, []);
-
-      return totalTransform(flattenArray);
-    }
-
     function totalTransform(transforms) {
       return transforms
         .map(function(value) {
           return {
-            xTranslate: typeof value.xTranslate === 'number' ? value.xTranslate : 0,
-            yTranslate: typeof value.yTranslate === 'number' ? value.yTranslate : 0,
-            xScale: typeof value.xScale === 'number' ? value.xScale : 1,
-            yScale: typeof value.yScale === 'number' ? value.yScale : 1
+            translate: value.translate || {x: 0, y: 0},
+            scale: value.scale || {x: 1, y: 1}
           };
         })
         .reduce(function(previousValue, currentValue) {
           return {
-            xTranslate: previousValue.xTranslate + currentValue.xTranslate * previousValue.xScale,
-            yTranslate: previousValue.yTranslate + currentValue.yTranslate * previousValue.yScale,
-            xScale: previousValue.xScale * currentValue.xScale,
-            yScale: previousValue.yScale * currentValue.yScale
+            translate: {
+              x: previousValue.translate.x + currentValue.translate.x * previousValue.scale.x,
+              y: previousValue.translate.y + currentValue.translate.y * previousValue.scale.y
+            },
+            scale: {
+              x: previousValue.scale.x * currentValue.scale.x,
+              y: previousValue.scale.y * currentValue.scale.y
+            }
           };
-        }, {xTranslate: 0, yTranslate: 0, xScale: 1, yScale: 1});
+        }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
     }
 
     function maxSize(size, width, height) {

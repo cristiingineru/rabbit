@@ -221,9 +221,55 @@ describe('rabbit', function () {
         expect(box.width).toBe(width);
         expect(box.height).toBe(height);
       });
+      
+      //should scale the box of an arc
+      //should not scale the box of an arc after restoring
+      //should translate the box of an arc based on a previous scale
+      //should translate the box of an arc based on all previous scales
+      //should translate the box of an arc multiple times based on all previous scales
+
     });
 
     describe('union', function() {
+      
+      /*
+      
+      ** How to read the following specs **
+      
+      Two rectangles that don't overlap have a projection on the x axis like this:
+      
+        +--------+
+        |        |
+        |        |    +-----------+
+        |        |    |           |
+        +--------+    |           |
+                      |           |
+                      +-----------+
+
+        ----------    -------------
+
+
+      Two rectangles that overlap have a projection on the y axis like this:
+
+        +-----------------+
+        |                 |
+        |         +---------------+
+        |         |       |       |
+        +-----------------+       |
+                  |               |
+                  +---------------+
+
+        ----------=========--------
+
+
+        Legend:
+          The projection of a single rectangle is marked with the --- signs.
+          The overlapping section is marked with the ==== signs.
+          The => sign is showing the projection of the bounding box of the rectangles.
+        
+        The same conventions are valid for the y axis as well but they will be rotated by 90 degrees clockwise.
+
+      */
 
       it('horizontal --- ---  =>  --------', function () {
         var box1 = {x: 1, width: 3},
@@ -409,128 +455,128 @@ describe('rabbit', function () {
 
     describe('totalTransform', function() {
 
-      it('[] => {xTranslate: 0, yTranslate: 0, xScale: 1, yScale: 1}', function() {
+      it('[] => {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}}', function() {
         var transforms = [];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(0);
-        expect(result.yTranslate).toBe(0);
-        expect(result.xScale).toBe(1);
-        expect(result.yScale).toBe(1);
+        expect(result.translate.x).toBe(0);
+        expect(result.translate.y).toBe(0);
+        expect(result.scale.x).toBe(1);
+        expect(result.scale.y).toBe(1);
       });
 
-      it('[t1] => {xTranslate: t1.x, yTranslate: t1.y, xScale: 1, yScale: 1}', function() {
+      it('[t1] => {translate: {x: t1.x, y: t1.y}, scale: {x: 1, y: 1}}', function() {
         var transforms = [
-          {xTranslate: 10, yTranslate: 11}
+          {translate: {x: 10, y: 11}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(10);
-        expect(result.yTranslate).toBe(11);
-        expect(result.xScale).toBe(1);
-        expect(result.yScale).toBe(1);
+        expect(result.translate.x).toBe(10);
+        expect(result.translate.y).toBe(11);
+        expect(result.scale.x).toBe(1);
+        expect(result.scale.y).toBe(1);
       });
 
-      it('[t1, t2] => {xTranslate: t1.x + t2.x, yTranslate: t1.y + t2.y, xScale: 1, yScale: 1}', function() {
+      it('[t1, t2] => {translate: {x: t1.x + t2.x, y: t1.y + t2.y}, scale: {x: 1, y: 1}}', function() {
         var transforms = [
-          {xTranslate: 10, yTranslate: 11},
-          {xTranslate: 12, yTranslate: 13}
+          {translate: {x: 10, y: 11}},
+          {translate: {x: 12, y: 13}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(10 + 12);
-        expect(result.yTranslate).toBe(11 + 13);
-        expect(result.xScale).toBe(1);
-        expect(result.yScale).toBe(1);
+        expect(result.translate.x).toBe(10 + 12);
+        expect(result.translate.y).toBe(11 + 13);
+        expect(result.scale.x).toBe(1);
+        expect(result.scale.y).toBe(1);
       });
 
-      it('[s1] => {xTranslate: 0, yTranslate: 0, xScale: s1.x, yScale: s1.y}', function() {
+      it('[s1] => {translate: {x: 0, y: 0}, scale: {x: s1.x, y: s1.y}}', function() {
         var transforms = [
-          {xScale: 10, yScale: 11}
+          {scale: {x: 10, y: 11}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(0);
-        expect(result.yTranslate).toBe(0);
-        expect(result.xScale).toBe(10);
-        expect(result.yScale).toBe(11);
+        expect(result.translate.x).toBe(0);
+        expect(result.translate.y).toBe(0);
+        expect(result.scale.x).toBe(10);
+        expect(result.scale.y).toBe(11);
       });
 
-      it('[s1, s2] => {xTranslate: 0, yTranslate: 0, xScale: s1.x * s2.x, yScale: s1.y * s2.y}', function() {
+      it('[s1, s2] => {translate: {x: 0, y: 0}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', function() {
         var transforms = [
-          {xScale: 10, yScale: 11},
-          {xScale: 12, yScale: 13}
+          {scale: {x: 10, y: 11}},
+          {scale: {x: 12, y: 13}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(0);
-        expect(result.yTranslate).toBe(0);
-        expect(result.xScale).toBe(10 * 12);
-        expect(result.yScale).toBe(11 * 13);
+        expect(result.translate.x).toBe(0);
+        expect(result.translate.y).toBe(0);
+        expect(result.scale.x).toBe(10 * 12);
+        expect(result.scale.y).toBe(11 * 13);
       });
 
-      it('[t1, s1] => {xTranslate: t1.x, yTranslate: t1.y, xScale: s1.x, yScale: s1.y}', function() {
+      it('[t1, s1] => {translate: {x: t1.x, y: t1.y}, scale: {x: s1.x, y: s1.y}}', function() {
         var transforms = [
-          {xTranslate: 10, yTranslate: 11},
-          {xScale: 12, yScale: 13}
+          {translate: {x: 10, y: 11}},
+          {scale: {x: 12, y: 13}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(10);
-        expect(result.yTranslate).toBe(11);
-        expect(result.xScale).toBe(12);
-        expect(result.yScale).toBe(13);
+        expect(result.translate.x).toBe(10);
+        expect(result.translate.y).toBe(11);
+        expect(result.scale.x).toBe(12);
+        expect(result.scale.y).toBe(13);
       });
 
-      it('[s1, t1] => {xTranslate: t1.x * s1.x, yTranslate: t1.y * s1.y, xScale: s1.x, yScale: s1.y}', function() {
+      it('[s1, t1] => {translate: {x: t1.x * s1.x, y: t1.y * s1.y}, scale: {x: s1.x, y: s1.y}}', function() {
         var transforms = [
-          {xScale: 10, yScale: 11},
-          {xTranslate: 12, yTranslate: 13}
+          {scale: {x: 10, y: 11}},
+          {translate: {x: 12, y: 13}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(12 * 10);
-        expect(result.yTranslate).toBe(13 * 11);
-        expect(result.xScale).toBe(10);
-        expect(result.yScale).toBe(11);
+        expect(result.translate.x).toBe(12 * 10);
+        expect(result.translate.y).toBe(13 * 11);
+        expect(result.scale.x).toBe(10);
+        expect(result.scale.y).toBe(11);
       });
 
-      it('[s1, t1, s2] => {xTranslate: t1.x * s1.x, yTranslate: t1.y * s1.y, xScale: s1.x * s2.x, yScale: s1.y * s2.y}', function() {
+      it('[s1, t1, s2] => {translate: {x: t1.x * s1.x, y: t1.y * s1.y}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', function() {
         var transforms = [
-          {xScale: 10, yScale: 11},
-          {xTranslate: 12, yTranslate: 13},
-          {xScale: 14, yScale: 15}
+          {scale: {x: 10, y: 11}},
+          {translate: {x: 12, y: 13}},
+          {scale: {x: 14, y: 15}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(12 * 10);
-        expect(result.yTranslate).toBe(13 * 11);
-        expect(result.xScale).toBe(10 * 14);
-        expect(result.yScale).toBe(11 * 15);
+        expect(result.translate.x).toBe(12 * 10);
+        expect(result.translate.y).toBe(13 * 11);
+        expect(result.scale.x).toBe(10 * 14);
+        expect(result.scale.y).toBe(11 * 15);
       });
 
-      it('[s1, t1, s2, t2] => {xTranslate: t1.x * s1.x + t2.x * s1.x * s2.x, yTranslate: t1.y * s1.y + t2.t * s1.y * s2.y, xScale: s1.x * s2.x, yScale: s1.y * s2.y}', function() {
+      it('[s1, t1, s2, t2] => {translate: {x: t1.x * s1.x + t2.x * s1.x * s2.x, y: t1.y * s1.y + t2.t * s1.y * s2.y}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', function() {
         var transforms = [
-          {xScale: 10, yScale: 11},
-          {xTranslate: 12, yTranslate: 13},
-          {xScale: 14, yScale: 15},
-          {xTranslate: 16, yTranslate: 17}
+          {scale: {x: 10, y: 11}},
+          {translate: {x: 12, y: 13}},
+          {scale: {x: 14, y: 15}},
+          {translate: {x: 16, y: 17}}
         ];
 
         var result = rabbit.totalTransform(transforms);
 
-        expect(result.xTranslate).toBe(12 * 10 + 16 * 10 * 14);
-        expect(result.yTranslate).toBe(13 * 11 + 17 * 11 * 15);
-        expect(result.xScale).toBe(10 * 14);
-        expect(result.yScale).toBe(11 * 15);
+        expect(result.translate.x).toBe(12 * 10 + 16 * 10 * 14);
+        expect(result.translate.y).toBe(13 * 11 + 17 * 11 * 15);
+        expect(result.scale.x).toBe(10 * 14);
+        expect(result.scale.y).toBe(11 * 15);
       });
 
     });
