@@ -31,320 +31,18 @@ describe('rabbit', function () {
           expect(box.height).toEqual(NaN);
       });
 
-      it('should return the box of a filled arc', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
+      describe('arc', function() {
 
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe(cx - r);
-        expect(box.y).toBe(cy - r);
-        expect(box.width).toBe(2 * r);
-        expect(box.height).toBe(2 * r);
-      });
-
-      it('should union the boxes of two filled arcs that are far from each other', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          toRightShift = 40, toBottomShift = 50;
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.arc(cx + toRightShift, cy + toBottomShift, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe(cx - r);
-        expect(box.y).toBe(cy - r);
-        expect(box.width).toBe(2 * r + toRightShift);
-        expect(box.height).toBe(2 * r + toBottomShift);
-      });
-
-      it('should translate the box of a filled arc', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          xTranslate = 15, yTranslate = 16;
-        ctx.translate(xTranslate, yTranslate);
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe(cx - r + xTranslate);
-        expect(box.y).toBe(cy - r + yTranslate);
-        expect(box.width).toBe(2 * r);
-        expect(box.height).toBe(2 * r);
-      });
-
-      it('should not translate the box of a filled arc after restoring', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          xTranslate = 15, yTranslate = 16;
-        ctx.save();
-        ctx.translate(xTranslate, yTranslate);
-        ctx.restore();
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe(cx - r);
-        expect(box.y).toBe(cy - r);
-        expect(box.width).toBe(2 * r);
-        expect(box.height).toBe(2 * r);
-      });
-
-      it('should scale the box of a filled arc', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          xScale = 15, yScale = 16;
-        ctx.scale(xScale, yScale);
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe((cx - r) * xScale);
-        expect(box.y).toBe((cy - r) * yScale);
-        expect(box.width).toBe(2 * r * xScale);
-        expect(box.height).toBe(2 * r * yScale);
-      });
-
-      it('should not scale the box of a filled arc after restoring', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          xScale = 15, yScale = 16;
-        ctx.save();
-        ctx.scale(xScale, yScale);
-        ctx.restore();
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe(cx - r);
-        expect(box.y).toBe(cy - r);
-        expect(box.width).toBe(2 * r);
-        expect(box.height).toBe(2 * r);
-      });
-
-      it('should translate the box of a filled arc based on a previous scale', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
-        ctx.scale(xScale, yScale);
-        ctx.translate(xTranslate, yTranslate);
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe((cx - r + xTranslate) * xScale);
-        expect(box.y).toBe((cy - r + yTranslate) * yScale);
-        expect(box.width).toBe(2 * r * xScale);
-        expect(box.height).toBe(2 * r * yScale);
-      });
-
-      it('should translate the box of a filled arc based on all previous scales', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17, xTranslate = 18, yTranslate = 19;
-        ctx.scale(xScale1, yScale1);
-        ctx.scale(xScale2, yScale2);
-        ctx.translate(xTranslate, yTranslate);
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe((cx - r + xTranslate) * xScale1 * xScale2);
-        expect(box.y).toBe((cy - r + yTranslate) * yScale1 * yScale2);
-        expect(box.width).toBe(2 * r * xScale1 * xScale2);
-        expect(box.height).toBe(2 * r * yScale1 * yScale2);
-      });
-
-      it('should translate the box of a filled arc multiple times based on all previous scales', function () {
-        var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-          xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17,
-          xTranslate1 = 18, yTranslate1 = 19, xTranslate2 = 20, yTranslate2 = 21;
-        ctx.scale(xScale1, yScale1);
-        ctx.translate(xTranslate1, yTranslate1);
-        ctx.scale(xScale2, yScale2);
-        ctx.translate(xTranslate2, yTranslate2);
-        ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-        ctx.fill();
-
-        var box = rabbit.getBBox(ctx.stack());
-
-        expect(box.x).toBe(xTranslate1 * xScale1 + (cx - r + xTranslate2) * xScale1 * xScale2);
-        expect(box.y).toBe(yTranslate1 * yScale1 + (cy - r + yTranslate2) * yScale1 * yScale2);
-        expect(box.width).toBe(2 * r * xScale1 * xScale2);
-        expect(box.height).toBe(2 * r * yScale1 * yScale2);
-      });
-
-      [ {shape: 'rect', drawFunction: 'fill'},
-        {shape: 'rect', drawFunction: 'stroke'},
-        {shape: 'fillRect', drawFunction: undefined},
-        {shape: 'strokeRect', drawFunction: undefined}
-      ].forEach(function(testCase) {
-
-        var namedShapeUnderTest = testCase.drawFunction
-          ? testCase.drawFunction + 'ed ' + testCase.shape
-          : testCase.shape;
-
-        it('should return the box of a ' + namedShapeUnderTest, function () {
-          var x = 11, y = 12, width = 13, height = 14;
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(x);
-          expect(box.y).toBe(y);
-          expect(box.width).toBe(width);
-          expect(box.height).toBe(height);
-        });
-
-        it('should union the boxes of two ' + namedShapeUnderTest + ' that are far from each other', function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            toRightShift = 40, toBottomShift = 50;
-          ctx[testCase.shape](x, y, width, height);
-          ctx[testCase.shape](x + toRightShift, y + toBottomShift, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(x);
-          expect(box.y).toBe(y);
-          expect(box.width).toBe(width + toRightShift);
-          expect(box.height).toBe(height + toBottomShift);
-        });
-
-        it('should translate the box of a ' + namedShapeUnderTest, function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            xTranslate = 15, yTranslate = 16;
-          ctx.translate(xTranslate, yTranslate);
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(x + xTranslate);
-          expect(box.y).toBe(y + yTranslate);
-          expect(box.width).toBe(width);
-          expect(box.height).toBe(height);
-        });
-
-        it('should not translate the box of a ' + namedShapeUnderTest + ' after restoring', function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            xTranslate = 15, yTranslate = 16;
-          ctx.save();
-          ctx.translate(xTranslate, yTranslate);
-          ctx.restore();
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(x);
-          expect(box.y).toBe(y);
-          expect(box.width).toBe(width);
-          expect(box.height).toBe(height);
-        });
-
-        it('should scale the box of a ' + namedShapeUnderTest, function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            xScale = 15, yScale = 16;
-          ctx.scale(xScale, yScale);
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(x * xScale);
-          expect(box.y).toBe(y * yScale);
-          expect(box.width).toBe(width * xScale);
-          expect(box.height).toBe(height * yScale);
-        });
-
-        it('should not scale the box of a ' + namedShapeUnderTest + ' after restoring', function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            xScale = 15, yScale = 16;
-          ctx.save();
-          ctx.scale(xScale, yScale);
-          ctx.restore();
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(x);
-          expect(box.y).toBe(y);
-          expect(box.width).toBe(width);
-          expect(box.height).toBe(height);
-        });
-
-        it('should translate the box of a ' + namedShapeUnderTest + ' based on a previous scale', function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
-          ctx.scale(xScale, yScale);
-          ctx.translate(xTranslate, yTranslate);
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe((x + xTranslate) * xScale);
-          expect(box.y).toBe((y + yTranslate) * yScale);
-          expect(box.width).toBe(width * xScale);
-          expect(box.height).toBe(height * yScale);
-        });
-
-        it('should translate the box of a ' + namedShapeUnderTest + ' based on all previous scales', function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
-            xTranslate = 19, yTranslate = 20;
-          ctx.scale(xScale1, yScale1);
-          ctx.scale(xScale2, yScale2);
-          ctx.translate(xTranslate, yTranslate);
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe((x + xTranslate) * xScale1 * xScale2);
-          expect(box.y).toBe((y + yTranslate) * yScale1 * yScale2);
-          expect(box.width).toBe(width * xScale1 * xScale2);
-          expect(box.height).toBe(height * yScale1 * yScale2);
-        });
-
-        it('should translate the box of a ' + namedShapeUnderTest + ' multiple times based on all previous scales', function () {
-          var x = 11, y = 12, width = 13, height = 14,
-            xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
-            xTranslate1 = 19, yTranslate1 = 20, xTranslate2 = 21, yTranslate2 = 22;
-          ctx.scale(xScale1, yScale1);
-          ctx.translate(xTranslate1, yTranslate1);
-          ctx.scale(xScale2, yScale2);
-          ctx.translate(xTranslate2, yTranslate2);
-          ctx[testCase.shape](x, y, width, height);
-          if (testCase.drawFunction) ctx[testCase.drawFunction]();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(xTranslate1 * xScale1 + (x + xTranslate2) * xScale1 * xScale2);
-          expect(box.y).toBe(yTranslate1 * yScale1 + (y + yTranslate2) * yScale1 * yScale2);
-          expect(box.width).toBe(width * xScale1 * xScale2);
-          expect(box.height).toBe(height * yScale1 * yScale2);
-        });
-      });
-
-
-      describe('path', function() {
-
-        it('should return the box of a filled arc', function () {
+        it('should not return the box of just an arc', function () {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-          ctx.fill();
 
           var box = rabbit.getBBox(ctx.stack());
 
-          expect(box.x).toBe(cx - r);
-          expect(box.y).toBe(cy - r);
-          expect(box.width).toBe(2 * r);
-          expect(box.height).toBe(2 * r);
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
         });
 
         it('should return the box of a stroked arc', function () {
@@ -358,18 +56,6 @@ describe('rabbit', function () {
           expect(box.y).toBe(cy - r);
           expect(box.width).toBe(2 * r);
           expect(box.height).toBe(2 * r);
-        });
-
-        it('should not return the box of just an arc', function () {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
-          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toEqual(NaN);
-          expect(box.y).toEqual(NaN);
-          expect(box.width).toEqual(NaN);
-          expect(box.height).toEqual(NaN);
         });
 
         it('should not return the box of an arc after calling beginPath', function () {
@@ -387,7 +73,318 @@ describe('rabbit', function () {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should not return the box of a stoked 1 point path (moveTo)', function () {
+        it('should return the box of a filled arc', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r);
+          expect(box.y).toBe(cy - r);
+          expect(box.width).toBe(2 * r);
+          expect(box.height).toBe(2 * r);
+        });
+
+        it('should union the boxes of two filled arcs that are far from each other', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            toRightShift = 40, toBottomShift = 50;
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.arc(cx + toRightShift, cy + toBottomShift, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r);
+          expect(box.y).toBe(cy - r);
+          expect(box.width).toBe(2 * r + toRightShift);
+          expect(box.height).toBe(2 * r + toBottomShift);
+        });
+
+        it('should translate the box of a filled arc', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xTranslate = 15, yTranslate = 16;
+          ctx.translate(xTranslate, yTranslate);
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r + xTranslate);
+          expect(box.y).toBe(cy - r + yTranslate);
+          expect(box.width).toBe(2 * r);
+          expect(box.height).toBe(2 * r);
+        });
+
+        it('should not translate the box of a filled arc after restoring', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xTranslate = 15, yTranslate = 16;
+          ctx.save();
+          ctx.translate(xTranslate, yTranslate);
+          ctx.restore();
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r);
+          expect(box.y).toBe(cy - r);
+          expect(box.width).toBe(2 * r);
+          expect(box.height).toBe(2 * r);
+        });
+
+        it('should scale the box of a filled arc', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xScale = 15, yScale = 16;
+          ctx.scale(xScale, yScale);
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe((cx - r) * xScale);
+          expect(box.y).toBe((cy - r) * yScale);
+          expect(box.width).toBe(2 * r * xScale);
+          expect(box.height).toBe(2 * r * yScale);
+        });
+
+        it('should not scale the box of a filled arc after restoring', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xScale = 15, yScale = 16;
+          ctx.save();
+          ctx.scale(xScale, yScale);
+          ctx.restore();
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r);
+          expect(box.y).toBe(cy - r);
+          expect(box.width).toBe(2 * r);
+          expect(box.height).toBe(2 * r);
+        });
+
+        it('should translate the box of a filled arc based on a previous scale', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
+          ctx.scale(xScale, yScale);
+          ctx.translate(xTranslate, yTranslate);
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe((cx - r + xTranslate) * xScale);
+          expect(box.y).toBe((cy - r + yTranslate) * yScale);
+          expect(box.width).toBe(2 * r * xScale);
+          expect(box.height).toBe(2 * r * yScale);
+        });
+
+        it('should translate the box of a filled arc based on all previous scales', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17, xTranslate = 18, yTranslate = 19;
+          ctx.scale(xScale1, yScale1);
+          ctx.scale(xScale2, yScale2);
+          ctx.translate(xTranslate, yTranslate);
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe((cx - r + xTranslate) * xScale1 * xScale2);
+          expect(box.y).toBe((cy - r + yTranslate) * yScale1 * yScale2);
+          expect(box.width).toBe(2 * r * xScale1 * xScale2);
+          expect(box.height).toBe(2 * r * yScale1 * yScale2);
+        });
+
+        it('should translate the box of a filled arc multiple times based on all previous scales', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17,
+            xTranslate1 = 18, yTranslate1 = 19, xTranslate2 = 20, yTranslate2 = 21;
+          ctx.scale(xScale1, yScale1);
+          ctx.translate(xTranslate1, yTranslate1);
+          ctx.scale(xScale2, yScale2);
+          ctx.translate(xTranslate2, yTranslate2);
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.fill();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(xTranslate1 * xScale1 + (cx - r + xTranslate2) * xScale1 * xScale2);
+          expect(box.y).toBe(yTranslate1 * yScale1 + (cy - r + yTranslate2) * yScale1 * yScale2);
+          expect(box.width).toBe(2 * r * xScale1 * xScale2);
+          expect(box.height).toBe(2 * r * yScale1 * yScale2);
+        });
+
+      });
+
+
+      [ {shape: 'rect', drawFunction: 'fill'},
+        {shape: 'rect', drawFunction: 'stroke'},
+        {shape: 'fillRect', drawFunction: undefined},
+        {shape: 'strokeRect', drawFunction: undefined}
+      ].forEach(function(testCase) {
+
+        var namedShapeUnderTest = testCase.drawFunction
+          ? testCase.drawFunction + (testCase.drawFunction.slice(-1) === 'e' ? 'd ' : 'ed ') + testCase.shape
+          : testCase.shape;
+
+        describe(namedShapeUnderTest, function() {
+
+          it('should return the box of a ' + namedShapeUnderTest, function () {
+            var x = 11, y = 12, width = 13, height = 14;
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe(x);
+            expect(box.y).toBe(y);
+            expect(box.width).toBe(width);
+            expect(box.height).toBe(height);
+          });
+
+          it('should union the boxes of two ' + namedShapeUnderTest + ' that are far from each other', function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              toRightShift = 40, toBottomShift = 50;
+            ctx[testCase.shape](x, y, width, height);
+            ctx[testCase.shape](x + toRightShift, y + toBottomShift, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe(x);
+            expect(box.y).toBe(y);
+            expect(box.width).toBe(width + toRightShift);
+            expect(box.height).toBe(height + toBottomShift);
+          });
+
+          it('should translate the box of a ' + namedShapeUnderTest, function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              xTranslate = 15, yTranslate = 16;
+            ctx.translate(xTranslate, yTranslate);
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe(x + xTranslate);
+            expect(box.y).toBe(y + yTranslate);
+            expect(box.width).toBe(width);
+            expect(box.height).toBe(height);
+          });
+
+          it('should not translate the box of a ' + namedShapeUnderTest + ' after restoring', function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              xTranslate = 15, yTranslate = 16;
+            ctx.save();
+            ctx.translate(xTranslate, yTranslate);
+            ctx.restore();
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe(x);
+            expect(box.y).toBe(y);
+            expect(box.width).toBe(width);
+            expect(box.height).toBe(height);
+          });
+
+          it('should scale the box of a ' + namedShapeUnderTest, function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              xScale = 15, yScale = 16;
+            ctx.scale(xScale, yScale);
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe(x * xScale);
+            expect(box.y).toBe(y * yScale);
+            expect(box.width).toBe(width * xScale);
+            expect(box.height).toBe(height * yScale);
+          });
+
+          it('should not scale the box of a ' + namedShapeUnderTest + ' after restoring', function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              xScale = 15, yScale = 16;
+            ctx.save();
+            ctx.scale(xScale, yScale);
+            ctx.restore();
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe(x);
+            expect(box.y).toBe(y);
+            expect(box.width).toBe(width);
+            expect(box.height).toBe(height);
+          });
+
+          it('should translate the box of a ' + namedShapeUnderTest + ' based on a previous scale', function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
+            ctx.scale(xScale, yScale);
+            ctx.translate(xTranslate, yTranslate);
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe((x + xTranslate) * xScale);
+            expect(box.y).toBe((y + yTranslate) * yScale);
+            expect(box.width).toBe(width * xScale);
+            expect(box.height).toBe(height * yScale);
+          });
+
+          it('should translate the box of a ' + namedShapeUnderTest + ' based on all previous scales', function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
+              xTranslate = 19, yTranslate = 20;
+            ctx.scale(xScale1, yScale1);
+            ctx.scale(xScale2, yScale2);
+            ctx.translate(xTranslate, yTranslate);
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe((x + xTranslate) * xScale1 * xScale2);
+            expect(box.y).toBe((y + yTranslate) * yScale1 * yScale2);
+            expect(box.width).toBe(width * xScale1 * xScale2);
+            expect(box.height).toBe(height * yScale1 * yScale2);
+          });
+
+          it('should translate the box of a ' + namedShapeUnderTest + ' multiple times based on all previous scales', function () {
+            var x = 11, y = 12, width = 13, height = 14,
+              xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
+              xTranslate1 = 19, yTranslate1 = 20, xTranslate2 = 21, yTranslate2 = 22;
+            ctx.scale(xScale1, yScale1);
+            ctx.translate(xTranslate1, yTranslate1);
+            ctx.scale(xScale2, yScale2);
+            ctx.translate(xTranslate2, yTranslate2);
+            ctx[testCase.shape](x, y, width, height);
+            if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+            var box = rabbit.getBBox(ctx.stack());
+
+            expect(box.x).toBe(xTranslate1 * xScale1 + (x + xTranslate2) * xScale1 * xScale2);
+            expect(box.y).toBe(yTranslate1 * yScale1 + (y + yTranslate2) * yScale1 * yScale2);
+            expect(box.width).toBe(width * xScale1 * xScale2);
+            expect(box.height).toBe(height * yScale1 * yScale2);
+          });
+
+        });
+
+      });
+
+
+      describe('lineTo', function() {
+
+        it('should not return the box of a stoked 1 point path given by moveTo', function () {
           var x = 10, y = 11;
           ctx.moveTo(x, y);
           ctx.stroke();
@@ -400,7 +397,21 @@ describe('rabbit', function () {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should not return the box of a stoked 1 point path (lineTo)', function () {
+        it('should not return the box of a stoked 2 points path given by 2 moveTo', function () {
+          var x1 = 10, y1 = 11, x2 = 12, y2 = 13;
+          ctx.moveTo(x1, y1);
+          ctx.moveTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
+        });
+
+        it('should not return the box of a stoked 1 point path given by lineTo', function () {
           var x = 10, y = 11;
           ctx.lineTo(x, y);
           ctx.stroke();
@@ -806,4 +817,5 @@ describe('rabbit', function () {
       });
 
     });
+
 });
