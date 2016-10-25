@@ -63,17 +63,26 @@ function Rabbit() {
 
     function getBBox(shape) {
       var box = {x: NaN, y: NaN, width: NaN, height: NaN};
-        transforms = [[]];
+        transforms = [[]],
+        path = [];
       shape.forEach(function (call) {
         var cx, cy, rx, ry, x, y, width, height, newBox,
           transform = totalTransform(transforms.flatten());
         switch(call.method) {
-          case 'arc':
-            cx = call.arguments[0] * transform.scale.x + transform.translate.x;
-            cy = call.arguments[1] * transform.scale.y + transform.translate.y;
-            rx = call.arguments[2] * transform.scale.x;
-            ry = call.arguments[2] * transform.scale.y
-            newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
+          case 'fillRect':
+            x = call.arguments[0] * transform.scale.x + transform.translate.x;
+            y = call.arguments[1] * transform.scale.y + transform.translate.y;
+            width = call.arguments[2] * transform.scale.x;
+            height = call.arguments[3] * transform.scale.y;
+            newBox = {x: x, y: y, width: width, height: height};
+            box = union(box, newBox);
+            break;
+          case 'strokeRect':
+            x = call.arguments[0] * transform.scale.x + transform.translate.x;
+            y = call.arguments[1] * transform.scale.y + transform.translate.y;
+            width = call.arguments[2] * transform.scale.x;
+            height = call.arguments[3] * transform.scale.y;
+            newBox = {x: x, y: y, width: width, height: height};
             box = union(box, newBox);
             break;
           case 'rect':
@@ -82,7 +91,15 @@ function Rabbit() {
             width = call.arguments[2] * transform.scale.x;
             height = call.arguments[3] * transform.scale.y;
             newBox = {x: x, y: y, width: width, height: height};
-            box = union(box, newBox);
+            path.push(newBox);
+            break;
+          case 'arc':
+            cx = call.arguments[0] * transform.scale.x + transform.translate.x;
+            cy = call.arguments[1] * transform.scale.y + transform.translate.y;
+            rx = call.arguments[2] * transform.scale.x;
+            ry = call.arguments[2] * transform.scale.y
+            newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
+            path.push(newBox);
             break;
           case 'save':
             transforms.push([]);
@@ -99,6 +116,20 @@ function Rabbit() {
             transforms
               .last()
               .push({scale: {x: call.arguments[0], y: call.arguments[1]}});
+            break;
+          case 'stroke':
+            path.forEach(function(newBox) {
+              box = union(box, newBox);
+            });
+            break;
+          case 'fill':
+            path.forEach(function(newBox) {
+              box = union(box, newBox);
+            });
+            break;
+          case 'beginPath':
+            path = [];
+            break;
         };
       });
       return box;
@@ -134,10 +165,10 @@ function Rabbit() {
             position = minPosition(position, cx - r, cy - r);
             break;
           case 'rect':
-              x = call.arguments[0] + translate.x;
-              y = call.arguments[1] + translate.y;
-              position = minPosition(position, x, y);
-              break;
+            x = call.arguments[0] + translate.x;
+            y = call.arguments[1] + translate.y;
+            position = minPosition(position, x, y);
+            break;
           case 'save':
             translates.push([]);
             break;

@@ -1,49 +1,47 @@
-The core functionality of Rabbit is based on the **shapePosition** and **shapeSize** functions. Check this table to see what functions and properties of the canvas are they supporting:
+# getBBox
 
-| |shapePosition|shapeSize|
-|:--|:-:|:-:|
-|arc|✓|✓|
-|arcTo| | |
-|beginPath| | |
-|bezierCurveTo| | |
-|clear| | |
-|clearRect| | |
-|clip| | |
-|closePath| | |
-|context| | |
-|createImageData| | |
-|createLinearGradient| | |
-|createPattern| | |
-|createRadialGradient| | |
-|drawFocusIfNeeded| | |
-|drawImage| | |
-|ellipse| | |
-|fill| | |
-|fillRect| | |
-|fillText| | |
-|getContextAttributes| | |
-|getImageData| | |
-|getLineDash| | |
-|hash| | |
-|isPointInPath| | |
-|isPointInStroke| | |
-|json| | |
-|lineTo| | |
-|measureText| | |
-|moveTo| | |
-|putImageData| | |
-|quadraticCurveTo| | |
-|rect|✓| |
-|resetTransform| | |
-|restore|✓| |
-|rotate| | |
-|save|✓| |
-|scale| | |
-|setLineDash| | |
-|setTransform| | |
-|stack| | |
-|stroke| | |
-|strokeRect| | |
-|strokeText| | |
-|transform| | |
-|translate|✓| |
+The Canvas functions and properties supported by the **getBBox** function:
+
+| |getBBox|
+|:--|:-:|
+|arc|✓|
+|arcTo| |
+|beginPath|✓|
+|bezierCurveTo| |
+|clearRect| |
+|clip| |
+|closePath| |
+|context| |
+|createImageData| |
+|createLinearGradient| |
+|createPattern| |
+|createRadialGradient| |
+|drawFocusIfNeeded| |
+|drawImage| |
+|ellipse| |
+|fill|✓|
+|fillRect|✓|
+|fillText| |
+|getContextAttributes| |
+|getImageData| |
+|getLineDash| |
+|isPointInPath| |
+|isPointInStroke| |
+|lineTo| |
+|measureText| |
+|moveTo| |
+|putImageData| |
+|quadraticCurveTo| |
+|rect|✓|
+|resetTransform| |
+|restore|✓|
+|rotate| |
+|save|✓|
+|scale|✓|
+|setLineDash| |
+|setTransform| |
+|stroke|✓|
+|strokeRect|✓|
+|strokeText| |
+|transform| |
+|translate|✓|
