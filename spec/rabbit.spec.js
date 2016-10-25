@@ -31,7 +31,7 @@ describe('rabbit', function () {
           expect(box.height).toEqual(NaN);
       });
 
-      it('should return the box of an arc', function () {
+      it('should return the box of a filled arc', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
         ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
         ctx.fill();
@@ -44,7 +44,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r);
       });
 
-      it('should union the boxes of two arcs that are far from each other', function () {
+      it('should union the boxes of two filled arcs that are far from each other', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           toRightShift = 40, toBottomShift = 50;
         ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -59,7 +59,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r + toBottomShift);
       });
 
-      it('should translate the box of an arc', function () {
+      it('should translate the box of a filled arc', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           xTranslate = 15, yTranslate = 16;
         ctx.translate(xTranslate, yTranslate);
@@ -74,7 +74,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r);
       });
 
-      it('should not translate the box of an arc after restoring', function () {
+      it('should not translate the box of a filled arc after restoring', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           xTranslate = 15, yTranslate = 16;
         ctx.save();
@@ -91,7 +91,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r);
       });
 
-      it('should scale the box of an arc', function () {
+      it('should scale the box of a filled arc', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           xScale = 15, yScale = 16;
         ctx.scale(xScale, yScale);
@@ -106,7 +106,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r * yScale);
       });
 
-      it('should not scale the box of an arc after restoring', function () {
+      it('should not scale the box of a filled arc after restoring', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           xScale = 15, yScale = 16;
         ctx.save();
@@ -123,7 +123,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r);
       });
 
-      it('should translate the box of an arc based on a previous scale', function () {
+      it('should translate the box of a filled arc based on a previous scale', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
         ctx.scale(xScale, yScale);
@@ -139,7 +139,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r * yScale);
       });
 
-      it('should translate the box of an arc based on all previous scales', function () {
+      it('should translate the box of a filled arc based on all previous scales', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17, xTranslate = 18, yTranslate = 19;
         ctx.scale(xScale1, yScale1);
@@ -156,7 +156,7 @@ describe('rabbit', function () {
         expect(box.height).toBe(2 * r * yScale1 * yScale2);
       });
 
-      it('should translate the box of an arc multiple times based on all previous scales', function () {
+      it('should translate the box of a filled arc multiple times based on all previous scales', function () {
         var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
           xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17,
           xTranslate1 = 18, yTranslate1 = 19, xTranslate2 = 20, yTranslate2 = 21;
