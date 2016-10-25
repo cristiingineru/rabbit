@@ -181,7 +181,11 @@ describe('rabbit', function () {
         {shape: 'strokeRect', drawFunction: undefined}
       ].forEach(function(testCase) {
 
-        it('should return the box of a ' + testCase.shape, function () {
+        var namedShapeUnderTest = testCase.drawFunction
+          ? testCase.drawFunction + 'ed ' + testCase.shape
+          : testCase.shape;
+
+        it('should return the box of a ' + namedShapeUnderTest, function () {
           var x = 11, y = 12, width = 13, height = 14;
           ctx[testCase.shape](x, y, width, height);
           if (testCase.drawFunction) ctx[testCase.drawFunction]();
@@ -194,7 +198,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height);
         });
 
-        it('should union the boxes of two ' + testCase.shape + ' that are far from each other', function () {
+        it('should union the boxes of two ' + namedShapeUnderTest + ' that are far from each other', function () {
           var x = 11, y = 12, width = 13, height = 14,
             toRightShift = 40, toBottomShift = 50;
           ctx[testCase.shape](x, y, width, height);
@@ -209,7 +213,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height + toBottomShift);
         });
 
-        it('should translate the box of a ' + testCase.shape, function () {
+        it('should translate the box of a ' + namedShapeUnderTest, function () {
           var x = 11, y = 12, width = 13, height = 14,
             xTranslate = 15, yTranslate = 16;
           ctx.translate(xTranslate, yTranslate);
@@ -224,7 +228,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height);
         });
 
-        it('should not translate the box of a ' + testCase.shape + ' after restoring', function () {
+        it('should not translate the box of a ' + namedShapeUnderTest + ' after restoring', function () {
           var x = 11, y = 12, width = 13, height = 14,
             xTranslate = 15, yTranslate = 16;
           ctx.save();
@@ -241,7 +245,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height);
         });
 
-        it('should scale the box of a ' + testCase.shape, function () {
+        it('should scale the box of a ' + namedShapeUnderTest, function () {
           var x = 11, y = 12, width = 13, height = 14,
             xScale = 15, yScale = 16;
           ctx.scale(xScale, yScale);
@@ -256,7 +260,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height * yScale);
         });
 
-        it('should not scale the box of a ' + testCase.shape + ' after restoring', function () {
+        it('should not scale the box of a ' + namedShapeUnderTest + ' after restoring', function () {
           var x = 11, y = 12, width = 13, height = 14,
             xScale = 15, yScale = 16;
           ctx.save();
@@ -273,7 +277,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height);
         });
 
-        it('should translate the box of a ' + testCase.shape + ' based on a previous scale', function () {
+        it('should translate the box of a ' + namedShapeUnderTest + ' based on a previous scale', function () {
           var x = 11, y = 12, width = 13, height = 14,
             xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
           ctx.scale(xScale, yScale);
@@ -289,7 +293,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height * yScale);
         });
 
-        it('should translate the box of a ' + testCase.shape + ' based on all previous scales', function () {
+        it('should translate the box of a ' + namedShapeUnderTest + ' based on all previous scales', function () {
           var x = 11, y = 12, width = 13, height = 14,
             xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
             xTranslate = 19, yTranslate = 20;
@@ -307,7 +311,7 @@ describe('rabbit', function () {
           expect(box.height).toBe(height * yScale1 * yScale2);
         });
 
-        it('should translate the box of a ' + testCase.shape + ' multiple times based on all previous scales', function () {
+        it('should translate the box of a ' + namedShapeUnderTest + ' multiple times based on all previous scales', function () {
           var x = 11, y = 12, width = 13, height = 14,
             xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
             xTranslate1 = 19, yTranslate1 = 20, xTranslate2 = 21, yTranslate2 = 22;
