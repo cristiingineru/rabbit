@@ -180,7 +180,7 @@ describe('rabbit', function () {
         {shape: 'fillRect', drawFunction: undefined},
         {shape: 'strokeRect', drawFunction: undefined}
       ].forEach(function(testCase) {
-      
+
         it('should return the box of a ' + testCase.shape, function () {
           var x = 11, y = 12, width = 13, height = 14;
           ctx[testCase.shape](x, y, width, height);
@@ -326,10 +326,10 @@ describe('rabbit', function () {
           expect(box.height).toBe(height * yScale1 * yScale2);
         });
       });
-      
-      
+
+
       describe('path', function() {
-        
+
         it('should return the box of a filled arc', function () {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -342,7 +342,7 @@ describe('rabbit', function () {
           expect(box.width).toBe(2 * r);
           expect(box.height).toBe(2 * r);
         });
-        
+
         it('should return the box of a stroked arc', function () {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -367,7 +367,7 @@ describe('rabbit', function () {
           expect(box.width).toEqual(NaN);
           expect(box.height).toEqual(NaN);
         });
-        
+
         it('should not return the box of an arc after calling beginPath', function () {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -382,11 +382,75 @@ describe('rabbit', function () {
           expect(box.width).toEqual(NaN);
           expect(box.height).toEqual(NaN);
         });
+
+        it('should not return the box of a stoked 1 point path (moveTo)', function () {
+          var x = 10, y = 11;
+          ctx.moveTo(x, y);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
+        });
+
+        it('should not return the box of a stoked 1 point path (lineTo)', function () {
+          var x = 10, y = 11;
+          ctx.lineTo(x, y);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
+        });
+
+        it('should return the box of a stoked 2 points path', function () {
+          var x1 = 10, y1 = 11, x2 = 12, y2 = 13;
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2),
+            minY = Math.min(y1, y2),
+            maxX = Math.max(x1, x2),
+            maxY = Math.max(y1, y2);
+          expect(box.x).toEqual(minX);
+          expect(box.y).toEqual(minY);
+          expect(box.width).toEqual(maxX - minX);
+          expect(box.height).toEqual(maxY - minY);
+        });
+
+        it('should return the box of a stoked 3 points path', function () {
+          var x1 = 10, y1 = 11, x2 = 12, y2 = 13, x3 = 14, y3 = 15;
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.lineTo(x3, y3);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2, x3),
+            minY = Math.min(y1, y2, y3),
+            maxX = Math.max(x1, x2, x3),
+            maxY = Math.max(y1, y2, y3);
+          expect(box.x).toEqual(minX);
+          expect(box.y).toEqual(minY);
+          expect(box.width).toEqual(maxX - minX);
+          expect(box.height).toEqual(maxY - minY);
+        });
+
       })
 
     });
 
-  
+
     describe('union', function() {
 
       /*
@@ -610,7 +674,7 @@ describe('rabbit', function () {
 
     });
 
-  
+
     describe('totalTransform', function() {
 
       it('[] => {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}}', function() {

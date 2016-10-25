@@ -64,9 +64,10 @@ function Rabbit() {
     function getBBox(shape) {
       var box = {x: NaN, y: NaN, width: NaN, height: NaN};
         transforms = [[]],
-        path = [];
+        path = [],
+        moveToLocation = {x: NaN, y: NaN};
       shape.forEach(function (call) {
-        var cx, cy, rx, ry, x, y, width, height, newBox,
+        var cx, cy, rx, ry, x, y, x1, y1, x2, y2, width, height, newBox,
           transform = totalTransform(transforms.flatten());
         switch(call.method) {
           case 'fillRect':
@@ -99,6 +100,19 @@ function Rabbit() {
             rx = call.arguments[2] * transform.scale.x;
             ry = call.arguments[2] * transform.scale.y
             newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
+            path.push(newBox);
+            break;
+          case 'moveTo':
+            x1 = call.arguments[0];
+            y1 = call.arguments[1];
+            moveToLocation = {x: x1, y: y1};
+            break;
+          case 'lineTo':
+            x1 = moveToLocation.x;
+            y1 = moveToLocation.y;
+            x2 = call.arguments[0];
+            y2 = call.arguments[1];
+            newBox = {x: Math.min(x1, x2), y: Math.min(y1, y2), width: Math.abs(x2 - x1), height: Math.abs(y2 - y1)};
             path.push(newBox);
             break;
           case 'save':
@@ -275,7 +289,7 @@ function Rabbit() {
           }
         }
       },
-      
+
       toHaveTheSameSizeWith: function (util, customEqualityTesters) {
         return {
           compare: function (actual, expected) {
