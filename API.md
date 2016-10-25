@@ -1,3 +1,8 @@
+
+# findAllShapesIgnoringArguments
+# findAllShapesIgnoringArguments
+# findShapeIgnoringArguments
+# removeShapes
 # getBBox
 
 The Canvas functions and properties supported by the **getBBox** function:
@@ -45,3 +50,16 @@ The Canvas functions and properties supported by the **getBBox** function:
 |strokeText| |
 |transform| |
 |translate|✓|
+
+
+# union
+# totalTransform
+# isPointInsideRectangle
+# customMatchers
+
+## toBePartOf
+## toBeInsideTheAreaOf
+## toHaveTheSamePositionWith
+## toHaveTheSameSizeWith
+## toBeHorizontallyAlignWith
+## toBeVerticallyAlignWith

@@ -31,7 +31,7 @@ describe('Face', function () {
             var found = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
             expect(found.length).toBe(2);
-            expect(found[0]).toHaveTheSizeWith(found[1]);
+            expect(found[0]).toHaveTheSameSizeWith(found[1]);
         });
 
         it('should have the eyes aligned', function () {

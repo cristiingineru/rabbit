@@ -135,56 +135,6 @@ function Rabbit() {
       return box;
     };
 
-    function shapeSize(shape) {
-      var size = {width: 0, height: 0};
-      shape.forEach(function (call) {
-        var cx, cy, r;
-        switch(call.method) {
-          case 'arc':
-            cx = call.arguments[0];
-            cy = call.arguments[1];
-            r = call.arguments[2];
-            size = maxSize(size, r * 2, r * 2);
-            break;
-        };
-      });
-      return size;
-    }
-
-    function shapePosition(shape) {
-      var position = {x: NaN, y: NaN},
-        translates = [[]];
-      shape.forEach(function (call) {
-        var cx, cy, r,
-          translate = calculateTotalTranslation(translates);
-        switch(call.method) {
-          case 'arc':
-            cx = call.arguments[0] + translate.x;
-            cy = call.arguments[1] + translate.y;
-            r = call.arguments[2];
-            position = minPosition(position, cx - r, cy - r);
-            break;
-          case 'rect':
-            x = call.arguments[0] + translate.x;
-            y = call.arguments[1] + translate.y;
-            position = minPosition(position, x, y);
-            break;
-          case 'save':
-            translates.push([]);
-            break;
-          case 'restore':
-            translates.pop();
-            break;
-          case 'translate':
-            translates
-              .last()
-              .push({x: call.arguments[0], y: call.arguments[1]});
-            break;
-        };
-      });
-      return position;
-    }
-
     function union(box1, box2) {
       box1 = {
         x: box1.x || box2.x,
@@ -211,19 +161,6 @@ function Rabbit() {
       return result;
     }
 
-    function calculateTotalTranslation(translates) {
-      return translates
-        .reduce(function(previousArray, currentArray) {
-          return previousArray.concat(currentArray);
-        }, [])
-        .reduce(function(previousValue, currentValue) {
-          return {
-            x: previousValue.x + currentValue.x,
-            y: previousValue.y + currentValue.y
-          };
-        }, {x: 0, y: 0});
-    }
-
     function totalTransform(transforms) {
       return transforms
         .map(function(value) {
@@ -246,20 +183,6 @@ function Rabbit() {
         }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
     }
 
-    function maxSize(size, width, height) {
-      return {
-        width: Math.max(size.width, width),
-        height: Math.max(size.height, height)
-      };
-    }
-
-    function minPosition(position, x, y) {
-      return {
-        x: isNaN(position.x) ? x : Math.min(position.x, x),
-        y: isNaN(position.y) ? y : Math.min(position.y, y)
-      };
-    }
-
     // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
     function isPointInsideRectangle(point, rectangle) {
       var segments = [{
@@ -279,7 +202,7 @@ function Rabbit() {
         y1: rectangle.y + rectangle.height,
         x2: rectangle.x,
         y2: rectangle.y
-        }];
+      }];
 
       var isInside = segments.map(function(segment) {
         var A = -(segment.y2 - segment.y1),
@@ -301,8 +224,6 @@ function Rabbit() {
     this.getBBox = getBBox;
     this.union = union;
     this.totalTransform = totalTransform;
-    this.shapeSize = shapeSize;
-    this.shapePosition = shapePosition;
     this.isPointInsideRectangle = isPointInsideRectangle;
     this.customMatchers = {
 
@@ -333,13 +254,10 @@ function Rabbit() {
           compare: function (actual, expected) {
             var smallShape = actual,
               bigShape = expected,
-              bigShapePostion = shapePosition(bigShape),
-              bigShapeSize = shapeSize(bigShape),
-              rectangle = {x: bigShapePostion.x, y: bigShapePostion.y, width: bigShapePostion.x + bigShapeSize.width, height: bigShapePostion.y + bigShapeSize.height},
-              smallShapePosition = shapePosition(smallShape),
-              smallShapeSize = shapeSize(smallShape),
-              center = {x: smallShapePosition.x + smallShapeSize.width / 2, y: smallShapePosition.y + smallShapeSize.height / 2},
-              isCenterInside = isPointInsideRectangle(center, rectangle),
+              bigShapeBBox = getBBox(bigShape),
+              smallShapeBBox = getBBox(smallShape),
+              center = {x: smallShapeBBox.x + smallShapeBBox.width / 2, y: smallShapeBBox.y + smallShapeBBox.height / 2},
+              isCenterInside = isPointInsideRectangle(center, bigShapeBBox),
               result = isCenterInside ? {pass: true} : {pass: false, message: 'Shape is not inside the area of'};
             return result;
           }
@@ -349,10 +267,22 @@ function Rabbit() {
       toHaveTheSamePositionWith: function (util, customEqualityTesters) {
         return {
           compare: function (actual, expected) {
-            var actualPosition = shapePosition(actual),
-              expectedPosition = shapePosition(expected),
-              haveTheSamePosition = actualPosition.x === expectedPosition.x && actualPosition.y === expectedPosition.y,
+            var actualBBox = getBBox(actual),
+              expectedBBox = getBBox(expected),
+              haveTheSamePosition = actualBBox.x === expectedBBox.x && actualBBox.y === expectedBBox.y,
               result = haveTheSamePosition ? {pass: true} : {pass: false, message: 'Shapes don`t have the same position'};
+            return result;
+          }
+        }
+      },
+      
+      toHaveTheSameSizeWith: function (util, customEqualityTesters) {
+        return {
+          compare: function (actual, expected) {
+            var actualBBox = getBBox(actual),
+              expectedBBox = getBBox(expected),
+              haveTheSameSize = actualBBox.width === expectedBBox.width && actualBBox.height === expectedBBox.height,
+              result = haveTheSameSize ? {pass: true} : {pass: false, message: 'Shapes don`t have the same size'};
             return result;
           }
         }
@@ -361,9 +291,9 @@ function Rabbit() {
       toBeHorizontallyAlignWith: function (util, customEqualityTesters) {
         return {
           compare: function (actual, expected) {
-            var actualPosition = shapePosition(actual),
-              expectedPosition = shapePosition(expected),
-              haveTheSameAlignment = actualPosition.y === expectedPosition.y,
+            var actualBBox = getBBox(actual),
+              expectedBBox = getBBox(expected),
+              haveTheSameAlignment = actualBBox.y === expectedBBox.y,
               result = haveTheSameAlignment ? {pass: true} : {pass: false, message: 'Shapes don`t have the same horizontal position'};
             return result;
           }
@@ -373,22 +303,10 @@ function Rabbit() {
       toBeVerticallyAlignWith: function (util, customEqualityTesters) {
         return {
           compare: function (actual, expected) {
-            var actualPosition = shapePosition(actual),
-              expectedPosition = shapePosition(expected),
-              haveTheSameAlignment = actualPosition.x === expectedPosition.x,
+            var actualBBox = getBBox(actual),
+              expectedBBox = getBBox(expected),
+              haveTheSameAlignment = actualBBox.x === expectedBBox.x,
               result = haveTheSameAlignment ? {pass: true} : {pass: false, message: 'Shapes don`t have the same vertical position'};
-            return result;
-          }
-        }
-      },
-
-      toHaveTheSizeWith: function (util, customEqualityTesters) {
-        return {
-          compare: function (actual, expected) {
-            var actualSize = shapeSize(actual),
-              expectedSize = shapeSize(expected),
-              haveTheSameSize = actualSize.width === expectedSize.width && actualSize.height === expectedSize.height,
-              result = haveTheSameSize ? {pass: true} : {pass: false, message: 'Shapes don`t have the same size'};
             return result;
           }
         }
