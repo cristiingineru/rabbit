@@ -11,7 +11,7 @@ var examples = [
     ctx.lineTo(15.5, 25.5);
     ctx.stroke();
   },
-  
+
   function(ctx, sizeIndex) {
     ctx.beginPath();
     ctx.lineWidth = sizeIndex * 2 + 1;
@@ -21,7 +21,7 @@ var examples = [
     ctx.lineTo(10.5, 30.5);
     ctx.stroke();
   },
-  
+
   function(ctx, sizeIndex) {
     ctx.beginPath();
     ctx.lineWidth = sizeIndex * 2 + 1;
@@ -29,7 +29,7 @@ var examples = [
     ctx.strokeRect(30.5, 30.5,  5,  5);
     ctx.strokeRect(35.5,  5.5,  8,  8);
   },
-  
+
   function(ctx, sizeIndex) {
     ctx.beginPath();
     ctx.lineWidth = sizeIndex * 2 + 1;
@@ -38,7 +38,31 @@ var examples = [
     ctx.strokeRect(5.5, 5.5, 15, 15);
     ctx.translate(5, 5);
     ctx.strokeRect(5.5, 5.5, 15, 15);
-  }
+  },
+
+  function(ctx, sizeIndex) {
+    ctx.beginPath();
+    ctx.lineWidth = sizeIndex * 2 + 1;
+    ctx.scale(sizeIndex + 1, sizeIndex + 1);
+    ctx.arc(20, 20, 10, 2*Math.PI/4, 6*Math.PI/4);
+    ctx.stroke();
+  },
+
+  function(ctx, sizeIndex) {
+    ctx.beginPath();
+    ctx.lineWidth = sizeIndex * 2 + 1;
+    ctx.translate(0, 0);
+    ctx.arc(20, 20, 10, 3*Math.PI/4, 7*Math.PI/4);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.translate(5, 5);
+    ctx.arc(20, 20, 10, 3*Math.PI/4, 7*Math.PI/4);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.translate(5, 5);
+    ctx.arc(20, 20, 10, 3*Math.PI/4, 7*Math.PI/4);
+    ctx.stroke();
+  },
 
 ];
 
@@ -61,9 +85,9 @@ if (!Object.prototype.elementAt){
 $(function() {
 
   examples.forEach(function(example, exampleIndex) {
-    
+
     var examplePreview = $('#placeholder')
-      .append('<textarea type="text" cols="40" rows="10" />')
+      .append('<textarea type="text" cols="55" rows="10" />')
       .find('textarea')
       .last()
       .elementAt(0);
