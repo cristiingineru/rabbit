@@ -45,6 +45,8 @@ expect(referenceCanvasStack).toBePartOf(canvasUnderTestStack);
 ```
 
 
-# API
+# Documentation
 
-Under construction. For now check these [example specs](https://github.com/cristiingineru/rabbit/blob/master/examples/face/face.spec.js) or consult the [supported features file](./API.md).
+[Example specs](https://github.com/cristiingineru/rabbit/blob/master/examples/face/face.spec.js)
+[getBBox supported features catalog](https://rawgit.com/cristiingineru/rabbit/master/catalog/catalog.html)
+[API description](./API.md)
