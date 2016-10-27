@@ -50,17 +50,39 @@ var examples = [
 
   function(ctx, sizeIndex) {
     ctx.beginPath();
-    ctx.lineWidth = sizeIndex * 2 + 1;
+    ctx.lineWidth = 1;
     ctx.translate(0, 0);
-    ctx.arc(20, 20, 10, 3*Math.PI/4, 7*Math.PI/4);
+    ctx.arc(15, 15, 10, 7*Math.PI/8, 13*Math.PI/8);
     ctx.stroke();
     ctx.beginPath();
+    ctx.lineWidth = 3;
     ctx.translate(5, 5);
-    ctx.arc(20, 20, 10, 3*Math.PI/4, 7*Math.PI/4);
+    ctx.scale(1.2, 1.2);
+    ctx.arc(15, 15, 10, 7*Math.PI/8, 13*Math.PI/8);
     ctx.stroke();
     ctx.beginPath();
+    ctx.lineWidth = 5;
     ctx.translate(5, 5);
-    ctx.arc(20, 20, 10, 3*Math.PI/4, 7*Math.PI/4);
+    ctx.scale(1.2, 1.2);
+    ctx.arc(15, 15, 10, 0*Math.PI/4, 16*Math.PI/8);
+    ctx.stroke();
+  },
+  
+  function(ctx, sizeIndex) {
+    var rectWidth = 30;
+    var rectHeight = 20;
+    var rectX = 5;
+    var rectY = 5;
+    var cornerRadius = 7;
+    ctx.scale(1+sizeIndex*0.2, 1+sizeIndex*0.2);
+    ctx.beginPath();
+    ctx.moveTo(rectX, rectY);
+    ctx.lineTo(rectX+rectWidth-cornerRadius, rectY);
+    ctx.arcTo(rectX+rectWidth, rectY,
+      rectX+rectWidth, rectY+cornerRadius,
+      cornerRadius);
+    ctx.lineTo(rectX+rectWidth, rectY+rectHeight);
+    ctx.lineWidth = 2 * sizeIndex + 1;
     ctx.stroke();
   },
 
@@ -70,6 +92,7 @@ var examples = [
 function drawBBox(ctx) {
     var rabbit = new Rabbit(ctx),
       box = rabbit.getBBox(ctx.stack());
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
     ctx.strokeRect(box.x, box.y, box.width, box.height);
