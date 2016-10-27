@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cristiingineru/rabbit.svg?branch=master)](https://travis-ci.org/cristiingineru/rabbit)
+
 # Overview
 
 Rabbit is a JavaScript library for writing tests for code drawing on canvas.
