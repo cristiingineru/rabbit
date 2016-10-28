@@ -20,6 +20,7 @@ module.exports = function(config) {
       'jquery.js',
       'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
       'lib/mock-raf.js',
+      'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
       'rabbit.js',
       'spec/*.spec.js',
       'examples/face/face.js',
