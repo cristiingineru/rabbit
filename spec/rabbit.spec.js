@@ -825,14 +825,12 @@ describe('rabbit', function () {
         [ {x1:  0, y1:  0, x2: 10, y2:  0},
           {x1: 10, y1:  2, x2:  5, y2:  2},
           {x1: -1, y1: -1, x2: 10, y2: -1},
-          {x1: 10, y1: 20, x2: -1, y2: 20},
-          {x1:  0, y1:  0, x2:  0, y2:  0},
-          {x1:  1, y1:  1, x2:  1, y2:  1},
+          {x1: 10, y1: 20, x2: -1, y2: 20}
         ].forEach(function(line) {
           [/*0,*/, 1, 2, 3, 4, 5].forEach(function(width) {
             var epsilon = 0.0001,
-              x1 = 0, y1 = 0,
-              x2 = 5, y2 = 0;
+              x1 = line.x1, y1 = line.y1,
+              x2 = line.x2, y2 = line.y2;
 
             var rect = rabbit.getRectAroundLine(x1, y1, x2, y2, width);
 
