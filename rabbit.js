@@ -197,7 +197,29 @@ function Rabbit() {
         }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
     }
 
-    function getRectAroundSegment(x1, y1, x2, y2, width) {
+    function getRectAroundLine(x1, y1, x2, y2, width) {
+      //  r = the radius or the given distance from a given point to the nearest corners of the rect
+      //  a = the angle between the line and the horizontal axis
+      //  b1, b2 = the angle between half the hight of the rectangle and the horizontal axis
+      //
+      //  In the following example the given line is horizontal, so a = 0.
+      //  The given line is between the two @ symbols.
+      //  The + symbols are the corners of rectangle to be determined.
+      //  In order to find the b1 and b2 angles we have to add PI/2 and respectivly subtract PI/2.
+      //  b1 is vertical and pointing upwords and b2 is also vertical but pointing downwords.
+      //  Each corner is r or width / 2 far away from its corespondent line ending.
+      //  So we know the distance (r), the starting points (x1, y1) and (x2, y2) and the (b1, b2) directions.
+      //
+      //    +------------------------+
+      //    ^                        ^
+      //    |                        |
+      //    | b1                     | b1
+      //    @========================@
+      //    | b2                     | b2
+      //    |                        |
+      //    v                        v
+      //    +------------------------+
+
       var r = width / 2,
         a = Math.atan((y2 - y1) / (x2 - x1)),
         b1 = a + Math.PI/2,
@@ -259,7 +281,7 @@ function Rabbit() {
     this.getBBox = getBBox;
     this.union = union;
     this.totalTransform = totalTransform;
-    this.getRectAroundSegment = getRectAroundSegment;
+    this.getRectAroundLine = getRectAroundLine;
     this.isPointInsideRectangle = isPointInsideRectangle;
     this.customMatchers = {
 
