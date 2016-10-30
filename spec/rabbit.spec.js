@@ -821,13 +821,42 @@ describe('rabbit', function () {
 
     describe('getRectAroundLine', function() {
 
+      it('for zero width returns rectangle overlapping the given line', function() {
+        [ {x1:  0, y1:  0, x2: 10, y2:  0}, // horizontal
+          {x1: -1, y1: -1, x2: 10, y2: -1},
+          {x1: 10, y1: 20, x2: -1, y2: 20},
+          {x1: 10, y1: 20, x2: 10, y2: 30}, // vertical
+          {x1:  0, y1: 20, x2:  0, y2: -5},
+          {x1:  0, y1:  0, x2: 10, y2:  0}, // oblique
+          {x1: -1, y1: -1, x2: 10, y2: -1},
+          {x1: 10, y1: 20, x2: -1, y2: 20},
+          //{x1:  0, y1:  0, x2:  0, y2:  0}, // special cases
+          //{x1:  1, y1:  1, x2:  1, y2:  1}
+        ].forEach(function(line) {
+          var width = 0,
+            x1 = line.x1, y1 = line.y1,
+            x2 = line.x2, y2 = line.y2;
+
+          var rect = rabbit.getRectAroundLine(x1, y1, x2, y2, width);
+
+          expect(rect.x1).toBe(line.x1);
+          expect(rect.y1).toBe(line.y1);
+          expect(rect.x4).toBe(line.x1);
+          expect(rect.y4).toBe(line.y1);
+          expect(rect.x2).toBe(line.x2);
+          expect(rect.y2).toBe(line.y2);
+          expect(rect.x3).toBe(line.x2);
+          expect(rect.y3).toBe(line.y2);
+        });
+      });
+
       it('horizontal line of a given width to be contained within a rect', function() {
         [ {x1:  0, y1:  0, x2: 10, y2:  0},
           {x1: 10, y1:  2, x2:  5, y2:  2},
           {x1: -1, y1: -1, x2: 10, y2: -1},
           {x1: 10, y1: 20, x2: -1, y2: 20}
         ].forEach(function(line) {
-          [/*0,*/, 1, 2, 3, 4, 5].forEach(function(width) {
+          [1, 2, 3, 4, 5].forEach(function(width) {
             var epsilon = 0.0001,
               x1 = line.x1, y1 = line.y1,
               x2 = line.x2, y2 = line.y2;
@@ -859,7 +888,7 @@ describe('rabbit', function () {
           {x1: -1, y1: -1, x2: 10, y2: 20},
           {x1: 10, y1: 20, x2: -1, y2: -1}
         ].forEach(function(line) {
-          [/*0,*/ 1, 2, 3, 4, 5].forEach(function(width) {
+          [1, 2, 3, 4, 5].forEach(function(width) {
             var epsilon = 0.0001,
               x1 = line.x1, y1 = line.y1,
               x2 = line.x2, y2 = line.y2;
