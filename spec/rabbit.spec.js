@@ -818,4 +818,30 @@ describe('rabbit', function () {
 
     });
 
+
+    describe('getRectAroundSegment', function() {
+
+      it('horizontal segment of a given width to be contained within a rect', function() {
+        [1, 2, 3, 4, 5].forEach(function(width) {
+          var epsilon = 0.0001,
+            x1 = 0, y1 = 0,
+            x2 = 5, y2 = 0;
+
+          var rect = rabbit.getRectAroundSegment(x1, y1, x2, y2, width);
+
+          var L = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)),
+            l = width,
+            L1 = Math.sqrt((rect.x2 - rect.x1) * (rect.x2 - rect.x1) + (rect.y2 - rect.y1) * (rect.y2 - rect.y1)),
+            l1 = Math.sqrt((rect.x3 - rect.x2) * (rect.x3 - rect.x2) + (rect.y3 - rect.y2) * (rect.y3 - rect.y2)),
+            L2 = Math.sqrt((rect.x4 - rect.x3) * (rect.x4 - rect.x3) + (rect.y4 - rect.y3) * (rect.y4 - rect.y3)),
+            l2 = Math.sqrt((rect.x1 - rect.x4) * (rect.x1 - rect.x4) + (rect.y1 - rect.y4) * (rect.y1 - rect.y4));
+          expect(L1).toBeCloseTo(L, epsilon);
+          expect(l1).toBeCloseTo(l, epsilon);
+          expect(L2).toBeCloseTo(L, epsilon);
+          expect(l2).toBeCloseTo(l, epsilon);
+        });
+      });
+
+    })
+
 });

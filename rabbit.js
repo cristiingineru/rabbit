@@ -197,6 +197,27 @@ function Rabbit() {
         }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
     }
 
+    function getRectAroundSegment(x1, y1, x2, y2, width) {
+      var r = width / 2,
+        a = Math.atan((y2 - y1) / (x2 - x1)),
+        b1 = a + Math.PI/2,
+        b2 = a - Math.PI/2,
+        rx1 = r * Math.cos(b1) + x1,
+        ry1 = r * Math.sin(b1) + y1,
+        rx2 = r * Math.cos(b1) + x2,
+        ry2 = r * Math.sin(b1) + y2,
+        rx3 = r * Math.cos(b2) + x2,
+        ry3 = r * Math.sin(b2) + y2,
+        rx4 = r * Math.cos(b2) + x1,
+        ry4 = r * Math.sin(b2) + y1;
+      return {
+        x1: rx1, y1: ry1,
+        x2: rx2, y2: ry2,
+        x3: rx3, y3: ry3,
+        x4: rx4, y4: ry4
+      };
+    }
+
     // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
     function isPointInsideRectangle(point, rectangle) {
       var segments = [{
@@ -238,6 +259,7 @@ function Rabbit() {
     this.getBBox = getBBox;
     this.union = union;
     this.totalTransform = totalTransform;
+    this.getRectAroundSegment = getRectAroundSegment;
     this.isPointInsideRectangle = isPointInsideRectangle;
     this.customMatchers = {
 
