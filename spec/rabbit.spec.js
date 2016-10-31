@@ -460,7 +460,7 @@ describe('rabbit', function () {
           expect(box.width).toEqual(maxX - minX);
           expect(box.height).toEqual(maxY - minY);
         });
-        
+
         it('should return the box of an oblique stoked 2 points path of width=1', function () {
           var width = 1,
             x1 = 10, y1 = 11, x2 = 12, y2 = 13;
@@ -480,7 +480,7 @@ describe('rabbit', function () {
           expect(box.width).toEqual(maxX - minX);
           expect(box.height).toEqual(maxY - minY);
         });
-        
+
         it('should return the box of a horizontal stoked 2 points path of width=2', function () {
           var width = 2,
             x1 = 10, y1 = 11, x2 = 20, y2 = 11;
@@ -500,7 +500,7 @@ describe('rabbit', function () {
           expect(box.width).toEqual(maxX - minX);
           expect(box.height).toEqual(maxY - minY + width);
         });
-        
+
         it('should return the box of a vertical stoked 3 points path of width=3', function () {
           var width = 3,
             x1 = 10, y1 = 11, x2 = 10, y2 = 22;
@@ -521,6 +521,33 @@ describe('rabbit', function () {
           expect(box.height).toEqual(maxY - minY);
         });
 
+        it('should scale the box of a 2 points stroked path of width=2', function () {
+          var width = 2,
+            x1 = 10, y1 = 11, x2 = 20, y2 = 11,
+            xScale = 20, yScale = 21;
+          ctx.lineWidth = width;
+          ctx.scale(xScale, yScale);
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2),
+            minY = Math.min(y1, y2),
+            maxX = Math.max(x1, x2),
+            maxY = Math.max(y1, y2);
+          expect(box.x).toEqual(minX * xScale);
+          expect(box.y).toEqual((minY - width / 2) * yScale);
+          expect(box.width).toEqual((maxX - minX) * xScale);
+          expect(box.height).toEqual((maxY - minY + width) * yScale);
+        });
+
+        //
+        //should not scale the box of a stroked rect after restoring
+        //should translate the box of a stroked rect based on a previous scale
+        //should translate the box of a stroked rect based on all previous scales
+        //should translate the box of a stroked rect multiple times based on all previous scales
       })
 
     });
@@ -880,7 +907,7 @@ describe('rabbit', function () {
 
 
     describe('getRectAroundLine', function() {
-      
+
       it('should return a rect with all the corners overlapping when the line has no length', function() {
         [0, 1, -1].forEach(function(value) {
           var width = 1;

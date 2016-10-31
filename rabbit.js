@@ -104,15 +104,15 @@ function Rabbit() {
             path.push(newBox);
             break;
           case 'moveTo':
-            x1 = call.arguments[0];
-            y1 = call.arguments[1];
+            x1 = call.arguments[0] * transform.scale.x;
+            y1 = call.arguments[1] * transform.scale.y;
             moveToLocation = {x: x1, y: y1};
             break;
           case 'lineTo':
             x1 = moveToLocation.x;
             y1 = moveToLocation.y;
-            x2 = call.arguments[0];
-            y2 = call.arguments[1];
+            x2 = call.arguments[0] * transform.scale.y;
+            y2 = call.arguments[1] * transform.scale.y;
             rect = getRectAroundLine(x1, y1, x2, y2, lineWidth > 1 ? lineWidth : 0);
             newBox = {
               x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
@@ -208,13 +208,13 @@ function Rabbit() {
           };
         }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
     }
-  
+
     function getRectAroundLine(x1, y1, x2, y2, width) {
       var rect;
       if (x1 === y1 && x1 === x2 && x1 === y2) {
         rect = {
           x1: x1, y1: x1,  x2: x1, y2: x1,
-          x4: x1, y4: x1,  x3: x1, y3: x1          
+          x4: x1, y4: x1,  x3: x1, y3: x1
         };
       } else {
         rect = getRectAroundLongLine(x1, y1, x2, y2, width);
