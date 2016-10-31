@@ -7,7 +7,7 @@
 The Canvas functions and properties supported by the **getBBox** function:
 
 | |getBBox|Notes|
-|:--|:-:| |
+|:--|:-:|:--|
 |arc|✓| |
 |arcTo| | |
 |beginPath|✓| |
