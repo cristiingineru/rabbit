@@ -460,6 +460,66 @@ describe('rabbit', function () {
           expect(box.width).toEqual(maxX - minX);
           expect(box.height).toEqual(maxY - minY);
         });
+        
+        it('should return the box of an oblique stoked 2 points path of width=1', function () {
+          var width = 1,
+            x1 = 10, y1 = 11, x2 = 12, y2 = 13;
+          ctx.lineWidth = width;
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2),
+            minY = Math.min(y1, y2),
+            maxX = Math.max(x1, x2),
+            maxY = Math.max(y1, y2);
+          expect(box.x).toEqual(minX);
+          expect(box.y).toEqual(minY);
+          expect(box.width).toEqual(maxX - minX);
+          expect(box.height).toEqual(maxY - minY);
+        });
+        
+        it('should return the box of a horizontal stoked 2 points path of width=2', function () {
+          var width = 2,
+            x1 = 10, y1 = 11, x2 = 20, y2 = 11;
+          ctx.lineWidth = width;
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2),
+            minY = Math.min(y1, y2),
+            maxX = Math.max(x1, x2),
+            maxY = Math.max(y1, y2);
+          expect(box.x).toEqual(minX);
+          expect(box.y).toEqual(minY - width / 2);
+          expect(box.width).toEqual(maxX - minX);
+          expect(box.height).toEqual(maxY - minY + width);
+        });
+        
+        it('should return the box of a vertical stoked 3 points path of width=3', function () {
+          var width = 3,
+            x1 = 10, y1 = 11, x2 = 10, y2 = 22;
+          ctx.lineWidth = width;
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2),
+            minY = Math.min(y1, y2),
+            maxX = Math.max(x1, x2),
+            maxY = Math.max(y1, y2);
+          expect(box.x).toEqual(minX - width / 2);
+          expect(box.y).toEqual(minY);
+          expect(box.width).toEqual(maxX - minX + width);
+          expect(box.height).toEqual(maxY - minY);
+        });
 
       })
 
@@ -820,8 +880,25 @@ describe('rabbit', function () {
 
 
     describe('getRectAroundLine', function() {
+      
+      it('should return a rect with all the corners overlapping when the line has no length', function() {
+        [0, 1, -1].forEach(function(value) {
+          var width = 1;
 
-      it('for zero width returns rectangle overlapping the given line', function() {
+          var rect = rabbit.getRectAroundLine(value, value, value, value, width);
+
+          expect(rect.x1).toBe(value);
+          expect(rect.y1).toBe(value);
+          expect(rect.x2).toBe(value);
+          expect(rect.y2).toBe(value);
+          expect(rect.x3).toBe(value);
+          expect(rect.y3).toBe(value);
+          expect(rect.x4).toBe(value);
+          expect(rect.y4).toBe(value);
+        });
+      });
+
+      it('should return a rect overlapping the given line when the width is zero', function() {
         [ {x1:  0, y1:  0, x2: 10, y2:  0}, // horizontal
           {x1: -1, y1: -1, x2: 10, y2: -1},
           {x1: 10, y1: 20, x2: -1, y2: 20},
@@ -829,9 +906,7 @@ describe('rabbit', function () {
           {x1:  0, y1: 20, x2:  0, y2: -5},
           {x1:  0, y1:  0, x2: 10, y2:  0}, // oblique
           {x1: -1, y1: -1, x2: 10, y2: -1},
-          {x1: 10, y1: 20, x2: -1, y2: 20},
-          //{x1:  0, y1:  0, x2:  0, y2:  0}, // special cases
-          //{x1:  1, y1:  1, x2:  1, y2:  1}
+          {x1: 10, y1: 20, x2: -1, y2: 20}
         ].forEach(function(line) {
           var width = 0,
             x1 = line.x1, y1 = line.y1,
@@ -850,7 +925,7 @@ describe('rabbit', function () {
         });
       });
 
-      it('horizontal line of a given width to be contained within a rect', function() {
+      it('should return a rect of the specified width around the given line', function() {
         [ {x1:  0, y1:  0, x2: 10, y2:  0},
           {x1: 10, y1:  2, x2:  5, y2:  2},
           {x1: -1, y1: -1, x2: 10, y2: -1},

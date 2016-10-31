@@ -65,9 +65,10 @@ function Rabbit() {
       var box = {x: NaN, y: NaN, width: NaN, height: NaN};
         transforms = [[]],
         path = [],
-        moveToLocation = {x: NaN, y: NaN};
+        moveToLocation = {x: NaN, y: NaN},
+        lineWidth = 1;
       shape.forEach(function (call) {
-        var cx, cy, rx, ry, x, y, x1, y1, x2, y2, width, height, newBox,
+        var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox,
           transform = totalTransform(transforms.flatten());
         switch(call.method) {
           case 'fillRect':
@@ -112,7 +113,13 @@ function Rabbit() {
             y1 = moveToLocation.y;
             x2 = call.arguments[0];
             y2 = call.arguments[1];
-            newBox = {x: Math.min(x1, x2), y: Math.min(y1, y2), width: Math.abs(x2 - x1), height: Math.abs(y2 - y1)};
+            rect = getRectAroundLine(x1, y1, x2, y2, lineWidth > 1 ? lineWidth : 0);
+            newBox = {
+              x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
+              y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
+              width: Math.max(rect.x1, rect.x2, rect.x3, rect.x4) - Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
+              height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
+            };
             path.push(newBox);
             break;
           case 'save':
@@ -145,6 +152,11 @@ function Rabbit() {
             path = [];
             break;
         };
+        switch(call.attr) {
+          case 'lineWidth':
+            lineWidth = call.val;
+            break;
+        }
       });
       return box;
     };
@@ -196,8 +208,21 @@ function Rabbit() {
           };
         }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
     }
-
+  
     function getRectAroundLine(x1, y1, x2, y2, width) {
+      var rect;
+      if (x1 === y1 && x1 === x2 && x1 === y2) {
+        rect = {
+          x1: x1, y1: x1,  x2: x1, y2: x1,
+          x4: x1, y4: x1,  x3: x1, y3: x1          
+        };
+      } else {
+        rect = getRectAroundLongLine(x1, y1, x2, y2, width);
+      }
+      return rect;
+    }
+
+    function getRectAroundLongLine(x1, y1, x2, y2, width) {
       //  r = the radius or the given distance from a given point to the nearest corners of the rect
       //  a = the angle between the line and the horizontal axis
       //  b1, b2 = the angle between half the hight of the rectangle and the horizontal axis
@@ -210,15 +235,18 @@ function Rabbit() {
       //  Each corner is r or width / 2 far away from its corespondent line ending.
       //  So we know the distance (r), the starting points (x1, y1) and (x2, y2) and the (b1, b2) directions.
       //
-      //    +------------------------+
-      //    ^                        ^
-      //    |                        |
-      //    | b1                     | b1
-      //    @========================@
-      //    | b2                     | b2
-      //    |                        |
-      //    v                        v
-      //    +------------------------+
+      //  (x1,y1)                    (x2,y2)
+      //      +------------------------+
+      //      ^                        ^
+      //      |                        |
+      //      | b1                     | b1
+      //      @========================@
+      //      | b2                     | b2
+      //      |                        |
+      //      v                        v
+      //      +------------------------+
+      //  (x4,y4)                    (x3,y3)
+      //
 
       var r = width / 2,
         a = Math.atan((y2 - y1) / (x2 - x1)),
@@ -233,10 +261,8 @@ function Rabbit() {
         rx4 = r * Math.cos(b2) + x1,
         ry4 = r * Math.sin(b2) + y1;
       return {
-        x1: rx1, y1: ry1,
-        x2: rx2, y2: ry2,
-        x3: rx3, y3: ry3,
-        x4: rx4, y4: ry4
+        x1: rx1, y1: ry1,  x2: rx2, y2: ry2,
+        x4: rx4, y4: ry4,  x3: rx3, y3: ry3
       };
     }
 
