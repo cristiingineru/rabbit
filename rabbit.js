@@ -64,7 +64,7 @@ function Rabbit() {
     function getBBox(shape) {
       var box = {x: NaN, y: NaN, width: NaN, height: NaN};
         transforms = [[]],
-        path = [],
+        shapesInPath = [],
         moveToLocation = {x: NaN, y: NaN},
         lineWidth = 1;
       shape.forEach(function (call) {
@@ -92,16 +92,14 @@ function Rabbit() {
             y = call.arguments[1] * transform.scale.y + transform.translate.y;
             width = call.arguments[2] * transform.scale.x;
             height = call.arguments[3] * transform.scale.y;
-            newBox = {x: x, y: y, width: width, height: height};
-            path.push(newBox);
+            shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
             break;
           case 'arc':
             cx = call.arguments[0] * transform.scale.x + transform.translate.x;
             cy = call.arguments[1] * transform.scale.y + transform.translate.y;
             rx = call.arguments[2] * transform.scale.x;
             ry = call.arguments[2] * transform.scale.y
-            newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
-            path.push(newBox);
+            shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
             break;
           case 'moveTo':
             x1 = call.arguments[0] * transform.scale.x;
@@ -113,15 +111,7 @@ function Rabbit() {
             y1 = moveToLocation.y;
             x2 = call.arguments[0] * transform.scale.x;
             y2 = call.arguments[1] * transform.scale.y;
-            scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, transform.scale.x, transform.scale.y, lineWidth);
-            rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth > 1 ? scaledLineWidth : 0);
-            newBox = {
-              x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
-              y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
-              width: Math.max(rect.x1, rect.x2, rect.x3, rect.x4) - Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
-              height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
-            };
-            path.push(newBox);
+            shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
             break;
           case 'save':
             transforms.push([]);
@@ -140,17 +130,66 @@ function Rabbit() {
               .push({scale: {x: call.arguments[0], y: call.arguments[1]}});
             break;
           case 'stroke':
-            path.forEach(function(newBox) {
-              box = union(box, newBox);
+            shapesInPath.forEach(function(shape) {
+              switch (shape.type) {
+                case 'rect':
+                  x = shape.x;
+                  y = shape.y;
+                  width = shape.width;
+                  height = shape.height;
+                  newBox = {x: x, y: y, width: width, height: height};
+                  box = union(box, newBox);
+                  break;
+                case 'arc':
+                  cx = shape.cx;
+                  cy = shape.cy;
+                  rx = shape.rx;
+                  ry = shape.ry;
+                  newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
+                  box = union(box, newBox);
+                  break;
+                case 'lineTo':
+                  x1 = shape.x1;
+                  y1 = shape.y1;
+                  x2 = shape.x2;
+                  y2 = shape.y2;
+                  scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, transform.scale.x, transform.scale.y, lineWidth);
+                  rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth > 1 ? scaledLineWidth : 0);
+                  newBox = {
+                    x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
+                    y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
+                    width: Math.max(rect.x1, rect.x2, rect.x3, rect.x4) - Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
+                    height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
+                  };
+                  box = union(box, newBox);
+                  break;
+              }
             });
             break;
           case 'fill':
-            path.forEach(function(newBox) {
-              box = union(box, newBox);
+            shapesInPath.forEach(function(shape) {
+              switch (shape.type) {
+                case 'rect':
+                  x = shape.x;
+                  y = shape.y;
+                  width = shape.width;
+                  height = shape.height;
+                  newBox = {x: x, y: y, width: width, height: height};
+                  box = union(box, newBox);
+                  break;
+                case 'arc':
+                  cx = shape.cx;
+                  cy = shape.cy;
+                  rx = shape.rx;
+                  ry = shape.ry;
+                  newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
+                  box = union(box, newBox);
+                  break;
+              }
             });
             break;
           case 'beginPath':
-            path = [];
+            shapesInPath = [];
             break;
         };
         switch(call.attr) {
@@ -162,18 +201,25 @@ function Rabbit() {
       return box;
     };
 
+    function firstTruthyOrZero(val1, val2){
+      if (val1 || val1 === 0) {
+        return val1;
+      }
+      return val2;
+    }
+
     function union(box1, box2) {
       box1 = {
-        x: box1.x || box2.x,
-        y: box1.y || box2.y,
-        width: box1.width || box2.width,
-        height: box1.height || box2.height
+        x: firstTruthyOrZero(box1.x, box2.x),
+        y: firstTruthyOrZero(box1.y, box2.y),
+        width: firstTruthyOrZero(box1.width, box2.width),
+        height: firstTruthyOrZero(box1.height, box2.height)
       };
       box2 = {
-        x: box2.x || box1.x,
-        y: box2.y || box1.y,
-        width: box2.width || box1.width,
-        height: box2.height || box1.height
+        x: firstTruthyOrZero(box2.x, box1.x),
+        y: firstTruthyOrZero(box2.y, box1.y),
+        width: firstTruthyOrZero(box2.width, box1.width),
+        height: firstTruthyOrZero(box2.height, box1.height)
       };
       var result = {
         x: Math.min(box1.x, box2.x),
@@ -266,14 +312,14 @@ function Rabbit() {
         x4: rx4, y4: ry4,  x3: rx3, y3: ry3
       };
     }
-  
+
     function getScaledWidthOfLine(x1, y1, x2, y2, sx, sy, width) {
       //  The original points are not moved. Only the width will be scaled.
       //  The width of an horizontal line will be scaled with the sy ratio only.
       //  The width of a vertival line will be scaled with the sx ratio only.
       //  The width of an oblique line will be scaled with both the sx and sy
       //but proportional with the angle between the line and the x and y axes.
-      //  
+      //
       //                                                    .\
       //               .\  (x2,y2)                         ...\  (x2,y2)
       //              ...@                                .....@

@@ -548,6 +548,34 @@ describe('rabbit', function () {
         //should translate the box of a stroked rect based on a previous scale
         //should translate the box of a stroked rect based on all previous scales
         //should translate the box of a stroked rect multiple times based on all previous scales
+
+        it('should return the rect of the widest line when the path is stroked multiple times with different widths', function () {
+          var width = 2,
+            x1 = 10, y1 = 11, y2 = 33,
+            xScale = 20, yScale = 21,
+            width1 = 20, width2 = 15, width3 = 10;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1, y2);
+            ctx.lineWidth = 20;
+            ctx.strokeStyle = 'red';
+            ctx.stroke();
+            ctx.lineWidth = 15;
+            ctx.strokeStyle = 'yellow';
+            ctx.stroke();
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = 'purple';
+            ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var maxWidth = Math.max(width1, width2, width3);
+          expect(box.x).toEqual(x1 - maxWidth / 2);
+          expect(box.y).toEqual(y1);
+          expect(box.width).toEqual(maxWidth);
+          expect(box.height).toEqual(y2 - y1);
+        });
+
       })
 
     });

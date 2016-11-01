@@ -5,13 +5,30 @@ var examples = [
   function(ctx, sizeIndex) {
     ctx.beginPath();
     ctx.lineWidth = sizeIndex*2 + 1;
+    ctx.scale(sizeIndex+1, sizeIndex+1);
     ctx.moveTo(10.5, 10.5);
     ctx.lineTo(30.5, 30.5);
     ctx.moveTo(35.5,  5.5);
     ctx.lineTo(15.5, 25.5);
     ctx.stroke();
   },
-  
+
+  function(ctx, sizeIndex) {
+    ctx.scale(sizeIndex+1, sizeIndex+1);
+    ctx.beginPath();
+    ctx.moveTo(25.5,  5.5);
+    ctx.lineTo(25.5, 45.5);
+    ctx.lineWidth = 20;
+    ctx.strokeStyle = 'red';
+    ctx.stroke();
+    ctx.lineWidth = 15;
+    ctx.strokeStyle = 'yellow';
+    ctx.stroke();
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = 'purple';
+    ctx.stroke();
+  },
+
   function(ctx, sizeIndex) {
     ctx.scale(sizeIndex*1.1+0.5, sizeIndex*1.1+0.5);
     ctx.beginPath();
@@ -91,7 +108,7 @@ var examples = [
     ctx.arc(15, 15, 10, 0*Math.PI/4, 16*Math.PI/8);
     ctx.stroke();
   },
-  
+
   function(ctx, sizeIndex) {
     var rectWidth = 30;
     var rectHeight = 20;
