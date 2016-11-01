@@ -4,7 +4,7 @@ var examples = [
 
   function(ctx, sizeIndex) {
     ctx.beginPath();
-    ctx.lineWidth = sizeIndex * 2 + 1;
+    ctx.lineWidth = sizeIndex*2 + 1;
     ctx.moveTo(10.5, 10.5);
     ctx.lineTo(30.5, 30.5);
     ctx.moveTo(35.5,  5.5);
@@ -13,26 +13,26 @@ var examples = [
   },
   
   function(ctx, sizeIndex) {
-    ctx.scale(sizeIndex*1.1+1, sizeIndex*1.1+1);
+    ctx.scale(sizeIndex*1.1+0.5, sizeIndex*1.1+0.5);
     ctx.beginPath();
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 4;
     ctx.moveTo( 5.5, 10.5);
-    ctx.lineTo(15.5, 10.5);
+    ctx.lineTo( 5.5, 20.5);
     ctx.stroke();
     ctx.beginPath();
     ctx.lineWidth = 5;
-    ctx.moveTo(20.5, 10.5);
-    ctx.lineTo(30.5, 10.5);
+    ctx.moveTo(10.5, 10.5);
+    ctx.lineTo(20.5, 10.5);
     ctx.stroke();
     ctx.beginPath();
     ctx.lineWidth = 8;
-    ctx.moveTo(35.5, 10.5);
-    ctx.lineTo(45.5, 10.5);
+    ctx.moveTo(25.5, 10.5);
+    ctx.lineTo(35.5, 10.5);
     ctx.stroke();
     ctx.beginPath();
     ctx.lineWidth = 15;
-    ctx.moveTo(40.5, 20.5);
-    ctx.lineTo(40.5, 45.5);
+    ctx.moveTo(45.5, 20.5);
+    ctx.lineTo(30.5, 45.5);
     ctx.stroke();
   },
 

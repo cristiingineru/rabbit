@@ -68,7 +68,7 @@ function Rabbit() {
         moveToLocation = {x: NaN, y: NaN},
         lineWidth = 1;
       shape.forEach(function (call) {
-        var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox,
+        var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox, scaledLineWidth,
           transform = totalTransform(transforms.flatten());
         switch(call.method) {
           case 'fillRect':
@@ -111,9 +111,10 @@ function Rabbit() {
           case 'lineTo':
             x1 = moveToLocation.x;
             y1 = moveToLocation.y;
-            x2 = call.arguments[0] * transform.scale.y;
+            x2 = call.arguments[0] * transform.scale.x;
             y2 = call.arguments[1] * transform.scale.y;
-            rect = getRectAroundLine(x1, y1, x2, y2, lineWidth > 1 ? lineWidth : 0);
+            scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, transform.scale.x, transform.scale.y, lineWidth);
+            rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth > 1 ? scaledLineWidth : 0);
             newBox = {
               x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
               y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
@@ -264,6 +265,32 @@ function Rabbit() {
         x1: rx1, y1: ry1,  x2: rx2, y2: ry2,
         x4: rx4, y4: ry4,  x3: rx3, y3: ry3
       };
+    }
+  
+    function getScaledWidthOfLine(x1, y1, x2, y2, sx, sy, width) {
+      //  The original points are not moved. Only the width will be scaled.
+      //  The width of an horizontal line will be scaled with the sy ratio only.
+      //  The width of a vertival line will be scaled with the sx ratio only.
+      //  The width of an oblique line will be scaled with both the sx and sy
+      //but proportional with the angle between the line and the x and y axes.
+      //  
+      //                                                    .\
+      //               .\  (x2,y2)                         ...\  (x2,y2)
+      //              ...@                                .....@
+      //             .../.\                              ...../.\
+      //            .../...              sx             ...../...\
+      //           .../...            +--->            ...../.....
+      //          .../...             |               ...../.....
+      //         .../...              |               \.../.....
+      //         \./...               |                \./.....
+      //          @...             sy v                 @.....
+      //  (x1,y1)  \.                           (x1,y1)  \...
+      //                                                  \.
+      //
+      var a = Math.atan((y2 - y1) / (x2 - x1)),
+        sina = Math.sin(a), cosa = Math.cos(a),
+        scaledWidth = width * Math.sqrt(sx*sx * sina*sina + sy*sy * cosa*cosa);
+      return scaledWidth;
     }
 
     // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
