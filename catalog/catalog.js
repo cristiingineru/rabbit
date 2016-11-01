@@ -19,7 +19,7 @@ var examples = [
     ctx.moveTo(25.5,  5.5);
     ctx.lineTo(25.5, 45.5);
     ctx.lineWidth = 20;
-    ctx.strokeStyle = 'red';
+    ctx.strokeStyle = 'black';
     ctx.stroke();
     ctx.lineWidth = 15;
     ctx.strokeStyle = 'yellow';
