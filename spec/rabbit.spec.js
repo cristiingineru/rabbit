@@ -576,7 +576,9 @@ describe('rabbit', function () {
           expect(box.height).toEqual(y2 - y1);
         });
 
-      })
+      });
+
+      // tests for each path shape that it moves the cursor position!!
 
     });
 
