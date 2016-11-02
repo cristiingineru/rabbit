@@ -102,15 +102,15 @@ function Rabbit() {
             shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
             break;
           case 'moveTo':
-            x1 = call.arguments[0] * transform.scale.x;
-            y1 = call.arguments[1] * transform.scale.y;
+            x1 = call.arguments[0] * transform.scale.x + transform.translate.x;
+            y1 = call.arguments[1] * transform.scale.y + transform.translate.y;
             moveToLocation = {x: x1, y: y1};
             break;
           case 'lineTo':
             x1 = moveToLocation.x;
             y1 = moveToLocation.y;
-            x2 = call.arguments[0] * transform.scale.x;
-            y2 = call.arguments[1] * transform.scale.y;
+            x2 = call.arguments[0] * transform.scale.x + transform.translate.x;
+            y2 = call.arguments[1] * transform.scale.y + transform.translate.y;
             shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
             break;
           case 'save':

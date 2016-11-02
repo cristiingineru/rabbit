@@ -543,11 +543,52 @@ describe('rabbit', function () {
           expect(box.height).toEqual((maxY - minY + width) * yScale);
         });
 
-        //
-        //should not scale the box of a stroked rect after restoring
-        //should translate the box of a stroked rect based on a previous scale
-        //should translate the box of a stroked rect based on all previous scales
-        //should translate the box of a stroked rect multiple times based on all previous scales
+        it('should not scale the box of a 2 points stroked path of width=2 after restoring', function () {
+          var width = 2,
+            x1 = 10, y1 = 11, x2 = 20, y2 = y1,
+            xScale = 20, yScale = 21;
+          ctx.lineWidth = width;
+          ctx.save();
+          ctx.scale(xScale, yScale);
+          ctx.restore();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2),
+            minY = Math.min(y1, y2),
+            maxX = Math.max(x1, x2),
+            maxY = Math.max(y1, y2);
+          expect(box.x).toEqual(minX);
+          expect(box.y).toEqual(minY - width / 2);
+          expect(box.width).toEqual(maxX - minX);
+          expect(box.height).toEqual(maxY - minY + width);
+        });
+
+        it('should translate the box of a 2 points stroked path of width=2 based on a previous scale', function () {
+          var width = 2,
+            x1 = 10, y1 = 11, x2 = 15, y2 = y1,
+            xScale = 20, yScale = 21, xTranslate = 22, yTranslate = 23;
+          ctx.lineWidth = width;
+          ctx.scale(xScale, yScale);
+          ctx.translate(xTranslate, yTranslate);
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          var minX = Math.min(x1, x2),
+            minY = Math.min(y1, y2),
+            maxX = Math.max(x1, x2),
+            maxY = Math.max(y1, y2);
+          expect(box.x).toEqual((minX + xTranslate) * xScale);
+          expect(box.y).toEqual((minY - width / 2 + yTranslate) * yScale);
+          expect(box.width).toEqual((maxX - minX) * xScale);
+          expect(box.height).toEqual((maxY - minY + width) * yScale);
+        });
 
         it('should return the rect of the widest line when the path is stroked multiple times with different widths', function () {
           var width = 2,
@@ -624,184 +665,114 @@ describe('rabbit', function () {
 
       */
 
-      it('horizontal --- ---  =>  --------', function () {
-        var box1 = {x: 1, width: 3},
-          box2 = {x: 5, width: 3};
+      [ {
+          description: 'horizontal --- ---  =>  --------',
+          box1: {x: 0, width: 3}, box2: {x: 5, width: 3},
+          x: 0, width: 8
+        }, {
+          description: 'horizontal --- ---  =>  --------',
+          box1: {x: 1, width: 3}, box2: {x: 5, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal -------  =>  --------',
+          box1: {x: 1, width: 5}, box2: {x: 5, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal ----===  =>  --------',
+          box1: {x: 1, width: 7}, box2: {x: 5, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal --===--  =>  --------',
+          box1: {x: 1, width: 7}, box2: {x: 3, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal -===---  =>  --------',
+          box1: {x: 1, width: 7}, box2: {x: 2, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal ===----  =>  --------',
+          box1: {x: 1, width: 7}, box2: {x: 1, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal -==----  =>  --------',
+          box1: {x: 2, width: 6}, box2: {x: 1, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal -------  =>  --------',
+          box1: {x: 4, width: 4}, box2: {x: 1, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal --- ---  =>  --------',
+          box1: {x: 5, width: 3}, box2: {x: 1, width: 3},
+          x: 1, width: 7
+        }, {
+          description: 'horizontal --- ---  =>  --------',
+          box1: {x: 5, width: 3}, box2: {x: 0, width: 3},
+          x: 0, width: 8
+        }
+      ].forEach(function(testCase) {
+        it(testCase.description, function() {
 
-        var box = rabbit.union(box1, box2);
+          var box = rabbit.union(testCase.box1, testCase.box2);
 
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
+          expect(box.x).toBe(testCase.x);
+          expect(box.width).toBe(testCase.width);
+        });
       });
 
-      it('horizontal -------  =>  --------', function () {
-        var box1 = {x: 1, width: 5},
-          box2 = {x: 5, width: 3};
+      [ {
+          description: 'vertical --- ---  =>  --------',
+          box1: {y: 0, height: 3}, box2: {y: 5, height: 3},
+          y: 0, height: 8
+        }, {
+          description: 'vertical --- ---  =>  --------',
+          box1: {y: 1, height: 3}, box2: {y: 5, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical -------  =>  --------',
+          box1: {y: 1, height: 5}, box2: {y: 5, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical ----===  =>  --------',
+          box1: {y: 1, height: 7}, box2: {y: 5, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical --===--  =>  --------',
+          box1: {y: 1, height: 7}, box2: {y: 3, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical -===---  =>  --------',
+          box1: {y: 1, height: 7}, box2: {y: 2, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical ===----  =>  --------',
+          box1: {y: 1, height: 7}, box2: {y: 1, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical -==----  =>  --------',
+          box1: {y: 2, height: 6}, box2: {y: 1, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical -------  =>  --------',
+          box1: {y: 4, height: 4}, box2: {y: 1, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical --- ---  =>  --------',
+          box1: {y: 5, height: 3}, box2: {y: 1, height: 3},
+          y: 1, height: 7
+        }, {
+          description: 'vertical --- ---  =>  --------',
+          box1: {y: 5, height: 3}, box2: {y: 0, height: 3},
+          y: 0, height: 8
+        }
+      ].forEach(function(testCase) {
+        it(testCase.description, function() {
 
-        var box = rabbit.union(box1, box2);
+          var box = rabbit.union(testCase.box1, testCase.box2);
 
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('horizontal ----===  =>  --------', function () {
-        var box1 = {x: 1, width: 7},
-          box2 = {x: 5, width: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('horizontal --===--  =>  --------', function () {
-        var box1 = {x: 1, width: 7},
-          box2 = {x: 3, width: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('horizontal -===---  =>  --------', function () {
-        var box1 = {x: 1, width: 7},
-          box2 = {x: 2, width: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('horizontal ===----  =>  --------', function () {
-        var box1 = {x: 1, width: 7},
-          box2 = {x: 1, width: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('horizontal -==----  =>  --------', function () {
-        var box1 = {x: 2, width: 6},
-          box2 = {x: 1, width: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('horizontal -------  =>  --------', function () {
-        var box1 = {x: 4, width: 4},
-          box2 = {x: 1, width: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('horizontal --- ---  =>  --------', function () {
-        var box1 = {x: 5, width: 3},
-          box2 = {x: 1, width: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.x).toBe(1);
-        expect(box.width).toBe(7);
-      });
-
-      it('vertical --- ---  =>  --------', function () {
-        var box1 = {y: 1, height: 3},
-          box2 = {y: 5, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical -------  =>  --------', function () {
-        var box1 = {y: 1, height: 5},
-          box2 = {y: 5, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical ----===  =>  --------', function () {
-        var box1 = {y: 1, height: 7},
-          box2 = {y: 5, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical --===--  =>  --------', function () {
-        var box1 = {y: 1, height: 7},
-          box2 = {y: 3, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical -===---  =>  --------', function () {
-        var box1 = {y: 1, height: 7},
-          box2 = {y: 2, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical ===----  =>  --------', function () {
-        var box1 = {y: 1, height: 7},
-          box2 = {y: 1, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical -==----  =>  --------', function () {
-        var box1 = {y: 2, height: 6},
-          box2 = {y: 1, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical -------  =>  --------', function () {
-        var box1 = {y: 4, height: 4},
-          box2 = {y: 1, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
-      });
-
-      it('vertical --- ---  =>  --------', function () {
-        var box1 = {y: 5, height: 3},
-          box2 = {y: 1, height: 3};
-
-        var box = rabbit.union(box1, box2);
-
-        expect(box.y).toBe(1);
-        expect(box.height).toBe(7);
+          expect(box.y).toBe(testCase.y);
+          expect(box.height).toBe(testCase.height);
+        });
       });
 
     });
