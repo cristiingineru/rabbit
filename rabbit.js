@@ -2,7 +2,7 @@ if (!Array.prototype.last) {
   Array.prototype.last = function() {
     return this[this.length - 1];
   };
-};
+}
 
 if (!Array.prototype.flatten) {
   Array.prototype.flatten = function() {
@@ -62,7 +62,7 @@ function Rabbit() {
     }
 
     function getBBox(shape) {
-      var box = {x: NaN, y: NaN, width: NaN, height: NaN};
+      var box = {x: NaN, y: NaN, width: NaN, height: NaN},
         transforms = [[]],
         shapesInPath = [],
         moveToLocation = {x: NaN, y: NaN},
@@ -191,7 +191,7 @@ function Rabbit() {
           case 'beginPath':
             shapesInPath = [];
             break;
-        };
+        }
         switch(call.attr) {
           case 'lineWidth':
             lineWidth = call.val;
@@ -199,7 +199,7 @@ function Rabbit() {
         }
       });
       return box;
-    };
+    }
 
     function firstTruthyOrZero(val1, val2){
       if (val1 || val1 === 0) {
@@ -471,4 +471,4 @@ function Rabbit() {
 
     };
 
-};
+}
