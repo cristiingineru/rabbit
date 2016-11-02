@@ -4,14 +4,16 @@ engines:
   csslint:
     enabled: true
   duplication:
-  	enabled: true
+    enabled: true
     config:
-    	languages:
-      - javascript
+      languages:
+        - javascript
 ratings:
   paths:
-  - "rabbit.js"
+  - rabbit.js
   - spec/**
   - examples/**
 exclude_paths:
-  - "**/jquery.js/**/*"
+  - canteen.min.js
+  - jquery.js
+  - lib/**
