@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/cristiingineru/rabbit.svg?branch=master)](https://travis-ci.org/cristiingineru/rabbit)
+[![Code Climate](https://codeclimate.com/github/cristiingineru/rabbit/badges/gpa.svg)](https://codeclimate.com/github/cristiingineru/rabbit)
 
 # Overview
 
