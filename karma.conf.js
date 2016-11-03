@@ -35,8 +35,8 @@ module.exports = function(config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress', 'kjhtml', 'coverage'],
-    
-    preprocessors: {
+
+    xpreprocessors: {
       // source files, that you wanna generate coverage for
       // do not include tests or libraries
       // (these files will be instrumented by Istanbul)
@@ -45,7 +45,7 @@ module.exports = function(config) {
       'examples/face/face.js': ['coverage'],
       'examples/face/*.spec.js': ['coverage']
     },
-    
+
     coverageReporter: {
       type : 'lcov',
       dir : 'coverage/'
