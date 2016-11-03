@@ -228,7 +228,8 @@ describe('rabbit', function () {
 
         var namedShapeUnderTest = testCase.drawFunction
           ? testCase.drawFunction + (testCase.drawFunction.slice(-1) === 'e' ? 'd ' : 'ed ') + testCase.shape
-          : testCase.shape;
+          : testCase.shape,
+          mustTestLineWidth = testCase.shape === 'strokeRect' || (testCase.shape === 'rect' && testCase.drawFunction === 'stroke');
 
         describe(namedShapeUnderTest, function() {
 
@@ -376,6 +377,22 @@ describe('rabbit', function () {
             expect(box.width).toBe(width * xScale1 * xScale2);
             expect(box.height).toBe(height * yScale1 * yScale2);
           });
+
+          if(mustTestLineWidth) {
+            it('should return the box of a ' + namedShapeUnderTest + ' with lineWidth = 2', function() {
+              var x = 11, y = 12, width = 13, height = 14, lineWidth = 2;
+              ctx.lineWidth = lineWidth;
+              ctx[testCase.shape](x, y, width, height);
+              if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+              var box = rabbit.getBBox(ctx.stack());
+
+              expect(box.x).toBe(x - lineWidth / 2);
+              expect(box.y).toBe(y - lineWidth / 2);
+              expect(box.width).toBe(width + lineWidth / 2);
+              expect(box.height).toBe(height + lineWidth / 2);
+            });
+          }
 
         });
 

@@ -84,7 +84,8 @@ function Rabbit() {
             y = call.arguments[1] * transform.scale.y + transform.translate.y;
             width = call.arguments[2] * transform.scale.x;
             height = call.arguments[3] * transform.scale.y;
-            newBox = {x: x, y: y, width: width, height: height};
+            scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
+            newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth / 2, height: height + scaledLineWidth / 2};
             box = union(box, newBox);
             break;
           case 'rect':
@@ -137,7 +138,8 @@ function Rabbit() {
                   y = shape.y;
                   width = shape.width;
                   height = shape.height;
-                  newBox = {x: x, y: y, width: width, height: height};
+                  scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
+                  newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth / 2, height: height + scaledLineWidth / 2};
                   box = union(box, newBox);
                   break;
                 case 'arc':
@@ -154,7 +156,7 @@ function Rabbit() {
                   x2 = shape.x2;
                   y2 = shape.y2;
                   scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, transform.scale.x, transform.scale.y, lineWidth);
-                  rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth > 1 ? scaledLineWidth : 0);
+                  rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth !== 1 ? scaledLineWidth : 0);
                   newBox = {
                     x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
                     y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
