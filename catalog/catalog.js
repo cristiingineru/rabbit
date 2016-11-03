@@ -90,7 +90,7 @@ var examples = [
   },
 
   function(ctx, sizeIndex) {
-    ctx.scale(sizeIndex * 0.3 + 1, sizeIndex * 0.3 + 1);
+    ctx.scale(sizeIndex*0.3 + 1, sizeIndex*0.3 + 1);
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.translate(0, 0);
