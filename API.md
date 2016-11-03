@@ -31,10 +31,10 @@ The Canvas functions and properties supported by the **getBBox** function:
 |getLineDash| | |
 |isPointInPath| | |
 |isPointInStroke| | |
-|lineTo|✓|Doesn't support transforms.|
-|lineWidth|✓|Only for lineTo.<br>Doesn't support save, restore, transforms.|
+|lineTo|✓| |
+|lineWidth|✓|Only for lineTo.<br>Doesn't support save, restore.|
 |measureText| | |
-|moveTo|✓|Doesn't support transforms.|
+|moveTo|✓| |
 |putImageData| | |
 |quadraticCurveTo| | |
 |rect|✓| |
