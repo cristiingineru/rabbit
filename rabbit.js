@@ -85,7 +85,7 @@ function Rabbit() {
             width = call.arguments[2] * transform.scale.x;
             height = call.arguments[3] * transform.scale.y;
             scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-            newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth / 2, height: height + scaledLineWidth / 2};
+            newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth, height: height + scaledLineWidth};
             box = union(box, newBox);
             break;
           case 'rect':
@@ -139,7 +139,7 @@ function Rabbit() {
                   width = shape.width;
                   height = shape.height;
                   scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-                  newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth / 2, height: height + scaledLineWidth / 2};
+                  newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth, height: height + scaledLineWidth};
                   box = union(box, newBox);
                   break;
                 case 'arc':

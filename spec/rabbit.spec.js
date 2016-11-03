@@ -389,8 +389,8 @@ describe('rabbit', function () {
 
               expect(box.x).toBe(x - lineWidth / 2);
               expect(box.y).toBe(y - lineWidth / 2);
-              expect(box.width).toBe(width + lineWidth / 2);
-              expect(box.height).toBe(height + lineWidth / 2);
+              expect(box.width).toBe(width + lineWidth);
+              expect(box.height).toBe(height + lineWidth);
             });
           }
 
