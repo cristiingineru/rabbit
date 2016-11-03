@@ -68,7 +68,8 @@ function Rabbit() {
         moveToLocation = {x: NaN, y: NaN},
         lineWidth = 1;
       shape.forEach(function (call) {
-        var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox, scaledLineWidth,
+        var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox,
+          scaledLineWidth, xScaledLineWidth, yScaledLineWidth,
           transform = totalTransform(transforms.flatten());
         switch(call.method) {
           case 'fillRect':
@@ -85,7 +86,9 @@ function Rabbit() {
             width = call.arguments[2] * transform.scale.x;
             height = call.arguments[3] * transform.scale.y;
             scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-            newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth, height: height + scaledLineWidth};
+            xScaledLineWidth = scaledLineWidth * transform.scale.x,
+            yScaledLineWidth = scaledLineWidth * transform.scale.y,
+            newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
             box = union(box, newBox);
             break;
           case 'rect':
@@ -139,7 +142,9 @@ function Rabbit() {
                   width = shape.width;
                   height = shape.height;
                   scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-                  newBox = {x: x - scaledLineWidth / 2, y: y - scaledLineWidth / 2, width: width + scaledLineWidth, height: height + scaledLineWidth};
+                  xScaledLineWidth = scaledLineWidth * transform.scale.x,
+                  yScaledLineWidth = scaledLineWidth * transform.scale.y,
+                  newBox = {x: x - xScaledLineWidth  / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
                   box = union(box, newBox);
                   break;
                 case 'arc':

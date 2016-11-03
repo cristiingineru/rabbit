@@ -392,6 +392,22 @@ describe('rabbit', function () {
               expect(box.width).toBe(width + lineWidth);
               expect(box.height).toBe(height + lineWidth);
             });
+
+            it('should return the box of a scaled ' + namedShapeUnderTest + ' with lineWidth = 3', function() {
+              var x = 11, y = 12, width = 13, height = 14, lineWidth = 2,
+                xScale = 15, yScale = 16;
+              ctx.lineWidth = lineWidth;
+              ctx.scale(xScale, yScale);
+              ctx[testCase.shape](x, y, width, height);
+              if (testCase.drawFunction) ctx[testCase.drawFunction]();
+
+              var box = rabbit.getBBox(ctx.stack());
+
+              expect(box.x).toBe((x - lineWidth / 2) * xScale);
+              expect(box.y).toBe((y - lineWidth / 2) * yScale);
+              expect(box.width).toBe((width + lineWidth) * xScale);
+              expect(box.height).toBe((height + lineWidth) * yScale);
+            });
           }
 
         });
