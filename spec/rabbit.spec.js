@@ -31,7 +31,7 @@ describe('rabbit', function () {
           expect(box.height).toEqual(NaN);
       });
 
-      describe('arc', function() {
+      describe('stroked arc', function() {
 
         it('should not return the box of just an arc', function () {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
@@ -72,6 +72,42 @@ describe('rabbit', function () {
           expect(box.width).toEqual(NaN);
           expect(box.height).toEqual(NaN);
         });
+
+        it('should return the box of a stroked arc width lineWidth = 2', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            lineWidth = 2;
+          ctx.lineWidth = lineWidth;
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r - lineWidth / 2);
+          expect(box.y).toBe(cy - r - lineWidth / 2);
+          expect(box.width).toBe(2 * r + lineWidth);
+          expect(box.height).toBe(2 * r + lineWidth);
+        });
+
+        it('should return the box of a scaled stroked arc width lineWidth = 2', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            xScale = 14, yScale = 15, lineWidth = 2;
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.scale(xScale, yScale);
+          ctx.lineWidth = lineWidth;
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r - lineWidth / 2 * xScale);
+          expect(box.y).toBe(cy - r - lineWidth / 2 * yScale);
+          expect(box.width).toBe(2 * r + lineWidth * xScale);
+          expect(box.height).toBe(2 * r + lineWidth * yScale);
+        });
+
+      });
+
+
+      describe('filled arc', function() {
 
         it('should return the box of a filled arc', function () {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;

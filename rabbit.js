@@ -152,7 +152,10 @@ function Rabbit() {
                   cy = shape.cy;
                   rx = shape.rx;
                   ry = shape.ry;
-                  newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
+                  scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
+                  xScaledLineWidth = scaledLineWidth * transform.scale.x,
+                  yScaledLineWidth = scaledLineWidth * transform.scale.y,
+                  newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth};
                   box = union(box, newBox);
                   break;
                 case 'lineTo':

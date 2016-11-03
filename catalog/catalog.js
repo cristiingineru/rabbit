@@ -90,6 +90,7 @@ var examples = [
   },
 
   function(ctx, sizeIndex) {
+    ctx.scale(sizeIndex * 0.3 + 1, sizeIndex * 0.3 + 1);
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.translate(0, 0);
@@ -105,7 +106,7 @@ var examples = [
     ctx.lineWidth = 5;
     ctx.translate(5, 5);
     ctx.scale(1.2, 1.2);
-    ctx.arc(15, 15, 10, 0*Math.PI/4, 16*Math.PI/8);
+    ctx.arc(15, 15, 8, 0*Math.PI/4, 16*Math.PI/8);
     ctx.stroke();
   },
 
