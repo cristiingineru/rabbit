@@ -66,11 +66,12 @@ function Rabbit() {
         transforms = [[]],
         shapesInPath = [],
         moveToLocation = {x: NaN, y: NaN},
-        lineWidth = 1;
+        lineWidths = [1];
       shape.forEach(function (call) {
         var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox,
           scaledLineWidth, xScaledLineWidth, yScaledLineWidth,
-          transform = totalTransform(transforms.flatten());
+          transform = totalTransform(transforms.flatten()),
+          lineWidth = lineWidths.last();
         switch(call.method) {
           case 'fillRect':
             x = call.arguments[0] * transform.scale.x + transform.translate.x;
@@ -119,9 +120,11 @@ function Rabbit() {
             break;
           case 'save':
             transforms.push([]);
+            lineWidths.push(lineWidths.last());
             break;
           case 'restore':
             transforms.pop();
+            lineWidths.pop();
             break;
           case 'translate':
             transforms
@@ -204,7 +207,7 @@ function Rabbit() {
         }
         switch(call.attr) {
           case 'lineWidth':
-            lineWidth = call.val;
+            lineWidths[lineWidths.length - 1] = call.val;
             break;
         }
       });

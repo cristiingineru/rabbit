@@ -104,6 +104,30 @@ describe('rabbit', function () {
           expect(box.height).toBe(2 * r + lineWidth * yScale);
         });
 
+        it('should use a previouse lineWidth after restoring', function () {
+          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+            lineWidth1 = 11, lineWidth2 = 22, lineWidth3 = 33, lineWidth4 = 44;
+
+          ctx.lineWidth = lineWidth1;
+          ctx.save();
+          ctx.lineWidth = lineWidth2;
+          ctx.save();
+          ctx.lineWidth = lineWidth3;
+          ctx.save();
+          ctx.lineWidth = lineWidth4;
+          ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
+          ctx.restore();
+          ctx.restore();
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(cx - r - lineWidth2 / 2);
+          expect(box.y).toBe(cy - r - lineWidth2 / 2);
+          expect(box.width).toBe(2 * r + lineWidth2);
+          expect(box.height).toBe(2 * r + lineWidth2);
+        });
+
       });
 
 
