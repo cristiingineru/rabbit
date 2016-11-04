@@ -32,7 +32,7 @@ The Canvas functions and properties supported by the **getBBox** function:
 |isPointInPath| | |
 |isPointInStroke| | |
 |lineTo|✓| |
-|lineWidth|✓|Doesn't support save, restore.|
+|lineWidth|✓| |
 |measureText| | |
 |moveTo|✓| |
 |putImageData| | |
