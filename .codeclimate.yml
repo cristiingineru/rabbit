@@ -10,10 +10,8 @@ engines:
         - javascript
 ratings:
   paths:
-  - rabbit.js
+  - src/**
   - spec/**
   - examples/**
 exclude_paths:
-  - canteen.min.js
-  - jquery.js
   - lib/**
