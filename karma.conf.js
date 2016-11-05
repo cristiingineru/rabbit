@@ -40,7 +40,7 @@ module.exports = function(config) {
       // source files, that you wanna generate coverage for
       // do not include tests or libraries
       // (these files will be instrumented by Istanbul)
-      'rabbit.js': ['coverage'],
+      'src/*.js': ['coverage'],
       'spec/*.spec.js': ['coverage'],
       'examples/face/face.js': ['coverage'],
       'examples/face/*.spec.js': ['coverage']
