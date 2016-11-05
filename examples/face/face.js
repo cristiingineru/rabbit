@@ -95,6 +95,7 @@ function Face(ctx, window) {
   var mouth = new Mouth(ctx),
     eye1 = new Eye(ctx),
     eye2 = new Eye(ctx),
+    newRafNeeded,
     animationInProgressId,
     shouldAnimate = function(opt) {
       return opt.mood === 'crazy';
@@ -110,7 +111,7 @@ function Face(ctx, window) {
       y: 10,
       width: 90,
       height: 100
-    }, opt || {}),
+    }, opt || {});
     newRafNeeded = shouldAnimate(opt);
 
     var step = function () {
