@@ -44,8 +44,8 @@ function Geometry() {
           width = call.arguments[2] * transform.scale.x;
           height = call.arguments[3] * transform.scale.y;
           scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-          xScaledLineWidth = scaledLineWidth * transform.scale.x,
-          yScaledLineWidth = scaledLineWidth * transform.scale.y,
+          xScaledLineWidth = scaledLineWidth * transform.scale.x;
+          yScaledLineWidth = scaledLineWidth * transform.scale.y;
           newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
           box = that.union(box, newBox);
           break;
@@ -60,7 +60,7 @@ function Geometry() {
           cx = call.arguments[0] * transform.scale.x + transform.translate.x;
           cy = call.arguments[1] * transform.scale.y + transform.translate.y;
           rx = call.arguments[2] * transform.scale.x;
-          ry = call.arguments[2] * transform.scale.y
+          ry = call.arguments[2] * transform.scale.y;
           shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
           break;
         case 'moveTo':
@@ -102,8 +102,8 @@ function Geometry() {
                 width = shape.width;
                 height = shape.height;
                 scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-                xScaledLineWidth = scaledLineWidth * transform.scale.x,
-                yScaledLineWidth = scaledLineWidth * transform.scale.y,
+                xScaledLineWidth = scaledLineWidth * transform.scale.x;
+                yScaledLineWidth = scaledLineWidth * transform.scale.y;
                 newBox = {x: x - xScaledLineWidth  / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
                 box = that.union(box, newBox);
                 break;

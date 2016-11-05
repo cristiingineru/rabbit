@@ -95,7 +95,7 @@ function Face(ctx, window) {
   var mouth = new Mouth(ctx),
     eye1 = new Eye(ctx),
     eye2 = new Eye(ctx),
-    animationInProgressId = undefined,
+    animationInProgressId,
     shouldAnimate = function(opt) {
       return opt.mood === 'crazy';
     },
