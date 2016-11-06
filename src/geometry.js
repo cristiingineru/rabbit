@@ -17,9 +17,98 @@ if (!Array.prototype.flatten) {
 function Geometry() {
 
   var that = this;
-  
 
-  var getBBox = function(shape) {
+
+  var state = {
+    box: {x: NaN, y: NaN, width: NaN, height: NaN},
+    transforms: [[]],
+    shapesInPath: [],
+    moveToLocation: {x: NaN, y: NaN},
+    lineWidths: [1]
+  },
+
+  canvasCallHandlers = [{
+      name: 'fillRect',
+      handler: function(state, call) {
+        var x = call.arguments[0] * transform.scale.x + transform.translate.x;
+          y = call.arguments[1] * transform.scale.y + transform.translate.y;
+          width = call.arguments[2] * transform.scale.x;
+          height = call.arguments[3] * transform.scale.y;
+          newBox = {x: x, y: y, width: width, height: height};
+          box = union(box, newBox);
+        return state;
+      }
+    }, {
+      name: 'strokeRect',
+      handler: function(state, call) {
+        var x = call.arguments[0] * transform.scale.x + transform.translate.x;
+          y = call.arguments[1] * transform.scale.y + transform.translate.y;
+          width = call.arguments[2] * transform.scale.x;
+          height = call.arguments[3] * transform.scale.y;
+          scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
+          xScaledLineWidth = scaledLineWidth * transform.scale.x;
+          yScaledLineWidth = scaledLineWidth * transform.scale.y;
+          newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
+          box = union(box, newBox);
+        return state;
+      }
+    }, {
+      name: 'rect',
+      handler: function(state, call) {
+        var x = call.arguments[0] * transform.scale.x + transform.translate.x;
+          y = call.arguments[1] * transform.scale.y + transform.translate.y;
+          width = call.arguments[2] * transform.scale.x;
+          height = call.arguments[3] * transform.scale.y;
+          shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
+        return state;
+      }
+    }, {
+      name: 'arc',
+      handler: function(state, call) {
+        var cx = call.arguments[0] * transform.scale.x + transform.translate.x;
+          cy = call.arguments[1] * transform.scale.y + transform.translate.y;
+          rx = call.arguments[2] * transform.scale.x;
+          ry = call.arguments[2] * transform.scale.y;
+        shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
+        return state;
+      }
+    }, {
+      name: 'moveTo',
+      handler: function(state, call) {
+        var x1 = call.arguments[0] * transform.scale.x + transform.translate.x;
+          y1 = call.arguments[1] * transform.scale.y + transform.translate.y;
+        moveToLocation = {x: x1, y: y1};
+        return state;
+      }
+    }, {
+      name: 'lineTo',
+      handler: function(state, call) {
+        var x1 = moveToLocation.x;
+          y1 = moveToLocation.y;
+          x2 = call.arguments[0] * transform.scale.x + transform.translate.x;
+          y2 = call.arguments[1] * transform.scale.y + transform.translate.y;
+        shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
+        return state;
+      }
+    }, {
+      name: 'save',
+      handler: function(state, call) {
+        transforms.push([]);
+        lineWidths.push(lineWidths.last());
+        return state;
+      }
+    }
+  ],
+
+  neutralCanvasCallHandler = function(state, call) {
+    return state;
+  },
+
+  getCanvasCallHandler = function(call) {
+
+  },
+
+  getBBox = function(shape) {
     var box = {x: NaN, y: NaN, width: NaN, height: NaN},
       transforms = [[]],
       shapesInPath = [],
