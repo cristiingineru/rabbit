@@ -4,7 +4,7 @@ function CustomMatchers(geometry) {
   geometry = geometry || new Geometry();
 
 
-  this.toBePartOf = function (util, customEqualityTesters) {
+  var toBePartOf = function (util, customEqualityTesters) {
     return {
       compare: function (actual, expected) {
         var match = false;
@@ -26,7 +26,7 @@ function CustomMatchers(geometry) {
     }
   },
 
-  this.toBeInsideTheAreaOf = function (util, customEqualityTesters) {
+  toBeInsideTheAreaOf = function (util, customEqualityTesters) {
     return {
       compare: function (actual, expected) {
         var smallShape = actual,
@@ -41,7 +41,7 @@ function CustomMatchers(geometry) {
     }
   },
 
-  this.toHaveTheSamePositionWith = function (util, customEqualityTesters) {
+  toHaveTheSamePositionWith = function (util, customEqualityTesters) {
     return {
       compare: function (actual, expected) {
         var actualBBox = geometry.getBBox(actual),
@@ -53,7 +53,7 @@ function CustomMatchers(geometry) {
     }
   },
 
-  this.toHaveTheSameSizeWith = function (util, customEqualityTesters) {
+  toHaveTheSameSizeWith = function (util, customEqualityTesters) {
     return {
       compare: function (actual, expected) {
         var actualBBox = geometry.getBBox(actual),
@@ -65,7 +65,7 @@ function CustomMatchers(geometry) {
     }
   },
 
-  this.toBeHorizontallyAlignWith = function (util, customEqualityTesters) {
+  toBeHorizontallyAlignWith = function (util, customEqualityTesters) {
     return {
       compare: function (actual, expected) {
         var actualBBox = geometry.getBBox(actual),
@@ -77,7 +77,7 @@ function CustomMatchers(geometry) {
     }
   },
 
-  this.toBeVerticallyAlignWith = function (util, customEqualityTesters) {
+  toBeVerticallyAlignWith = function (util, customEqualityTesters) {
     return {
       compare: function (actual, expected) {
         var actualBBox = geometry.getBBox(actual),
@@ -87,6 +87,13 @@ function CustomMatchers(geometry) {
         return result;
       }
     }
-  }
+  };
 
+
+  this.toBePartOf = toBePartOf;
+  this.toBeInsideTheAreaOf = toBeInsideTheAreaOf;
+  this.toHaveTheSamePositionWith = toHaveTheSamePositionWith;
+  this.toHaveTheSameSizeWith = toHaveTheSameSizeWith;
+  this.toBeHorizontallyAlignWith = toBeHorizontallyAlignWith;
+  this.toBeVerticallyAlignWith = toBeVerticallyAlignWith;
 }

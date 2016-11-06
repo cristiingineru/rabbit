@@ -17,8 +17,9 @@ if (!Array.prototype.flatten) {
 function Geometry() {
 
   var that = this;
+  
 
-  this.getBBox = function(shape) {
+  var getBBox = function(shape) {
     var box = {x: NaN, y: NaN, width: NaN, height: NaN},
       transforms = [[]],
       shapesInPath = [],
@@ -27,7 +28,7 @@ function Geometry() {
     shape.forEach(function (call) {
       var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox,
         scaledLineWidth, xScaledLineWidth, yScaledLineWidth,
-        transform = that.totalTransform(transforms.flatten()),
+        transform = totalTransform(transforms.flatten()),
         lineWidth = lineWidths.last();
       switch(call.method) {
         case 'fillRect':
@@ -36,7 +37,7 @@ function Geometry() {
           width = call.arguments[2] * transform.scale.x;
           height = call.arguments[3] * transform.scale.y;
           newBox = {x: x, y: y, width: width, height: height};
-          box = that.union(box, newBox);
+          box = union(box, newBox);
           break;
         case 'strokeRect':
           x = call.arguments[0] * transform.scale.x + transform.translate.x;
@@ -47,7 +48,7 @@ function Geometry() {
           xScaledLineWidth = scaledLineWidth * transform.scale.x;
           yScaledLineWidth = scaledLineWidth * transform.scale.y;
           newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
-          box = that.union(box, newBox);
+          box = union(box, newBox);
           break;
         case 'rect':
           x = call.arguments[0] * transform.scale.x + transform.translate.x;
@@ -105,7 +106,7 @@ function Geometry() {
                 xScaledLineWidth = scaledLineWidth * transform.scale.x;
                 yScaledLineWidth = scaledLineWidth * transform.scale.y;
                 newBox = {x: x - xScaledLineWidth  / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
-                box = that.union(box, newBox);
+                box = union(box, newBox);
                 break;
               case 'arc':
                 cx = shape.cx;
@@ -116,22 +117,22 @@ function Geometry() {
                 xScaledLineWidth = scaledLineWidth * transform.scale.x,
                 yScaledLineWidth = scaledLineWidth * transform.scale.y,
                 newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth};
-                box = that.union(box, newBox);
+                box = union(box, newBox);
                 break;
               case 'lineTo':
                 x1 = shape.x1;
                 y1 = shape.y1;
                 x2 = shape.x2;
                 y2 = shape.y2;
-                scaledLineWidth = that.getScaledWidthOfLine(x1, y1, x2, y2, transform.scale.x, transform.scale.y, lineWidth);
-                rect = that.getRectAroundLine(x1, y1, x2, y2, scaledLineWidth !== 1 ? scaledLineWidth : 0);
+                scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, transform.scale.x, transform.scale.y, lineWidth);
+                rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth !== 1 ? scaledLineWidth : 0);
                 newBox = {
                   x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
                   y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
                   width: Math.max(rect.x1, rect.x2, rect.x3, rect.x4) - Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
                   height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
                 };
-                box = that.union(box, newBox);
+                box = union(box, newBox);
                 break;
             }
           });
@@ -145,7 +146,7 @@ function Geometry() {
                 width = shape.width;
                 height = shape.height;
                 newBox = {x: x, y: y, width: width, height: height};
-                box = that.union(box, newBox);
+                box = union(box, newBox);
                 break;
               case 'arc':
                 cx = shape.cx;
@@ -153,7 +154,7 @@ function Geometry() {
                 rx = shape.rx;
                 ry = shape.ry;
                 newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
-                box = that.union(box, newBox);
+                box = union(box, newBox);
                 break;
             }
           });
@@ -169,27 +170,27 @@ function Geometry() {
       }
     });
     return box;
-  }
+  },
 
-  this.firstTruthyOrZero = function(val1, val2){
+  firstTruthyOrZero = function(val1, val2){
     if (val1 || val1 === 0) {
       return val1;
     }
     return val2;
-  }
+  },
 
-  this.union = function(box1, box2) {
+  union = function(box1, box2) {
     box1 = {
-      x: that.firstTruthyOrZero(box1.x, box2.x),
-      y: that.firstTruthyOrZero(box1.y, box2.y),
-      width: that.firstTruthyOrZero(box1.width, box2.width),
-      height: that.firstTruthyOrZero(box1.height, box2.height)
+      x: firstTruthyOrZero(box1.x, box2.x),
+      y: firstTruthyOrZero(box1.y, box2.y),
+      width: firstTruthyOrZero(box1.width, box2.width),
+      height: firstTruthyOrZero(box1.height, box2.height)
     };
     box2 = {
-      x: that.firstTruthyOrZero(box2.x, box1.x),
-      y: that.firstTruthyOrZero(box2.y, box1.y),
-      width: that.firstTruthyOrZero(box2.width, box1.width),
-      height: that.firstTruthyOrZero(box2.height, box1.height)
+      x: firstTruthyOrZero(box2.x, box1.x),
+      y: firstTruthyOrZero(box2.y, box1.y),
+      width: firstTruthyOrZero(box2.width, box1.width),
+      height: firstTruthyOrZero(box2.height, box1.height)
     };
     var result = {
       x: Math.min(box1.x, box2.x),
@@ -202,9 +203,9 @@ function Geometry() {
         : box1.height + box2.height + (box1.y - (box2.y + box2.height)))
     };
     return result;
-  }
+  },
 
-  this.totalTransform = function(transforms) {
+  totalTransform = function(transforms) {
     return transforms
       .map(function(value) {
         return {
@@ -224,9 +225,9 @@ function Geometry() {
           }
         };
       }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
-  }
+  },
 
-  this.getRectAroundLine = function(x1, y1, x2, y2, width) {
+  getRectAroundLine = function(x1, y1, x2, y2, width) {
     var rect;
     if (x1 === y1 && x1 === x2 && x1 === y2) {
       rect = {
@@ -234,12 +235,12 @@ function Geometry() {
         x4: x1, y4: x1,  x3: x1, y3: x1
       };
     } else {
-      rect = that.getRectAroundLongLine(x1, y1, x2, y2, width);
+      rect = getRectAroundLongLine(x1, y1, x2, y2, width);
     }
     return rect;
-  }
+  },
 
-  this.getRectAroundLongLine = function(x1, y1, x2, y2, width) {
+  getRectAroundLongLine = function(x1, y1, x2, y2, width) {
     //  r = the radius or the given distance from a given point to the nearest corners of the rect
     //  a = the angle between the line and the horizontal axis
     //  b1, b2 = the angle between half the hight of the rectangle and the horizontal axis
@@ -281,9 +282,9 @@ function Geometry() {
       x1: rx1, y1: ry1,  x2: rx2, y2: ry2,
       x4: rx4, y4: ry4,  x3: rx3, y3: ry3
     };
-  }
+  },
 
-  this.getScaledWidthOfLine = function(x1, y1, x2, y2, sx, sy, width) {
+  getScaledWidthOfLine = function(x1, y1, x2, y2, sx, sy, width) {
     //  The original points are not moved. Only the width will be scaled.
     //  The width of an horizontal line will be scaled with the sy ratio only.
     //  The width of a vertival line will be scaled with the sx ratio only.
@@ -307,10 +308,10 @@ function Geometry() {
       sina = Math.sin(a), cosa = Math.cos(a),
       scaledWidth = width * Math.sqrt(sx*sx * sina*sina + sy*sy * cosa*cosa);
     return scaledWidth;
-  }
+  },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
-  this.isPointInsideRectangle = function(point, rectangle) {
+  isPointInsideRectangle = function(point, rectangle) {
     var segments = [{
       x1: rectangle.x,
       y1: rectangle.y,
@@ -341,7 +342,13 @@ function Geometry() {
     });
 
     return isInside;
-  }
+  };
 
+
+  this.getBBox = getBBox;
+  this.union = union;
+  this.totalTransform = totalTransform;
+  this.getRectAroundLine = getRectAroundLine;
+  this.isPointInsideRectangle = isPointInsideRectangle;
 
 }
