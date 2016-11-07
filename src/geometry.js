@@ -19,246 +19,189 @@ function Geometry() {
   var that = this;
 
 
-  var state = {
-    box: {x: NaN, y: NaN, width: NaN, height: NaN},
-    transforms: [[]],
-    shapesInPath: [],
-    moveToLocation: {x: NaN, y: NaN},
-    lineWidths: [1]
+  var createNewCanvasCallState = function () {
+    return {
+      box: {x: NaN, y: NaN, width: NaN, height: NaN},
+      transforms: [[]],
+      shapesInPath: [],
+      moveToLocation: {x: NaN, y: NaN},
+      lineWidths: [1]
+    };
   },
 
-  canvasCallHandlers = [{
-      name: 'fillRect',
-      handler: function(state, call) {
-        var x = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y = call.arguments[1] * transform.scale.y + transform.translate.y;
-          width = call.arguments[2] * transform.scale.x;
-          height = call.arguments[3] * transform.scale.y;
-          newBox = {x: x, y: y, width: width, height: height};
-          box = union(box, newBox);
-        return state;
-      }
-    }, {
-      name: 'strokeRect',
-      handler: function(state, call) {
-        var x = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y = call.arguments[1] * transform.scale.y + transform.translate.y;
-          width = call.arguments[2] * transform.scale.x;
-          height = call.arguments[3] * transform.scale.y;
-          scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-          xScaledLineWidth = scaledLineWidth * transform.scale.x;
-          yScaledLineWidth = scaledLineWidth * transform.scale.y;
-          newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
-          box = union(box, newBox);
-        return state;
-      }
-    }, {
-      name: 'rect',
-      handler: function(state, call) {
-        var x = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y = call.arguments[1] * transform.scale.y + transform.translate.y;
-          width = call.arguments[2] * transform.scale.x;
-          height = call.arguments[3] * transform.scale.y;
-          shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
-        return state;
-      }
-    }, {
-      name: 'arc',
-      handler: function(state, call) {
-        var cx = call.arguments[0] * transform.scale.x + transform.translate.x;
-          cy = call.arguments[1] * transform.scale.y + transform.translate.y;
-          rx = call.arguments[2] * transform.scale.x;
-          ry = call.arguments[2] * transform.scale.y;
-        shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
-        return state;
-      }
-    }, {
-      name: 'moveTo',
-      handler: function(state, call) {
-        var x1 = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y1 = call.arguments[1] * transform.scale.y + transform.translate.y;
-        moveToLocation = {x: x1, y: y1};
-        return state;
-      }
-    }, {
-      name: 'lineTo',
-      handler: function(state, call) {
-        var x1 = moveToLocation.x;
-          y1 = moveToLocation.y;
-          x2 = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y2 = call.arguments[1] * transform.scale.y + transform.translate.y;
-        shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
-        return state;
-      }
-    }, {
-      name: 'save',
-      handler: function(state, call) {
-        transforms.push([]);
-        lineWidths.push(lineWidths.last());
-        return state;
-      }
+  canvasCallHandlers = {
+    lineWidth: function(state, call) {
+      state.lineWidths[state.lineWidths.length - 1] = call.val;
+      return state;
+    },
+    fillRect: function(state, call) {
+      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
+        width = call.arguments[2] * state.transform.scale.x;
+        height = call.arguments[3] * state.transform.scale.y;
+        newBox = {x: x, y: y, width: width, height: height};
+        state.box = union(state.box, newBox);
+      return state;
+    },
+    strokeRect: function(state, call) {
+      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
+        width = call.arguments[2] * state.transform.scale.x;
+        height = call.arguments[3] * state.transform.scale.y;
+        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0;
+        xScaledLineWidth = scaledLineWidth * state.transform.scale.x;
+        yScaledLineWidth = scaledLineWidth * state.transform.scale.y;
+        newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
+        state.box = union(state.box, newBox);
+      return state;
+    },
+    rect: function(state, call) {
+      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
+        width = call.arguments[2] * state.transform.scale.x;
+        height = call.arguments[3] * state.transform.scale.y;
+        state.shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
+      return state;
+    },
+    arc: function(state, call) {
+      var cx = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+        cy = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
+        rx = call.arguments[2] * state.transform.scale.x;
+        ry = call.arguments[2] * state.transform.scale.y;
+      state.shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
+      return state;
+    },
+    moveTo: function(state, call) {
+      var x1 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+        y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
+      state.moveToLocation = {x: x1, y: y1};
+      return state;
+    },
+    lineTo: function(state, call) {
+      var x1 = state.moveToLocation.x;
+        y1 = state.moveToLocation.y;
+        x2 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+        y2 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
+      state.shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
+      return state;
+    },
+    save: function(state, call) {
+      state.transforms.push([]);
+      state.lineWidths.push(state.lineWidths.last());
+      return state;
+    },
+    restore: function(state, call) {
+      state.transforms.pop();
+      state.lineWidths.pop();
+      return state;
+    },
+    translate: function(state, call) {
+      state.transforms
+        .last()
+        .push({translate: {x: call.arguments[0], y: call.arguments[1]}});
+      return state;
+    },
+    scale: function(state, call) {
+      state.transforms
+        .last()
+        .push({scale: {x: call.arguments[0], y: call.arguments[1]}});
+      return state;
+    },
+    beginPath: function(state, call) {
+      state.shapesInPath = [];
+      return state;
+    },
+    fill: function(state, call) {
+      state.shapesInPath.forEach(function(shape) {
+        switch (shape.type) {
+          case 'rect':
+            x = shape.x;
+            y = shape.y;
+            width = shape.width;
+            height = shape.height;
+            newBox = {x: x, y: y, width: width, height: height};
+            state.box = union(state.box, newBox);
+            break;
+          case 'arc':
+            cx = shape.cx;
+            cy = shape.cy;
+            rx = shape.rx;
+            ry = shape.ry;
+            newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
+            state.box = union(state.box, newBox);
+            break;
+        }
+      });
+      return state;
+    },
+    stroke: function(state, call) {
+      state.shapesInPath.forEach(function(shape) {
+        switch (shape.type) {
+          case 'rect':
+            x = shape.x;
+            y = shape.y;
+            width = shape.width;
+            height = shape.height;
+            scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0;
+            xScaledLineWidth = scaledLineWidth * state.transform.scale.x;
+            yScaledLineWidth = scaledLineWidth * state.transform.scale.y;
+            newBox = {x: x - xScaledLineWidth  / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
+            state.box = union(state.box, newBox);
+            break;
+          case 'arc':
+            cx = shape.cx;
+            cy = shape.cy;
+            rx = shape.rx;
+            ry = shape.ry;
+            scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0;
+            xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
+            yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
+            newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth};
+            state.box = union(state.box, newBox);
+            break;
+          case 'lineTo':
+            x1 = shape.x1;
+            y1 = shape.y1;
+            x2 = shape.x2;
+            y2 = shape.y2;
+            scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, state.transform.scale.x, state.transform.scale.y, state.lineWidth);
+            rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth !== 1 ? scaledLineWidth : 0);
+            newBox = {
+              x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
+              y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
+              width: Math.max(rect.x1, rect.x2, rect.x3, rect.x4) - Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
+              height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
+            };
+            state.box = union(state.box, newBox);
+            break;
+        }
+      });
+      return state;
     }
-  ],
+  },
 
-  neutralCanvasCallHandler = function(state, call) {
+  nullCanvasCallHandler = function(state, call) {
     return state;
   },
 
   getCanvasCallHandler = function(call) {
-
+    return canvasCallHandlers[call.method] || canvasCallHandlers[call.attr] || nullCanvasCallHandler;
+  },
+      
+  preCanvasCallHandler = function(state) {
+    state.transform = totalTransform(state.transforms.flatten());
+    state.lineWidth = state.lineWidths.last();
+    return state;
   },
 
   getBBox = function(shape) {
-    var box = {x: NaN, y: NaN, width: NaN, height: NaN},
-      transforms = [[]],
-      shapesInPath = [],
-      moveToLocation = {x: NaN, y: NaN},
-      lineWidths = [1];
+    var state = createNewCanvasCallState();
     shape.forEach(function (call) {
-      var cx, cy, rx, ry, x, y, x1, y1, x2, y2, rect, width, height, newBox,
-        scaledLineWidth, xScaledLineWidth, yScaledLineWidth,
-        transform = totalTransform(transforms.flatten()),
-        lineWidth = lineWidths.last();
-      switch(call.method) {
-        case 'fillRect':
-          x = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y = call.arguments[1] * transform.scale.y + transform.translate.y;
-          width = call.arguments[2] * transform.scale.x;
-          height = call.arguments[3] * transform.scale.y;
-          newBox = {x: x, y: y, width: width, height: height};
-          box = union(box, newBox);
-          break;
-        case 'strokeRect':
-          x = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y = call.arguments[1] * transform.scale.y + transform.translate.y;
-          width = call.arguments[2] * transform.scale.x;
-          height = call.arguments[3] * transform.scale.y;
-          scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-          xScaledLineWidth = scaledLineWidth * transform.scale.x;
-          yScaledLineWidth = scaledLineWidth * transform.scale.y;
-          newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
-          box = union(box, newBox);
-          break;
-        case 'rect':
-          x = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y = call.arguments[1] * transform.scale.y + transform.translate.y;
-          width = call.arguments[2] * transform.scale.x;
-          height = call.arguments[3] * transform.scale.y;
-          shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
-          break;
-        case 'arc':
-          cx = call.arguments[0] * transform.scale.x + transform.translate.x;
-          cy = call.arguments[1] * transform.scale.y + transform.translate.y;
-          rx = call.arguments[2] * transform.scale.x;
-          ry = call.arguments[2] * transform.scale.y;
-          shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
-          break;
-        case 'moveTo':
-          x1 = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y1 = call.arguments[1] * transform.scale.y + transform.translate.y;
-          moveToLocation = {x: x1, y: y1};
-          break;
-        case 'lineTo':
-          x1 = moveToLocation.x;
-          y1 = moveToLocation.y;
-          x2 = call.arguments[0] * transform.scale.x + transform.translate.x;
-          y2 = call.arguments[1] * transform.scale.y + transform.translate.y;
-          shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
-          break;
-        case 'save':
-          transforms.push([]);
-          lineWidths.push(lineWidths.last());
-          break;
-        case 'restore':
-          transforms.pop();
-          lineWidths.pop();
-          break;
-        case 'translate':
-          transforms
-            .last()
-            .push({translate: {x: call.arguments[0], y: call.arguments[1]}});
-          break;
-        case 'scale':
-          transforms
-            .last()
-            .push({scale: {x: call.arguments[0], y: call.arguments[1]}});
-          break;
-        case 'stroke':
-          shapesInPath.forEach(function(shape) {
-            switch (shape.type) {
-              case 'rect':
-                x = shape.x;
-                y = shape.y;
-                width = shape.width;
-                height = shape.height;
-                scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-                xScaledLineWidth = scaledLineWidth * transform.scale.x;
-                yScaledLineWidth = scaledLineWidth * transform.scale.y;
-                newBox = {x: x - xScaledLineWidth  / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
-                box = union(box, newBox);
-                break;
-              case 'arc':
-                cx = shape.cx;
-                cy = shape.cy;
-                rx = shape.rx;
-                ry = shape.ry;
-                scaledLineWidth = lineWidth !== 1 ? lineWidth : 0;
-                xScaledLineWidth = scaledLineWidth * transform.scale.x,
-                yScaledLineWidth = scaledLineWidth * transform.scale.y,
-                newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth};
-                box = union(box, newBox);
-                break;
-              case 'lineTo':
-                x1 = shape.x1;
-                y1 = shape.y1;
-                x2 = shape.x2;
-                y2 = shape.y2;
-                scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, transform.scale.x, transform.scale.y, lineWidth);
-                rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth !== 1 ? scaledLineWidth : 0);
-                newBox = {
-                  x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
-                  y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
-                  width: Math.max(rect.x1, rect.x2, rect.x3, rect.x4) - Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
-                  height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
-                };
-                box = union(box, newBox);
-                break;
-            }
-          });
-          break;
-        case 'fill':
-          shapesInPath.forEach(function(shape) {
-            switch (shape.type) {
-              case 'rect':
-                x = shape.x;
-                y = shape.y;
-                width = shape.width;
-                height = shape.height;
-                newBox = {x: x, y: y, width: width, height: height};
-                box = union(box, newBox);
-                break;
-              case 'arc':
-                cx = shape.cx;
-                cy = shape.cy;
-                rx = shape.rx;
-                ry = shape.ry;
-                newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
-                box = union(box, newBox);
-                break;
-            }
-          });
-          break;
-        case 'beginPath':
-          shapesInPath = [];
-          break;
-      }
-      switch(call.attr) {
-        case 'lineWidth':
-          lineWidths[lineWidths.length - 1] = call.val;
-          break;
-      }
+      var handler = getCanvasCallHandler(call);
+      state = preCanvasCallHandler(state);
+      state = handler(state, call);
     });
-    return box;
+    return state.box;
   },
 
   firstTruthyOrZero = function(val1, val2){
