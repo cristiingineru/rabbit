@@ -5,7 +5,7 @@ function Rabbit() {
   var that = this,
     geometry = new Geometry(),
     matchers = new CustomMatchers();
-
+    
 
   var findAllShapesIgnoringArguments = function(shape, where) {
     var found = [], index = 0;

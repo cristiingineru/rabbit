@@ -4,7 +4,8 @@
   "description": "Testing with Canteen",
   "main": "?",
   "scripts": {
-    "test": "node node_modules/karma/bin/karma start --single-run"
+    "test": "node node_modules/karma/bin/karma start --single-run",
+    "build": "babel src -d obj"
   },
   "repository": {
     "type": "git",
@@ -16,11 +17,6 @@
     "canvas"
   ],
   "author": "Cristi Ingineru",
-  "contributors": [
-    {
-      "name": "?"
-    }
-  ],
   "license": "?",
   "bugs": {
     "url": "https://github.com/cristiingineru/rabbit/issues"
@@ -28,8 +24,11 @@
   "homepage": "https://github.com/cristiingineru/rabbit",
   "devDependencies": {
     "Canteen": "1.0.4",
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
     "jasmine-core": "^2.5.0",
     "karma": "^1.3.0",
+    "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
     "karma-firefox-launcher": "^1.0.0",
