@@ -21,7 +21,7 @@ function Geometry() {
   var that = this;
 
 
-  var createNewCanvasCallState = function() {
+  var createNewCanvasCallState = () => {
     return {
       box: {x: NaN, y: NaN, width: NaN, height: NaN},
       transforms: [[]],
@@ -32,7 +32,7 @@ function Geometry() {
   },
 
   pathFillShapeHandlers = {
-    rect: function(state, shape) {
+    rect: (state, shape) => {
       var x = shape.x,
         y = shape.y,
         width = shape.width,
@@ -41,7 +41,7 @@ function Geometry() {
       state.box = union(state.box, newBox);
       return state;
     },
-    arc: function(state, shape) {
+    arc: (state, shape) => {
       var cx = shape.cx,
         cy = shape.cy,
         rx = shape.rx,
@@ -53,7 +53,7 @@ function Geometry() {
   },
 
   pathStrokeShapeHandlers = {
-    rect: function(state, shape) {
+    rect: (state, shape) => {
       var x = shape.x,
         y = shape.y,
         width = shape.width,
@@ -65,7 +65,7 @@ function Geometry() {
       state.box = union(state.box, newBox);
       return state;
     },
-    arc: function(state, shape) {
+    arc: (state, shape) => {
       var cx = shape.cx,
         cy = shape.cy,
         rx = shape.rx,
@@ -77,7 +77,7 @@ function Geometry() {
       state.box = union(state.box, newBox);
       return state;
     },
-    lineTo: function(state, shape) {
+    lineTo: (state, shape) => {
       var x1 = shape.x1,
         y1 = shape.y1,
         x2 = shape.x2,
@@ -96,11 +96,11 @@ function Geometry() {
   },
 
   canvasCallHandlers = {
-    lineWidth: function(state, call) {
+    lineWidth: (state, call) => {
       state.lineWidths[state.lineWidths.length - 1] = call.val;
       return state;
     },
-    fillRect: function(state, call) {
+    fillRect: (state, call) => {
       var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
         width = call.arguments[2] * state.transform.scale.x,
@@ -109,7 +109,7 @@ function Geometry() {
       state.box = union(state.box, newBox);
       return state;
     },
-    strokeRect: function(state, call) {
+    strokeRect: (state, call) => {
       var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
         width = call.arguments[2] * state.transform.scale.x,
@@ -121,7 +121,7 @@ function Geometry() {
       state.box = union(state.box, newBox);
       return state;
     },
-    rect: function(state, call) {
+    rect: (state, call) => {
       var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
         width = call.arguments[2] * state.transform.scale.x,
@@ -129,7 +129,7 @@ function Geometry() {
       state.shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
       return state;
     },
-    arc: function(state, call) {
+    arc: (state, call) => {
       var cx = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         cy = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
         rx = call.arguments[2] * state.transform.scale.x,
@@ -137,13 +137,13 @@ function Geometry() {
       state.shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
       return state;
     },
-    moveTo: function(state, call) {
+    moveTo: (state, call) => {
       var x1 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
       state.moveToLocation = {x: x1, y: y1};
       return state;
     },
-    lineTo: function(state, call) {
+    lineTo: (state, call) => {
       var x1 = state.moveToLocation.x,
         y1 = state.moveToLocation.y,
         x2 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
@@ -151,71 +151,71 @@ function Geometry() {
       state.shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
       return state;
     },
-    save: function(state, call) {
+    save: (state, call) => {
       state.transforms.push([]);
       state.lineWidths.push(state.lineWidths.last());
       return state;
     },
-    restore: function(state, call) {
+    restore: (state, call) => {
       state.transforms.pop();
       state.lineWidths.pop();
       return state;
     },
-    translate: function(state, call) {
+    translate: (state, call) => {
       state.transforms
         .last()
         .push({translate: {x: call.arguments[0], y: call.arguments[1]}});
       return state;
     },
-    scale: function(state, call) {
+    scale: (state, call) => {
       state.transforms
         .last()
         .push({scale: {x: call.arguments[0], y: call.arguments[1]}});
       return state;
     },
-    beginPath: function(state, call) {
+    beginPath: (state, call) => {
       state.shapesInPath = [];
       return state;
     },
-    fill: function(state, call) {
-      return state.shapesInPath.reduce(function(state, shape) {
+    fill: (state, call) => {
+      return state.shapesInPath.reduce((state, shape) => {
         var handler = getPathFillShapeHandler(shape);
         return handler(state, shape);
       }, state);
     },
-    stroke: function(state, call) {
-      return state.shapesInPath.reduce(function(state, shape) {
+    stroke: (state, call) => {
+      return state.shapesInPath.reduce((state, shape) => {
         var handler = getPathStrokeShapeHandler(shape);
         return handler(state, shape);
       }, state);
     }
   },
 
-  nullCanvasCallHandler = function(state, call) {
+  nullCanvasCallHandler = (state, call) => {
     return state;
   },
 
-  getCanvasCallHandler = function(call) {
+  getCanvasCallHandler = (call) => {
     return canvasCallHandlers[call.method] || canvasCallHandlers[call.attr] || nullCanvasCallHandler;
   },
 
-  getPathFillShapeHandler = function(shape) {
+  getPathFillShapeHandler = (shape) => {
     return pathFillShapeHandlers[shape.type];
   },
 
-  getPathStrokeShapeHandler = function(shape) {
+  getPathStrokeShapeHandler = (shape) => {
     return pathStrokeShapeHandlers[shape.type];
   },
 
-  preCanvasCallHandler = function(state) {
+  preCanvasCallHandler = (state) => {
     state.transform = totalTransform(state.transforms.flatten());
     state.lineWidth = state.lineWidths.last();
     return state;
   },
 
-  getBBox = function(shape) {
+  getBBox = (shape) => {
     var state = createNewCanvasCallState();
-    state = shape.reduce(function (state, call) {
+    state = shape.reduce((state, call) => {
       var handler = getCanvasCallHandler(call);
       return handler(preCanvasCallHandler(state), call);
     }, createNewCanvasCallState());
