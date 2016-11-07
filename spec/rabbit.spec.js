@@ -30,6 +30,17 @@ describe('rabbit', function () {
           expect(box.width).toEqual(NaN);
           expect(box.height).toEqual(NaN);
       });
+      
+      it('should return {x: NaN, y: NaN, width: NaN, height: NaN} when using unsupported canvas functions', function () {
+          ctx.bezierCurveTo(1, 2, 3, 4, 5, 6);
+        
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
+      });
 
       describe('stroked arc', function() {
 
