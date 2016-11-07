@@ -1,4 +1,4 @@
-
+"use strict";
 
 jQuery = $;
 
@@ -125,6 +125,8 @@ function Face(ctx, window) {
     return this;
   }
 
+  var draw_core_state = {};
+
   var draw_core = function (opt) {
 
     clearCanvas(ctx);
@@ -138,18 +140,18 @@ function Face(ctx, window) {
 
       var eye1YOffset = 0, eye2YOffset = 0;
       if (opt.mood === 'crazy') {
-        if (this.animationDirection === 'alpha') {
-          this.animationDistance += 0.5;
-        } else if (this.animationDirection === 'beta') {
-          this.animationDistance -= 0.5;
+        if (draw_core_state.animationDirection === 'alpha') {
+          draw_core_state.animationDistance += 0.5;
+        } else if (draw_core_state.animationDirection === 'beta') {
+          draw_core_state.animationDistance -= 0.5;
         } else {
-          this.animationDirection = 'alpha';
-          this.animationDistance = 0;
+          draw_core_state.animationDirection = 'alpha';
+          draw_core_state.animationDistance = 0;
         }
-        eye1YOffset = this.animationDistance;
-        eye2YOffset = -this.animationDistance;
-        if (this.animationDistance ===  6) this.animationDirection = 'beta';
-        if (this.animationDistance === -6) this.animationDirection = 'alpha';
+        eye1YOffset = draw_core_state.animationDistance;
+        eye2YOffset = -draw_core_state.animationDistance;
+        if (draw_core_state.animationDistance ===  6) draw_core_state.animationDirection = 'beta';
+        if (draw_core_state.animationDistance === -6) draw_core_state.animationDirection = 'alpha';
       }
 
       var scale = opt.width / opt.height;

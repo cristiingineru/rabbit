@@ -1,3 +1,5 @@
+"use strict";
+
 if (!Array.prototype.last) {
   Array.prototype.last = function() {
     return this[this.length - 1];
@@ -28,67 +30,67 @@ function Geometry() {
       lineWidths: [1]
     };
   },
-      
+
   pathFillShapeHandlers = {
     rect: function(state, shape) {
-      var x = shape.x;
-        y = shape.y;
-        width = shape.width;
-        height = shape.height;
+      var x = shape.x,
+        y = shape.y,
+        width = shape.width,
+        height = shape.height,
         newBox = {x: x, y: y, width: width, height: height};
-        state.box = union(state.box, newBox);
+      state.box = union(state.box, newBox);
       return state;
     },
     arc: function(state, shape) {
-      var cx = shape.cx;
-        cy = shape.cy;
-        rx = shape.rx;
-        ry = shape.ry;
+      var cx = shape.cx,
+        cy = shape.cy,
+        rx = shape.rx,
+        ry = shape.ry,
         newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
-        state.box = union(state.box, newBox);
+      state.box = union(state.box, newBox);
       return state;
     }
   },
-  
+
   pathStrokeShapeHandlers = {
     rect: function(state, shape) {
-      var x = shape.x;
-        y = shape.y;
-        width = shape.width;
-        height = shape.height;
-        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0;
-        xScaledLineWidth = scaledLineWidth * state.transform.scale.x;
-        yScaledLineWidth = scaledLineWidth * state.transform.scale.y;
+      var x = shape.x,
+        y = shape.y,
+        width = shape.width,
+        height = shape.height,
+        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
+        xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
+        yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
         newBox = {x: x - xScaledLineWidth  / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
-        state.box = union(state.box, newBox);
+      state.box = union(state.box, newBox);
       return state;
     },
     arc: function(state, shape) {
-      var cx = shape.cx;
-        cy = shape.cy;
-        rx = shape.rx;
-        ry = shape.ry;
-        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0;
+      var cx = shape.cx,
+        cy = shape.cy,
+        rx = shape.rx,
+        ry = shape.ry,
+        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
         xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
         yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
         newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth};
-        state.box = union(state.box, newBox);
+      state.box = union(state.box, newBox);
       return state;
     },
     lineTo: function(state, shape) {
-      var x1 = shape.x1;
-        y1 = shape.y1;
-        x2 = shape.x2;
-        y2 = shape.y2;
-        scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, state.transform.scale.x, state.transform.scale.y, state.lineWidth);
-        rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth !== 1 ? scaledLineWidth : 0);
+      var x1 = shape.x1,
+        y1 = shape.y1,
+        x2 = shape.x2,
+        y2 = shape.y2,
+        scaledLineWidth = getScaledWidthOfLine(x1, y1, x2, y2, state.transform.scale.x, state.transform.scale.y, state.lineWidth),
+        rect = getRectAroundLine(x1, y1, x2, y2, scaledLineWidth !== 1 ? scaledLineWidth : 0),
         newBox = {
           x: Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
           y: Math.min(rect.y1, rect.y2, rect.y3, rect.y4),
           width: Math.max(rect.x1, rect.x2, rect.x3, rect.x4) - Math.min(rect.x1, rect.x2, rect.x3, rect.x4),
           height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
         };
-        state.box = union(state.box, newBox);
+      state.box = union(state.box, newBox);
       return state;
     }
   },
@@ -99,52 +101,52 @@ function Geometry() {
       return state;
     },
     fillRect: function(state, call) {
-      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
-        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
-        width = call.arguments[2] * state.transform.scale.x;
-        height = call.arguments[3] * state.transform.scale.y;
+      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
+        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
+        width = call.arguments[2] * state.transform.scale.x,
+        height = call.arguments[3] * state.transform.scale.y,
         newBox = {x: x, y: y, width: width, height: height};
-        state.box = union(state.box, newBox);
+      state.box = union(state.box, newBox);
       return state;
     },
     strokeRect: function(state, call) {
-      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
-        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
-        width = call.arguments[2] * state.transform.scale.x;
-        height = call.arguments[3] * state.transform.scale.y;
-        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0;
-        xScaledLineWidth = scaledLineWidth * state.transform.scale.x;
-        yScaledLineWidth = scaledLineWidth * state.transform.scale.y;
+      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
+        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
+        width = call.arguments[2] * state.transform.scale.x,
+        height = call.arguments[3] * state.transform.scale.y,
+        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
+        xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
+        yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
         newBox = {x: x - xScaledLineWidth / 2, y: y - yScaledLineWidth / 2, width: width + xScaledLineWidth, height: height + yScaledLineWidth};
-        state.box = union(state.box, newBox);
+      state.box = union(state.box, newBox);
       return state;
     },
     rect: function(state, call) {
-      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
-        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
-        width = call.arguments[2] * state.transform.scale.x;
+      var x = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
+        y = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
+        width = call.arguments[2] * state.transform.scale.x,
         height = call.arguments[3] * state.transform.scale.y;
-        state.shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
+      state.shapesInPath.push({type: 'rect', x: x, y: y, width: width, height: height});
       return state;
     },
     arc: function(state, call) {
-      var cx = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
-        cy = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
-        rx = call.arguments[2] * state.transform.scale.x;
+      var cx = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
+        cy = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
+        rx = call.arguments[2] * state.transform.scale.x,
         ry = call.arguments[2] * state.transform.scale.y;
       state.shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
       return state;
     },
     moveTo: function(state, call) {
-      var x1 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+      var x1 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
       state.moveToLocation = {x: x1, y: y1};
       return state;
     },
     lineTo: function(state, call) {
-      var x1 = state.moveToLocation.x;
-        y1 = state.moveToLocation.y;
-        x2 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x;
+      var x1 = state.moveToLocation.x,
+        y1 = state.moveToLocation.y,
+        x2 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         y2 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y;
       state.shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
       return state;
@@ -196,15 +198,15 @@ function Geometry() {
   getCanvasCallHandler = function(call) {
     return canvasCallHandlers[call.method] || canvasCallHandlers[call.attr] || nullCanvasCallHandler;
   },
-      
+
   getPathFillShapeHandler = function(shape) {
     return pathFillShapeHandlers[shape.type];
   },
-      
+
   getPathStrokeShapeHandler = function(shape) {
     return pathStrokeShapeHandlers[shape.type];
   },
-      
+
   preCanvasCallHandler = function(state) {
     state.transform = totalTransform(state.transforms.flatten());
     state.lineWidth = state.lineWidths.last();
