@@ -7,32 +7,28 @@ module.exports = function(config) {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '.',
 
-
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine-jquery', 'jasmine', 'requirejs'],
 
-
     // list of files / patterns to load in the browser
     files: [
-      //'node_modules/Canteen/build/canteen.min.js',
-      {pattern: 'node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
-      //'lib/jquery.js',
-      //'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
       'lib/mock-raf.js',
       'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
-      //'node_modules/requirejs-babel/es6.js',
-      //'node_modules/requirejs-babel/babel-5.8.34.min.js',
-      //'node_modules/requirejs/require.js',
-      'src/*.js',
+
+      // This has to be loaded with requirejs
+      {pattern: 'node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
+
+      // Here is the entry point for testing
       'requirejs.conf.js',
-      'spec/*.spec.js',
-      //'examples/face/face.js',
-      //'examples/face/*.spec.js'
+
+      // The next pairs are a workaround to allow them being requested
+      //by requirejs and being preprocessed by babel.
+      'src/*.js',
       {pattern: 'src/*.js', included: false, served: true, watched: true, nocache: true},
+      'spec/*.spec.js',
       {pattern: 'spec/*.spec.js', included: false, served: true, watched: true, nocache: true},
     ],
-
 
     // list of files to exclude
     exclude: [],
@@ -55,21 +51,11 @@ module.exports = function(config) {
         sourceMap: 'inline'
       },
       filename: function (file) {
-        return file.originalPath; //.replace(/\.js$/, '.es5.js');
+        return file.originalPath;
       },
       sourceFileName: function (file) {
         return file.originalPath;
       }
-    },
-
-    xpreprocessors: {
-      // source files, that you wanna generate coverage for
-      // do not include tests or libraries
-      // (these files will be instrumented by Istanbul)
-      'src/*.js': ['coverage'],
-      'spec/*.spec.js': ['coverage'],
-      'examples/face/face.js': ['coverage'],
-      'examples/face/*.spec.js': ['coverage']
     },
 
     coverageReporter: {
@@ -77,29 +63,36 @@ module.exports = function(config) {
       dir : 'coverage/'
     },
 
+    xpreprocessors: {
+      // source files, that you wanna generate coverage for
+      // do not include tests or libraries
+      // (these files will be instrumented by Istanbul)
+      //'src/*.js': ['coverage'],
+      //'spec/*.spec.js': ['coverage'],
+      //'examples/face/face.js': ['coverage'],
+      //'examples/face/*.spec.js': ['coverage']
+      'src/*.js': ['babel', 'coverage'],
+      'spec/*.spec.js': ['babel', 'coverage'],
+      'examples/face/face.js': ['babel', 'coverage'],
+      'examples/face/*.spec.js': ['babel', 'coverage']
+    },
 
     // web server port
     port: 9876,
 
-
     // enable / disable colors in the output (reporters and logs)
     colors: true,
-
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
 
-
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
-
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    //browsers: ['Chrome'],
     browsers: ['PhantomJS', 'Firefox'],
-
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
