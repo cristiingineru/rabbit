@@ -38,7 +38,15 @@ module.exports = function(config) {
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress', 'kjhtml', 'coverage'],
 
+    // Use this for coverage
     xpreprocessors: {
+      'src/*.js': ['babel', 'coverage'],
+      'spec/*.spec.js': ['babel', 'coverage'],
+      'examples/face/face.js': ['babel', 'coverage'],
+      'examples/face/*.spec.js': ['babel', 'coverage']
+    },
+
+    preprocessors: {
       'src/*.js': ['babel'],
       'spec/*.spec.js': ['babel'],
       'examples/face/face.js': ['babel'],
@@ -61,20 +69,6 @@ module.exports = function(config) {
     coverageReporter: {
       type : 'lcov',
       dir : 'coverage/'
-    },
-
-    preprocessors: {
-      // source files, that you wanna generate coverage for
-      // do not include tests or libraries
-      // (these files will be instrumented by Istanbul)
-      //'src/*.js': ['coverage'],
-      //'spec/*.spec.js': ['coverage'],
-      //'examples/face/face.js': ['coverage'],
-      //'examples/face/*.spec.js': ['coverage']
-      'src/*.js': ['babel', 'coverage'],
-      'spec/*.spec.js': ['babel', 'coverage'],
-      'examples/face/face.js': ['babel', 'coverage'],
-      'examples/face/*.spec.js': ['babel', 'coverage']
     },
 
     // web server port
