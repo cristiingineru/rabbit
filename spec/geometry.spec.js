@@ -1,4 +1,5 @@
-import * as geo from 'geometry';
+import * as geometryLib from 'geometry';
+
 
 describe('geometry', function () {
     'use strict';
@@ -6,7 +7,7 @@ describe('geometry', function () {
     var geometry;
 
     beforeAll(function() {
-      geometry = new Geometry();
+      geometry = new geometryLib.geometry();
     });
 
     describe('union', function() {

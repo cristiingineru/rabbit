@@ -23,13 +23,13 @@ module.exports = function(config) {
       //'node_modules/requirejs-babel/es6.js',
       //'node_modules/requirejs-babel/babel-5.8.34.min.js',
       'node_modules/requirejs/require.js',
-      //'src/*.js',
+      'src/*.js',
       'requirejs.conf.js',
-      //'spec/*.spec.js',
+      'spec/*.spec.js',
       //'examples/face/face.js',
       //'examples/face/*.spec.js'
-      {pattern: 'src/*.js', included: false, served: true, watched: false, nocache: true},
-      {pattern: 'spec/*.spec.js', included: false, served: true, watched: false, nocache: true},
+      {pattern: 'src/*.js', included: false, served: true, watched: true, nocache: true},
+      {pattern: 'spec/*.spec.js', included: false, served: true, watched: true, nocache: true},
     ],
 
 

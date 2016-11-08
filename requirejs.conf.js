@@ -10,5 +10,5 @@ requirejs([
   'spec/rabbit.spec',
   'spec/geometry.spec'
 ], function(geometry, rabbit) {
-  console.log('yey');
+  window.__karma__.start();
 });

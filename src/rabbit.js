@@ -1,12 +1,14 @@
 "use strict";
 
-import * as geo from 'geometry';
+import * as geometryLib from 'geometry';
+import * as customMatchersLib from 'customMatchers';
 
-function Rabbit() {
+
+export function rabbit(geometry, matchers) {
 
   var that = this,
-    geometry = new Geometry(),
-    matchers = new CustomMatchers();
+    geometry = geometry || new geometryLib.geometry(),
+    matchers = matchers || new customMatchersLib.customMatchers();
     
 
   var findAllShapesIgnoringArguments = function(shape, where) {

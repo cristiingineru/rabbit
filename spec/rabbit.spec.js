@@ -1,8 +1,9 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
-import * as geo from 'geometry';
-import * as rab from 'rabbit';
+import * as geometryLib from 'geometry';
+import * as rabbitLib from 'rabbit';
+
 
 describe('rabbit', function () {
     'use strict';
@@ -10,7 +11,7 @@ describe('rabbit', function () {
     var rabbit;
 
     beforeAll(function() {
-      rabbit = new Rabbit();
+      rabbit = new rabbitLib.rabbit();
     });
 
     describe('getBBox', function() {
