@@ -1,17 +1,18 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
-import * as geometryLib from 'geometry';
-import * as rabbitLib from 'rabbit';
+import { Geometry } from 'geometry';
+import { Rabbit } from 'rabbit';
+import * as canteen from '../node_modules/Canteen/build/canteen.min';
 
 
-describe('rabbit', function () {
+describe('Rabbit', function () {
     'use strict';
 
     var rabbit;
 
     beforeAll(function() {
-      rabbit = new rabbitLib.rabbit();
+      rabbit = new Rabbit();
     });
 
     describe('getBBox', function() {
@@ -34,10 +35,10 @@ describe('rabbit', function () {
           expect(box.width).toEqual(NaN);
           expect(box.height).toEqual(NaN);
       });
-      
+
       it('should return {x: NaN, y: NaN, width: NaN, height: NaN} when using unsupported canvas functions', function () {
           ctx.bezierCurveTo(1, 2, 3, 4, 5, 6);
-        
+
           var box = rabbit.getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);

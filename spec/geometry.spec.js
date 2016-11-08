@@ -1,13 +1,13 @@
-import * as geometryLib from 'geometry';
+import { Geometry } from 'geometry';
 
 
-describe('geometry', function () {
+describe('Geometry', function () {
     'use strict';
 
     var geometry;
 
     beforeAll(function() {
-      geometry = new geometryLib.geometry();
+      geometry = new Geometry();
     });
 
     describe('union', function() {

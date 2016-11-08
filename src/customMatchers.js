@@ -1,11 +1,11 @@
 "use strict";
 
-import * as geometryLib from 'geometry';
-//import * as Geometry from 'geometry';
+import { Geometry } from 'geometry';
 
-export function customMatchers(geometry) {
 
-  geometry = geometry || new geometryLib.geometry();
+export function CustomMatchers(geometry) {
+
+  geometry = geometry || new Geometry();
 
 
   var toBePartOf = function (util, customEqualityTesters) {

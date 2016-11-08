@@ -1,16 +1,16 @@
 "use strict";
 
-import * as geometryLib from 'geometry';
-import * as customMatchersLib from 'customMatchers';
-import * as rabbitLib from '../node_modules/Canteen/build/canteen.min';
+import { Geometry } from 'geometry';
+import { CustomMatchers } from 'customMatchers';
+import * as canteen from '../node_modules/Canteen/build/canteen.min';
 
 
-export function rabbit(geometry, matchers) {
+export function Rabbit(geometry, matchers) {
 
   var that = this,
-    geometry = geometry || new geometryLib.geometry(),
-    matchers = matchers || new customMatchersLib.customMatchers();
-    
+    geometry = geometry || new Geometry(),
+    matchers = matchers || new CustomMatchers();
+
 
   var findAllShapesIgnoringArguments = function(shape, where) {
     var found = [], index = 0;

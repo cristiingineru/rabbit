@@ -16,7 +16,7 @@ if (!Array.prototype.flatten) {
 }
 
 
-export function geometry() {
+export function Geometry() {
 
   var that = this;
 
