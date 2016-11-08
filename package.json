@@ -37,6 +37,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-jasmine-jquery": "^0.1.1",
     "karma-phantomjs-launcher": "^1.0.2",
+    "karma-requirejs": "^1.1.0",
     "phantomjs-polyfill-object-assign": "0.0.2",
     "requirejs": "^2.3.2",
     "requirejs-babel": "0.0.9"

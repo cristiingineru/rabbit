@@ -2,6 +2,7 @@
 
 import * as geometryLib from 'geometry';
 import * as customMatchersLib from 'customMatchers';
+import * as rabbitLib from '../node_modules/Canteen/build/canteen.min';
 
 
 export function rabbit(geometry, matchers) {

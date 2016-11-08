@@ -10,19 +10,20 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine-jquery', 'jasmine'],
+    frameworks: ['jasmine-jquery', 'jasmine', 'requirejs'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/Canteen/build/canteen.min.js',
-      'lib/jquery.js',
-      'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
+      //'node_modules/Canteen/build/canteen.min.js',
+      {pattern: 'node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
+      //'lib/jquery.js',
+      //'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
       'lib/mock-raf.js',
       'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
       //'node_modules/requirejs-babel/es6.js',
       //'node_modules/requirejs-babel/babel-5.8.34.min.js',
-      'node_modules/requirejs/require.js',
+      //'node_modules/requirejs/require.js',
       'src/*.js',
       'requirejs.conf.js',
       'spec/*.spec.js',
