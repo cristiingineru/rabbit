@@ -1,6 +1,9 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
+import * as geo from 'geometry';
+import * as rab from 'rabbit';
+
 describe('rabbit', function () {
     'use strict';
 

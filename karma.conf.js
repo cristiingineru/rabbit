@@ -5,7 +5,7 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: '.',
 
 
     // frameworks to use
@@ -20,10 +20,16 @@ module.exports = function(config) {
       'node_modules/karma-jasmine-jquery/lib/jasmine-jquery.js',
       'lib/mock-raf.js',
       'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
-      'src/*.js',
-      'spec/*.spec.js',
-      'examples/face/face.js',
-      'examples/face/*.spec.js'
+      //'node_modules/requirejs-babel/es6.js',
+      //'node_modules/requirejs-babel/babel-5.8.34.min.js',
+      'node_modules/requirejs/require.js',
+      //'src/*.js',
+      'requirejs.conf.js',
+      //'spec/*.spec.js',
+      //'examples/face/face.js',
+      //'examples/face/*.spec.js'
+      {pattern: 'src/*.js', included: false, served: true, watched: false, nocache: true},
+      {pattern: 'spec/*.spec.js', included: false, served: true, watched: false, nocache: true},
     ],
 
 
@@ -43,7 +49,16 @@ module.exports = function(config) {
     },
 
     babelPreprocessor: {
-      // options go here
+      options: {
+        presets: ['es2015'],
+        sourceMap: 'inline'
+      },
+      filename: function (file) {
+        return file.originalPath; //.replace(/\.js$/, '.es5.js');
+      },
+      sourceFileName: function (file) {
+        return file.originalPath;
+      }
     },
 
     xpreprocessors: {

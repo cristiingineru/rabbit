@@ -1,3 +1,5 @@
+import * as geo from 'geometry';
+
 describe('geometry', function () {
     'use strict';
 

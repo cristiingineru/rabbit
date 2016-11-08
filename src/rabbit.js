@@ -1,5 +1,7 @@
 "use strict";
 
+import * as geo from 'geometry';
+
 function Rabbit() {
 
   var that = this,
