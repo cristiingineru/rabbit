@@ -141,12 +141,19 @@ function drawBBox(ctx) {
 }
 
 
+requirejs(['../obj/rabbit', '../lib/domReady'], function(util) {
+    console.log('xxx');
+});
+
+
+
 if (!Object.prototype.elementAt){
     Object.prototype.elementAt = function(index){
         return this[index];
     };
 };
 
+/*
 $(function() {
 
   examples.forEach(function(example, exampleIndex) {
@@ -178,3 +185,4 @@ $(function() {
   });
 
 });
+*/
