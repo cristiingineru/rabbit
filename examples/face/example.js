@@ -32,31 +32,19 @@ var examples = [
 
 ];
 
-
-//if (!Object.prototype.elementAt){
-//    Object.prototype.elementAt = function(index){
-//        return this[index];
-//    };
-//};
-
-System.config({
-  map: {
-    jquery: '//code.jquery.com/jquery-2.1.4.min.js'
-  }
-});
-
-System.import('face.js', 'jquery').then(function(imports) {
+System.import('face.js').then(function(imports) {
 
     Face = imports.Face;
 
+    var jQuery = $;
+
     examples.forEach(function(example, index) {
 
-      var ctx = $('#placeholder')
-        .append('<canvas width="200" height="200" style="margin: 10px;" />')
-        .find('canvas')
-        .last()
-        .elementAt(0)
-        .getContext('2d');
+      var canvases = jQuery('#placeholder')
+          .append('<canvas width="200" height="200" style="margin: 10px;" />')
+          .find('canvas'),
+        lastCreatedCanvas = canvases[canvases.length - 1],
+        ctx = lastCreatedCanvas.getContext('2d');
 
       example(ctx);
     });

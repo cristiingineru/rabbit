@@ -1,6 +1,6 @@
 "use strict";
 
-System.register([], function($__export, $__moduleContext) {
+System.register([], function(_export, _context) {
 
   function Eye(ctx) {
 
@@ -46,6 +46,6 @@ System.register([], function($__export, $__moduleContext) {
 
     return this;
   }
-  
-  $__export('Eye', Eye);
+
+  _export('Eye', Eye);
 });

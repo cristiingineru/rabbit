@@ -1,7 +1,8 @@
 "use strict";
 
-System.register(['eye.js', 'mouth.js'], function($__export, $__moduleContext) {
+System.register(['eye.js', 'mouth.js'], function(_export, _context) {
 
+  var Eye, Mouth;
   function Face(ctx, window) {
 
     window = window || {requestAnimationFrame: function () {}};
@@ -101,6 +102,15 @@ System.register(['eye.js', 'mouth.js'], function($__export, $__moduleContext) {
       }
     }
   }
-  
-  $__export('Face', Face);
+
+  _export('Face', Face);
+
+  return {
+    setters: [function (_eye) {
+      Eye = _eye.Eye;
+    }, function (_mouth) {
+      Mouth = _mouth.Mouth;
+    }],
+    execute: function () {}
+  };
 });

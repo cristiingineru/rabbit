@@ -1,7 +1,7 @@
 "use strict";
 
-System.register([], function($__export, $__moduleContext) {
-  
+System.register([], function(_export, _context) {
+
   function Mouth(ctx) {
 
     this.draw = function(opt) {
@@ -42,6 +42,6 @@ System.register([], function($__export, $__moduleContext) {
 
     return this;
   }
-  
-  $__export('Mouth', Mouth);
+
+  _export('Mouth', Mouth);
 });
