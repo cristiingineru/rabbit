@@ -1,9 +1,9 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
-import { Geometry } from 'geometry';
-import { Rabbit } from 'rabbit';
-import * as Canteen from '../node_modules/Canteen/build/canteen.min';
+import { Geometry } from 'geometry'
+import { Rabbit } from 'rabbit'
+import '../node_modules/Canteen/build/canteen.min'
 
 
 describe('Rabbit', function () {

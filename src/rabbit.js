@@ -1,7 +1,7 @@
 "use strict";
 
-import { Geometry } from 'geometry';
-import { CustomMatchers } from 'customMatchers';
+import { Geometry } from 'geometry'
+import { CustomMatchers } from 'customMatchers'
 
 
 export function Rabbit(geometry, matchers) {

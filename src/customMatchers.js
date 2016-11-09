@@ -1,6 +1,6 @@
 "use strict";
 
-import { Geometry } from 'geometry';
+import { Geometry } from 'geometry'
 
 
 export function CustomMatchers(geometry) {
