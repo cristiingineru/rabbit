@@ -131,30 +131,33 @@ var examples = [
 ];
 
 
-function drawBBox(ctx) {
-    var rabbit = new Rabbit(ctx),
-      box = rabbit.getBBox(ctx.stack());
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
-    ctx.strokeRect(box.x, box.y, box.width, box.height);
+function drawBBox(ctx, rabbit) {
+  var box = rabbit.getBBox(ctx.stack());
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
+  ctx.strokeRect(box.x, box.y, box.width, box.height);
 }
 
 
-requirejs(['../obj/rabbit', '../lib/domReady'], function(util) {
-    console.log('xxx');
+if (!Object.prototype.elementAt){
+  Object.prototype.elementAt = function(index){
+      return this[index];
+  };
+};
+
+
+requirejs.config({
+  baseUrl: '../build',
+  paths: {
+    lib: '../lib'
+  }
 });
 
 
-
-if (!Object.prototype.elementAt){
-    Object.prototype.elementAt = function(index){
-        return this[index];
-    };
-};
-
-/*
-$(function() {
+requirejs(['lib/domReady', 'lib/canteen.min', 'rabbit'], function(domReady, Canteen, RabbitModule) {
+  
+  var rabbit = new RabbitModule.Rabbit();
 
   examples.forEach(function(example, exampleIndex) {
 
@@ -178,11 +181,11 @@ $(function() {
         .getContext('2d');
 
       example(ctx, sizeIndex);
-      drawBBox(ctx);
+      drawBBox(ctx, rabbit);
     });
 
     $('#placeholder').append('<br />');
   });
 
+
 });
-*/

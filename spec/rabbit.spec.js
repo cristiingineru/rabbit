@@ -3,7 +3,7 @@
 
 import { Geometry } from 'geometry';
 import { Rabbit } from 'rabbit';
-import * as canteen from '../node_modules/Canteen/build/canteen.min';
+import * as Canteen from '../node_modules/Canteen/build/canteen.min';
 
 
 describe('Rabbit', function () {
