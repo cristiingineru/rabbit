@@ -148,9 +148,9 @@ if (!Object.prototype.elementAt){
 
 
 requirejs.config({
-  baseUrl: '../build',
+  baseUrl: '../build/amd',
   paths: {
-    lib: '../lib'
+    lib: '../../lib'
   }
 });
 
