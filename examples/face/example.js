@@ -1,5 +1,7 @@
 "use strict";
 
+var Face;
+
 var examples = [
 
   function(ctx) {
@@ -31,24 +33,33 @@ var examples = [
 ];
 
 
-if (!Object.prototype.elementAt){
-    Object.prototype.elementAt = function(index){
-        return this[index];
-    };
-};
+//if (!Object.prototype.elementAt){
+//    Object.prototype.elementAt = function(index){
+//        return this[index];
+//    };
+//};
 
-$(function() {
+System.config({
+  map: {
+    jquery: '//code.jquery.com/jquery-2.1.4.min.js'
+  }
+});
 
-  examples.forEach(function(example, index) {
+System.import('face.js', 'jquery').then(function(imports) {
 
-    var ctx = $('#placeholder')
-      .append('<canvas width="200" height="200" style="margin: 10px;" />')
-      .find('canvas')
-      .last()
-      .elementAt(0)
-      .getContext('2d');
+    Face = imports.Face;
 
-    example(ctx);
-  });
+    examples.forEach(function(example, index) {
+
+      var ctx = $('#placeholder')
+        .append('<canvas width="200" height="200" style="margin: 10px;" />')
+        .find('canvas')
+        .last()
+        .elementAt(0)
+        .getContext('2d');
+
+      example(ctx);
+    });
+
 
 });
