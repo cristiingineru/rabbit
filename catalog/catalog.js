@@ -140,13 +140,6 @@ function drawBBox(ctx, rabbit) {
 }
 
 
-if (!Object.prototype.elementAt){
-  Object.prototype.elementAt = function(index){
-      return this[index];
-  };
-};
-
-
 requirejs.config({
   baseUrl: '../build/amd',
   paths: {
@@ -161,24 +154,22 @@ requirejs(['lib/domReady', 'lib/canteen.min', 'rabbit'], function(domReady, Cant
 
   examples.forEach(function(example, exampleIndex) {
 
-    var examplePreview = $('#placeholder')
+    var examplePreviews = $('#placeholder')
       .append('<textarea type="text" cols="55" rows="10" />')
-      .find('textarea')
-      .last()
-      .elementAt(0);
+      .find('textarea'),
+      examplePreview = examplePreviews[examplePreviews.length - 1];
     examplePreview.value = example.toString();
 
     [{width:  50, height:  50},
      {width: 100, height: 100},
      {width: 150, height: 150}
     ].forEach(function(size, sizeIndex) {
-
-      var ctx = $('#placeholder')
+      
+      var canvases = $('#placeholder')
         .append('<canvas width="' + size.width + '" height="' + size.height + '" style="margin: 5px;" />')
-        .find('canvas')
-        .last()
-        .elementAt(0)
-        .getContext('2d');
+        .find('canvas'),
+      lastCreatedCanvas = canvases[canvases.length - 1],
+      ctx = lastCreatedCanvas.getContext('2d');
 
       example(ctx, sizeIndex);
       drawBBox(ctx, rabbit);
