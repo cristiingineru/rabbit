@@ -5,8 +5,8 @@
   "main": "?",
   "scripts": {
     "test": "node node_modules/karma/bin/karma start --single-run",
-    "buildAmd": "babel src -d build/amd --plugins=transform-es2015-modules-amd",
-    "buildSystemJS": "babel src -d build/systemjs --plugins=transform-es2015-modules-systemjs"
+    "buildAmd": "babel src -d build/amd --presets=es2015 --plugins=transform-es2015-modules-amd",
+    "buildSystemJS": "babel src -d build/systemjs --presets=es2015 --plugins=transform-es2015-modules-systemjs"
   },
   "repository": {
     "type": "git",

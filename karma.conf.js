@@ -56,6 +56,7 @@ module.exports = function(config) {
     babelPreprocessor: {
       options: {
         presets: ['es2015'],
+        plugins: ['transform-es2015-modules-amd'],
         sourceMap: 'inline'
       },
       filename: function (file) {
