@@ -13,6 +13,7 @@ var go = function() {
   describe('Face', function () {
     'use strict';
 
+    var $ = jQuery;
     var rabbit, fixture, placeholder, ctx, face;
 
     beforeAll(function() {
@@ -226,7 +227,7 @@ var go = function() {
 };
 
 
-  
+
 return {
   setters: [function (_eye) {
     Eye = _eye.Eye;
@@ -239,6 +240,6 @@ return {
   }],
   execute: go
 };
-  
-  
+
+
 });
