@@ -13,7 +13,6 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'lib/mock-raf.js',
       'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
 
       // This has to be loaded with requirejs
@@ -41,16 +40,12 @@ module.exports = function(config) {
     // Use this for coverage
     xpreprocessors: {
       'src/*.js': ['babel', 'coverage'],
-      'spec/*.spec.js': ['babel', 'coverage'],
-      'examples/face/face.js': ['babel', 'coverage'],
-      'examples/face/*.spec.js': ['babel', 'coverage']
+      'spec/*.spec.js': ['babel', 'coverage']
     },
 
     preprocessors: {
       'src/*.js': ['babel'],
-      'spec/*.spec.js': ['babel'],
-      'examples/face/face.js': ['babel'],
-      'examples/face/*.spec.js': ['babel']
+      'spec/*.spec.js': ['babel']
     },
 
     babelPreprocessor: {
