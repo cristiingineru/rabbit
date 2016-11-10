@@ -32,22 +32,19 @@ var examples = [
 
 ];
 
+
 System.import('face.js').then(function(imports) {
+  Face = imports.Face;
 
-    Face = imports.Face;
+  examples.forEach(function(example, index) {
 
-    var jQuery = $;
+    var canvases = $('#placeholder')
+        .append('<canvas width="200" height="200" style="margin: 10px;" />')
+        .find('canvas'),
+      lastCreatedCanvas = canvases[canvases.length - 1],
+      ctx = lastCreatedCanvas.getContext('2d');
 
-    examples.forEach(function(example, index) {
-
-      var canvases = jQuery('#placeholder')
-          .append('<canvas width="200" height="200" style="margin: 10px;" />')
-          .find('canvas'),
-        lastCreatedCanvas = canvases[canvases.length - 1],
-        ctx = lastCreatedCanvas.getContext('2d');
-
-      example(ctx);
-    });
-
+    example(ctx);
+  });
 
 });

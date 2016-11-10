@@ -1,5 +1,7 @@
 "use strict";
 
+var Eye, Mouth, Face;
+
 var examples = [
 
   function(ctx) {
@@ -79,13 +81,12 @@ var examples = [
 ];
 
 
-if (!Object.prototype.elementAt){
-    Object.prototype.elementAt = function(index){
-        return this[index];
-    };
-};
-
-$(function() {
+System.import('eye.js').then(function(imports) {
+  Eye = imports.Eye;
+System.import('mouth.js').then(function(imports) {
+  Mouth = imports.Mouth;
+System.import('face.js').then(function(imports) {
+  Face = imports.Face;
 
   examples.forEach(function(example, index) {
 
@@ -94,12 +95,11 @@ $(function() {
      {width: 150, height: 150}
     ].forEach(function(size) {
 
-      var ctx = $('#placeholder')
-        .append('<canvas width="' + size.width + '" height="' + size.height + '" style="margin: 5px;" />')
-        .find('canvas')
-        .last()
-        .elementAt(0)
-        .getContext('2d');
+      var canvases = $('#placeholder')
+          .append('<canvas width="' + size.width + '" height="' + size.height + '" style="margin: 5px;" />')
+          .find('canvas'),
+        lastCreatedCanvas = canvases[canvases.length - 1],
+        ctx = lastCreatedCanvas.getContext('2d');
 
       example(ctx);
     });
@@ -107,4 +107,6 @@ $(function() {
     $('#placeholder').append('<br />');
   });
 
+});
+});
 });
