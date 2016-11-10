@@ -1,6 +1,6 @@
 "use strict";
 
-System.register(['geometry'], function (_export, _context) {
+System.register(['x/geometry.js'], function (_export, _context) {
   "use strict";
 
   var Geometry;

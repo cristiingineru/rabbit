@@ -3,7 +3,14 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
-describe('Face', function () {
+System.register(['eye.js', 'mouth.js', 'face.js', 'x/rabbit.js'], function(_export, _context) {
+
+var Eye, Mouth, Face, Rabbit;
+
+
+var go = function() {
+
+  describe('Face', function () {
     'use strict';
 
     var rabbit, fixture, placeholder, ctx, face;
@@ -25,82 +32,82 @@ describe('Face', function () {
 
     describe('with default options', function() {
 
-        it('should have 2 eyes of the same size', function () {
-            face.draw();
+      it('should have 2 eyes of the same size', function () {
+          face.draw();
 
-            var eyeCtx = newCtx();
-            new Eye(eyeCtx).draw();
-            var found = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+          var eyeCtx = newCtx();
+          new Eye(eyeCtx).draw();
+          var found = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-            expect(found.length).toBe(2);
-            expect(found[0]).toHaveTheSameSizeWith(found[1]);
-        });
+          expect(found.length).toBe(2);
+          expect(found[0]).toHaveTheSameSizeWith(found[1]);
+      });
 
-        it('should have the eyes aligned', function () {
-            face.draw();
+      it('should have the eyes aligned', function () {
+          face.draw();
 
-            var eyeCtx = newCtx();
-            new Eye(eyeCtx).draw();
-            var found = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+          var eyeCtx = newCtx();
+          new Eye(eyeCtx).draw();
+          var found = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-            expect(found[0]).toBeHorizontallyAlignWith(found[1]);
-        });
+          expect(found[0]).toBeHorizontallyAlignWith(found[1]);
+      });
 
-        it('should contain the eyes inside it`s area', function () {
-            face.draw();
+      it('should contain the eyes inside it`s area', function () {
+          face.draw();
 
-            var eyeCtx = newCtx();
-            new Eye(eyeCtx).draw();
-            var foundEyes = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+          var eyeCtx = newCtx();
+          new Eye(eyeCtx).draw();
+          var foundEyes = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-            var justTheFaceShape = rabbit.removeShapes(foundEyes, ctx.stack())
-            foundEyes.forEach(function(foundEye) {
-              expect(foundEye).toBeInsideTheAreaOf(justTheFaceShape);
-            });
-        });
+          var justTheFaceShape = rabbit.removeShapes(foundEyes, ctx.stack())
+          foundEyes.forEach(function(foundEye) {
+            expect(foundEye).toBeInsideTheAreaOf(justTheFaceShape);
+          });
+      });
 
-        it('should have 1 mouth', function () {
-            face.draw();
+      it('should have 1 mouth', function () {
+          face.draw();
 
-            var mouthCtx = newCtx();
-            new Mouth(mouthCtx).draw();
-            var found = rabbit.findAllShapesIgnoringArguments(mouthCtx.stack(), ctx.stack());
+          var mouthCtx = newCtx();
+          new Mouth(mouthCtx).draw();
+          var found = rabbit.findAllShapesIgnoringArguments(mouthCtx.stack(), ctx.stack());
 
-            expect(found.length).toBe(1);
-        });
+          expect(found.length).toBe(1);
+      });
 
     });
 
 
     describe('side', function () {
 
-        ['left', 'right'].forEach(function (side) {
-          it('should have 1 eye when looked from ' + side, function () {
-              face.draw({side: side});
+      ['left', 'right'].forEach(function (side) {
+        it('should have 1 eye when looked from ' + side, function () {
+            face.draw({side: side});
 
-              var eyeCtx = newCtx();
-              new Eye(eyeCtx).draw();
-              var foundEyes = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+            var eyeCtx = newCtx();
+            new Eye(eyeCtx).draw();
+            var foundEyes = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-              expect(foundEyes.length).toBe(1);
-          });
+            expect(foundEyes.length).toBe(1);
         });
+      });
 
     });
 
 
     describe('drunk mood', function () {
 
-        it('should render blurry eye when drunk', function () {
-          face.draw({mood: 'drunk'});
-          var drunkFace = ctx.stack();
+      it('should render blurry eye when drunk', function () {
+        face.draw({mood: 'drunk'});
+        var drunkFace = ctx.stack();
 
-          var eyeCtx = newCtx();
-          new Eye(eyeCtx).draw({style: 'blurry'});
-          var blurryEye = eyeCtx.stack();
+        var eyeCtx = newCtx();
+        new Eye(eyeCtx).draw({style: 'blurry'});
+        var blurryEye = eyeCtx.stack();
 
-          expect(blurryEye).toBePartOf(drunkFace);
-        });
+        expect(blurryEye).toBePartOf(drunkFace);
+      });
 
     });
 
@@ -213,4 +220,25 @@ describe('Face', function () {
       var ctx = placeholder[0].getContext('2d');
       return ctx;
     }
+  });
+
+
+};
+
+
+  
+return {
+  setters: [function (_eye) {
+    Eye = _eye.Eye;
+  }, function (_mouth) {
+    Mouth = _mouth.Mouth;
+  }, function (_face) {
+    Face = _face.Face;
+  }, function (_rabbit) {
+    Rabbit = _rabbit.Rabbit;
+  }],
+  execute: go
+};
+  
+  
 });

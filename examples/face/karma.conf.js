@@ -5,29 +5,22 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '.',
+    basePath: '../..',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine-jquery', 'jasmine', 'requirejs'],
+    frameworks: ['jasmine-jquery', 'jasmine'],
 
     // list of files / patterns to load in the browser
     files: [
-      'lib/mock-raf.js',
-      'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
-
-      // This has to be loaded with requirejs
-      {pattern: 'node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
-
-      // Here is the entry point for testing
-      'requirejs.conf.js',
-
-      // The next pairs are a workaround to allow them being requested
-      //by requirejs and being preprocessed by babel.
-      'src/*.js',
-      {pattern: 'src/*.js', included: false, served: true, watched: true, nocache: true},
-      'spec/*.spec.js',
-      {pattern: 'spec/*.spec.js', included: false, served: true, watched: true, nocache: true},
+      'examples/face/lib/jquery.js',
+      'examples/face/lib/mock-raf.js',
+      //'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
+      'examples/face/node_modules/Canteen/build/canteen.min.js',
+      'examples/face/node_modules/systemjs/dist/system.js',
+      'examples/face/systemjs.conf.js',
+      {pattern: 'examples/face/*.js', included: false, served: true, watched: true, nocache: true},
+      {pattern: 'build/systemjs/*.js', included: false, served: true, watched: true, nocache: true}
     ],
 
     // list of files to exclude
@@ -36,40 +29,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'kjhtml', 'coverage'],
-
-    // Use this for coverage
-    xpreprocessors: {
-      'src/*.js': ['babel', 'coverage'],
-      'spec/*.spec.js': ['babel', 'coverage'],
-      'examples/face/face.js': ['babel', 'coverage'],
-      'examples/face/*.spec.js': ['babel', 'coverage']
-    },
-
-    preprocessors: {
-      'src/*.js': ['babel'],
-      'spec/*.spec.js': ['babel'],
-      'examples/face/face.js': ['babel'],
-      'examples/face/*.spec.js': ['babel']
-    },
-
-    babelPreprocessor: {
-      options: {
-        presets: ['es2015'],
-        sourceMap: 'inline'
-      },
-      filename: function (file) {
-        return file.originalPath;
-      },
-      sourceFileName: function (file) {
-        return file.originalPath;
-      }
-    },
-
-    coverageReporter: {
-      type : 'lcov',
-      dir : 'coverage/'
-    },
+    reporters: ['progress', 'kjhtml'],
 
     // web server port
     port: 9876,

@@ -111,6 +111,8 @@ System.register(['eye.js', 'mouth.js'], function(_export, _context) {
     }, function (_mouth) {
       Mouth = _mouth.Mouth;
     }],
-    execute: function () {}
+    execute: function () {
+      console.log('face execute');
+    }
   };
 });

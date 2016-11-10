@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "systemjs": "^0.19.40"
+  },
+  "devDependencies": {
+    "Canteen": "^1.0.4"
   }
 }
