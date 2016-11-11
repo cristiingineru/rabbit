@@ -3,9 +3,9 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
-System.register(['eye.js', 'mouth.js', 'face.js', 'x/rabbit.js'], function(_export, _context) {
+System.register(['eye.js', 'mouth.js', 'face.js'], function(_export, _context) {
 
-var Eye, Mouth, Face, Rabbit;
+var Eye, Mouth, Face;
 
 
 var go = function() {
@@ -235,8 +235,6 @@ return {
     Mouth = _mouth.Mouth;
   }, function (_face) {
     Face = _face.Face;
-  }, function (_rabbit) {
-    Rabbit = _rabbit.Rabbit;
   }],
   execute: go
 };

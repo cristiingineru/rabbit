@@ -17,12 +17,13 @@ module.exports = function(config) {
       'examples/face/lib/mock-raf.js',
       //'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
       //'examples/face/node_modules/Canteen/build/canteen.min.js',
+      'build/bundle/*.js',
       {pattern: 'examples/face/node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
       'examples/face/node_modules/systemjs/dist/system.js',
       {pattern: 'examples/face/node_modules/systemjs/dist/*', included: false, served: true, watched: true, nocache: true},
       'examples/face/systemjs.conf.js',
       {pattern: 'examples/face/*.js', included: false, served: true, watched: true, nocache: true},
-      {pattern: 'build/systemjs/*.js', included: false, served: true, watched: true, nocache: true}
+      //{pattern: 'build/systemjs/*.js', included: false, served: true, watched: true, nocache: true}
     ],
 
     // list of files to exclude
