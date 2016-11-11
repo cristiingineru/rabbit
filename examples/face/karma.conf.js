@@ -9,7 +9,9 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine-jquery', 'jasmine'],
+    frameworks: ['systemjs', 'jasmine-jquery', 'jasmine'],
+    
+    plugins: ['karma-systemjs'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -18,16 +20,30 @@ module.exports = function(config) {
       //'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
       //'examples/face/node_modules/Canteen/build/canteen.min.js',
       'build/bundle/*.js',
-      {pattern: 'examples/face/node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
-      'examples/face/node_modules/systemjs/dist/system.js',
+      //{pattern: 'examples/face/node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
+      //'examples/face/node_modules/systemjs/dist/system.js',
       //{pattern: 'examples/face/node_modules/systemjs/dist/*', included: false, served: true, watched: true, nocache: true},
-      'examples/face/systemjs.conf.js',
-      {pattern: 'examples/face/*.js', included: false, served: true, watched: true, nocache: true},
+      //'examples/face/systemjs.conf.js',
+      //{pattern: 'examples/face/*.js', included: false, served: true, watched: true, nocache: true},
       //{pattern: 'build/systemjs/*.js', included: false, served: true, watched: true, nocache: true}
     ],
 
     // list of files to exclude
     exclude: [],
+    
+    systemjs: {
+      // Path to your SystemJS configuration file 
+      configFile: 'examples/face/systemjs.conf.js',
+
+      // Patterns for files that you want Karma to make available, but not loaded until a module requests them. eg. Third-party libraries. 
+      serveFiles: [
+        'examples/face/node_modules/Canteen/build/canteen.min.js',
+        'eye.js',
+        'mouth.js',
+        'face.js',
+        'face.spec.js'
+      ]
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
