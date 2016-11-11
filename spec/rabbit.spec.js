@@ -1,8 +1,8 @@
 /* global $, describe, it, xit, after, beforeEach, afterEach, expect, jasmine, spyOn */
 /* jshint browser: true*/
 
-import { Geometry } from 'geometry'
-import { Rabbit } from 'rabbit'
+import { Geometry } from '../src/geometry.js'
+import { Rabbit } from '../src/rabbit.js'
 import '../node_modules/Canteen/build/canteen.min'
 
 

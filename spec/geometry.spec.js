@@ -1,4 +1,4 @@
-import { Geometry } from 'geometry'
+import { Geometry } from '../src/geometry.js'
 
 
 describe('Geometry', function () {

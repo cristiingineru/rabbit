@@ -1,4 +1,4 @@
-define(['exports', 'geometry'], function (exports, _geometry) {
+define(['exports', './geometry.js'], function (exports, _geometry) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {

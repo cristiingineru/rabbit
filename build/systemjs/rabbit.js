@@ -1,6 +1,6 @@
 "use strict";
 
-System.register(['x/geometry.js', 'x/customMatchers.js'], function (_export, _context) {
+System.register(['./geometry.js', './customMatchers.js'], function (_export, _context) {
   "use strict";
 
   var Geometry, CustomMatchers;
@@ -65,10 +65,10 @@ System.register(['x/geometry.js', 'x/customMatchers.js'], function (_export, _co
   _export('Rabbit', Rabbit);
 
   return {
-    setters: [function (_geometry) {
-      Geometry = _geometry.Geometry;
-    }, function (_customMatchers) {
-      CustomMatchers = _customMatchers.CustomMatchers;
+    setters: [function (_geometryJs) {
+      Geometry = _geometryJs.Geometry;
+    }, function (_customMatchersJs) {
+      CustomMatchers = _customMatchersJs.CustomMatchers;
     }],
     execute: function () {}
   };

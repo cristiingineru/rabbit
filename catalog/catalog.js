@@ -148,7 +148,7 @@ requirejs.config({
 });
 
 
-requirejs(['lib/domReady', 'lib/canteen.min', 'rabbit'], function(domReady, Canteen, RabbitModule) {
+requirejs(['lib/domReady', 'lib/canteen.min', '../build/amd/rabbit.js'], function(domReady, Canteen, RabbitModule) {
   
   var rabbit = new RabbitModule.Rabbit();
 

@@ -1,6 +1,6 @@
 "use strict";
 
-import { Geometry } from 'geometry'
+import { Geometry } from './geometry.js'
 
 
 export function CustomMatchers(geometry) {

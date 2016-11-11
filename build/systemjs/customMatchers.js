@@ -1,6 +1,6 @@
 "use strict";
 
-System.register(['x/geometry.js'], function (_export, _context) {
+System.register(['./geometry.js'], function (_export, _context) {
   "use strict";
 
   var Geometry;
@@ -99,8 +99,8 @@ System.register(['x/geometry.js'], function (_export, _context) {
   _export('CustomMatchers', CustomMatchers);
 
   return {
-    setters: [function (_geometry) {
-      Geometry = _geometry.Geometry;
+    setters: [function (_geometryJs) {
+      Geometry = _geometryJs.Geometry;
     }],
     execute: function () {}
   };
