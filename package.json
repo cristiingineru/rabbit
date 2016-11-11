@@ -5,7 +5,7 @@
   "main": "?",
   "scripts": {
     "test": "node node_modules/karma/bin/karma start --single-run",
-    "buildBundle": "node node_modules/browserify/bin/cmd.js src/rabbit.js -t --outfile build/bundle/rabbit.js -t [ babelify --presets [ es2015 ] ]",
+    "buildBundle": "node node_modules/browserify/bin/cmd.js -r ./src/rabbit.js --outfile build/bundle/rabbit.js -t [ babelify --presets [ es2015 ] ]",
     "buildCommonJS": "babel src -d build/commonjs --presets=es2015",
     "buildAmd": "babel src -d build/amd --presets=es2015 --plugins=transform-es2015-modules-amd",
     "buildSystemJS": "babel src -d build/systemjs --presets=es2015 --plugins=transform-es2015-modules-systemjs"

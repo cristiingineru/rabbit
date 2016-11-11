@@ -1,4 +1,74 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/src/rabbit.js":[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Rabbit = Rabbit;
+
+var _geometry = require('./geometry.js');
+
+var _customMatchers = require('./customMatchers.js');
+
+function Rabbit(geometry, matchers) {
+
+  var that = this,
+      geometry = geometry || new _geometry.Geometry(),
+      matchers = matchers || new _customMatchers.CustomMatchers();
+
+  var findAllShapesIgnoringArguments = function findAllShapesIgnoringArguments(shape, where) {
+    var found = [],
+        index = 0;
+    do {
+      index = that.findShapeIgnoringArguments(shape, where, index);
+      if (index !== -1) {
+        found.push(where.slice(index, index + shape.length));
+        index += shape.length;
+      }
+    } while (index !== -1 && index < where.length);
+    return found;
+  },
+      findShapeIgnoringArguments = function findShapeIgnoringArguments(shape, where, startIndex) {
+    startIndex = startIndex || 0;
+    var match = false,
+        index = -1;
+    for (var i = startIndex; i <= where.length - shape.length; i++) {
+      match = true;
+      for (var j = 0; j < shape.length; j++) {
+        if (where[i + j].method !== shape[j].method) {
+          match = false;
+          break;
+        }
+      }
+      if (match === true) {
+        index = i;
+        break;
+      }
+    }
+    return index;
+  },
+      removeShapes = function removeShapes(shapes, from) {
+    var copy = from.slice(0, from.length);
+    shapes.forEach(function (shape) {
+      var index = -1;
+      do {
+        index = that.findShapeIgnoringArguments(shape, copy);
+        if (index !== -1) {
+          copy.splice(index, shape.length);
+        }
+      } while (index !== -1);
+    });
+    return copy;
+  };
+
+  this.getBBox = geometry.getBBox;
+  this.customMatchers = matchers;
+  this.findAllShapesIgnoringArguments = findAllShapesIgnoringArguments;
+  this.findShapeIgnoringArguments = findShapeIgnoringArguments;
+  this.removeShapes = removeShapes;
+}
+
+},{"./customMatchers.js":1,"./geometry.js":2}],1:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -482,74 +552,4 @@ function Geometry() {
   this.isPointInsideRectangle = isPointInsideRectangle;
 }
 
-},{}],3:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Rabbit = Rabbit;
-
-var _geometry = require('./geometry.js');
-
-var _customMatchers = require('./customMatchers.js');
-
-function Rabbit(geometry, matchers) {
-
-  var that = this,
-      geometry = geometry || new _geometry.Geometry(),
-      matchers = matchers || new _customMatchers.CustomMatchers();
-
-  var findAllShapesIgnoringArguments = function findAllShapesIgnoringArguments(shape, where) {
-    var found = [],
-        index = 0;
-    do {
-      index = that.findShapeIgnoringArguments(shape, where, index);
-      if (index !== -1) {
-        found.push(where.slice(index, index + shape.length));
-        index += shape.length;
-      }
-    } while (index !== -1 && index < where.length);
-    return found;
-  },
-      findShapeIgnoringArguments = function findShapeIgnoringArguments(shape, where, startIndex) {
-    startIndex = startIndex || 0;
-    var match = false,
-        index = -1;
-    for (var i = startIndex; i <= where.length - shape.length; i++) {
-      match = true;
-      for (var j = 0; j < shape.length; j++) {
-        if (where[i + j].method !== shape[j].method) {
-          match = false;
-          break;
-        }
-      }
-      if (match === true) {
-        index = i;
-        break;
-      }
-    }
-    return index;
-  },
-      removeShapes = function removeShapes(shapes, from) {
-    var copy = from.slice(0, from.length);
-    shapes.forEach(function (shape) {
-      var index = -1;
-      do {
-        index = that.findShapeIgnoringArguments(shape, copy);
-        if (index !== -1) {
-          copy.splice(index, shape.length);
-        }
-      } while (index !== -1);
-    });
-    return copy;
-  };
-
-  this.getBBox = geometry.getBBox;
-  this.customMatchers = matchers;
-  this.findAllShapesIgnoringArguments = findAllShapesIgnoringArguments;
-  this.findShapeIgnoringArguments = findShapeIgnoringArguments;
-  this.removeShapes = removeShapes;
-}
-
-},{"./customMatchers.js":1,"./geometry.js":2}]},{},[3]);
+},{}]},{},[]);
