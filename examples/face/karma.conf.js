@@ -5,21 +5,21 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '../..',
+    basePath: '.',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['systemjs', 'jasmine-jquery', 'jasmine'],
-    
-    plugins: ['karma-systemjs'],
+
+    plugins: ['karma-systemjs', 'karma-jasmine-jquery', 'karma-jasmine', 'karma-jasmine-html-reporter', 'karma-firefox-launcher', 'karma-phantomjs-launcher'],
 
     // list of files / patterns to load in the browser
     files: [
       //'examples/face/lib/jquery.js',
-      'examples/face/lib/mock-raf.js',
+      'lib/mock-raf.js',
       //'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
       //'examples/face/node_modules/Canteen/build/canteen.min.js',
-      'build/bundle/*.js',
+      '../../build/bundle/*.js',
       //{pattern: 'examples/face/node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
       //'examples/face/node_modules/systemjs/dist/system.js',
       //{pattern: 'examples/face/node_modules/systemjs/dist/*', included: false, served: true, watched: true, nocache: true},
@@ -30,14 +30,14 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [],
-    
-    systemjs: {
-      // Path to your SystemJS configuration file 
-      configFile: 'examples/face/systemjs.conf.js',
 
-      // Patterns for files that you want Karma to make available, but not loaded until a module requests them. eg. Third-party libraries. 
+    systemjs: {
+      // Path to your SystemJS configuration file
+      configFile: 'system.conf.js',
+
+      // Patterns for files that you want Karma to make available, but not loaded until a module requests them. eg. Third-party libraries.
       serveFiles: [
-        'examples/face/node_modules/Canteen/build/canteen.min.js',
+        'node_modules/Canteen/build/canteen.min.js',
         'eye.js',
         'mouth.js',
         'face.js',
