@@ -6,7 +6,7 @@
 System.register(['eye.js', 'mouth.js', 'face.js'], function(_export, _context) {
 
 var Eye, Mouth, Face,
-    Rabbit = REQUIRE('/src/rabbit.js').Rabbit;
+    Rabbit = REQUIRE('rabbit').Rabbit;
 
 
 var go = function() {
