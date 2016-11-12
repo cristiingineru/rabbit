@@ -12,6 +12,6 @@ ratings:
   paths:
   - src/**
   - spec/**
-  - examples/**
+  - examples/face/*.js
 exclude_paths:
-  - lib/**
+  - examples/face/rabbit.js

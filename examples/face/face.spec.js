@@ -5,8 +5,11 @@
 
 System.register(['eye.js', 'mouth.js', 'face.js'], function(_export, _context) {
 
-var Eye, Mouth, Face,
-    Rabbit = REQUIRE('rabbit').Rabbit;
+var Eye, Mouth, Face;
+
+// Using a workaround to prevent systemjs from loading the rabbit module as commonjs.
+//All require() calls from this file were replaced with REQUIRE(); 
+var Rabbit = REQUIRE('rabbit').Rabbit;
 
 
 var go = function() {

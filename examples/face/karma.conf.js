@@ -15,24 +15,18 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      //'examples/face/lib/jquery.js',
-      //'lib/mock-raf.js',
-      //'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
-      //'examples/face/node_modules/Canteen/build/canteen.min.js',
-      //'../../build/bundle/rabbit.js',
-      //{pattern: 'examples/face/node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
-      //'examples/face/node_modules/systemjs/dist/system.js',
-      //{pattern: 'examples/face/node_modules/systemjs/dist/*', included: false, served: true, watched: true, nocache: true},
-      //'examples/face/systemjs.conf.js',
-      //{pattern: 'examples/face/*.js', included: false, served: true, watched: true, nocache: true},
-      //{pattern: 'build/systemjs/*.js', included: false, served: true, watched: true, nocache: true}
       'node_modules/Canteen/build/canteen.min.js',
+      'lib/mock-raf.js',
+      // Can't use the rabbit file directly because systemjs will find the require() calls
+      //and try to load it as commonjs module and resolve its dependencies which are
+      //embedded in the same file anyway. The local version of rabbit.js has the
+      //require() calls replaced with REQUIRE().
+      //'../../build/bundle/rabbit.js',
       'rabbit.js',
       'eye.js',
       'mouth.js',
       'face.js',
-      'face.spec.js',
-      'lib/mock-raf.js'
+      'face.spec.js'
     ],
 
     // list of files to exclude
@@ -50,27 +44,6 @@ module.exports = function(config) {
           "systemjs": "node_modules/systemjs/dist/*.js"
         },
       },
-
-      // Patterns for files that you want Karma to make available, but not loaded until a module requests them. eg. Third-party libraries.
-      xserveFiles: [
-        'node_modules/Canteen/build/canteen.min.js',
-        'eye.js',
-        'mouth.js',
-        'face.js',
-        'face.spec.js',
-        'lib/mock-raf.js',
-        'rabbit.js'
-      ],
-
-      meta: {
-        'rabbit.js': { format: 'global', scriptLoad: true }
-      },
-
-      files: [
-        //'lib/mock-raf.js',
-        //'../../build/bundle/rabbit.js'
-        '*.js'
-      ],
 
       testFileSuffix: ".spec.js"
     },
@@ -95,7 +68,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'/*, 'Firefox'*/],
+    browsers: ['PhantomJS', 'Firefox'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
