@@ -7,18 +7,13 @@ for (var file in window.__karma__.files) {
   }
 }
 
-function karmaStart()
-{
-  window.__karma__.start();
-}
-
 requirejs.config({
   baseUrl: './base/src',
   paths: {
       spec: '../spec'
   },
   deps: tests,
-  callback: karmaStart
+  callback: window.__karma__.start
 });
 
 requirejs([], function() {
