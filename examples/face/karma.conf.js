@@ -45,6 +45,8 @@ module.exports = function(config) {
       config: {
         transpiler: null,
         paths: {
+          'phantomjs-polyfill': 'node_modules/phantomjs-polyfill/bind-polyfill.js',
+          'phantomjs-polyfill': 'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
           "systemjs": "node_modules/systemjs/dist/*.js"
         },
       },
