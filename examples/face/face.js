@@ -1,6 +1,6 @@
 "use strict";
 
-System.register(['eye.js', 'mouth.js'], function(_export, _context) {
+System.register(['./eye.js', './mouth.js'], function(_export, _context) {
 
   var Eye, Mouth;
   function Face(ctx, window) {

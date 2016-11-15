@@ -5,20 +5,6 @@ define(['exports'], function (exports) {
     value: true
   });
   exports.Geometry = Geometry;
-  if (!Array.prototype.last) {
-    Array.prototype.last = function () {
-      return this[this.length - 1];
-    };
-  }
-
-  if (!Array.prototype.flatten) {
-    Array.prototype.flatten = function () {
-      return this.reduce(function (previousArray, currentArray) {
-        return previousArray.concat(currentArray);
-      }, []);
-    };
-  }
-
   function Geometry() {
 
     var that = this;
@@ -152,7 +138,7 @@ define(['exports'], function (exports) {
       },
       save: function save(state, call) {
         state.transforms.push([]);
-        state.lineWidths.push(state.lineWidths.last());
+        state.lineWidths.push(lastElement(state.lineWidths));
         return state;
       },
       restore: function restore(state, call) {
@@ -161,11 +147,11 @@ define(['exports'], function (exports) {
         return state;
       },
       translate: function translate(state, call) {
-        state.transforms.last().push({ translate: { x: call.arguments[0], y: call.arguments[1] } });
+        lastElement(state.transforms).push({ translate: { x: call.arguments[0], y: call.arguments[1] } });
         return state;
       },
       scale: function scale(state, call) {
-        state.transforms.last().push({ scale: { x: call.arguments[0], y: call.arguments[1] } });
+        lastElement(state.transforms).push({ scale: { x: call.arguments[0], y: call.arguments[1] } });
         return state;
       },
       beginPath: function beginPath(state, call) {
@@ -198,8 +184,8 @@ define(['exports'], function (exports) {
       return pathStrokeShapeHandlers[shape.type];
     },
         preCanvasCallHandler = function preCanvasCallHandler(state) {
-      state.transform = totalTransform(state.transforms.flatten());
-      state.lineWidth = state.lineWidths.last();
+      state.transform = totalTransform(flatten(state.transforms));
+      state.lineWidth = lastElement(state.lineWidths);
       return state;
     },
         getBBox = function getBBox(shape) {
@@ -209,6 +195,14 @@ define(['exports'], function (exports) {
         return handler(preCanvasCallHandler(state), call);
       }, createNewCanvasCallState());
       return state.box;
+    },
+        flatten = function flatten(array) {
+      return array.reduce(function (previousArray, currentArray) {
+        return previousArray.concat(currentArray);
+      }, []);
+    },
+        lastElement = function lastElement(array) {
+      return array[array.length - 1];
     },
         firstTruthyOrZero = function firstTruthyOrZero(val1, val2) {
       if (val1 || val1 === 0) {

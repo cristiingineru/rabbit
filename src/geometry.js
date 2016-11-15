@@ -1,20 +1,5 @@
 "use strict";
 
-if (!Array.prototype.last) {
-  Array.prototype.last = function() {
-    return this[this.length - 1];
-  };
-}
-
-if (!Array.prototype.flatten) {
-  Array.prototype.flatten = function() {
-    return this
-      .reduce(function(previousArray, currentArray) {
-        return previousArray.concat(currentArray);
-      }, []);
-  }
-}
-
 
 export function Geometry() {
 
@@ -153,7 +138,7 @@ export function Geometry() {
     },
     save: (state, call) => {
       state.transforms.push([]);
-      state.lineWidths.push(state.lineWidths.last());
+      state.lineWidths.push(lastElement(state.lineWidths));
       return state;
     },
     restore: (state, call) => {
@@ -162,14 +147,12 @@ export function Geometry() {
       return state;
     },
     translate: (state, call) => {
-      state.transforms
-        .last()
+      lastElement(state.transforms)
         .push({translate: {x: call.arguments[0], y: call.arguments[1]}});
       return state;
     },
     scale: (state, call) => {
-      state.transforms
-        .last()
+      lastElement(state.transforms)
         .push({scale: {x: call.arguments[0], y: call.arguments[1]}});
       return state;
     },
@@ -208,8 +191,8 @@ export function Geometry() {
   },
 
   preCanvasCallHandler = (state) => {
-    state.transform = totalTransform(state.transforms.flatten());
-    state.lineWidth = state.lineWidths.last();
+    state.transform = totalTransform(flatten(state.transforms));
+    state.lineWidth = lastElement(state.lineWidths);
     return state;
   },
 
@@ -220,6 +203,17 @@ export function Geometry() {
       return handler(preCanvasCallHandler(state), call);
     }, createNewCanvasCallState());
     return state.box;
+  },
+  
+  flatten = function(array) {
+    return array
+      .reduce(function(previousArray, currentArray) {
+        return previousArray.concat(currentArray);
+      }, []);
+  },
+      
+  lastElement = function(array) {
+    return array[array.length - 1];
   },
 
   firstTruthyOrZero = function(val1, val2){

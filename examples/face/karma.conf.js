@@ -5,7 +5,7 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '.',
+    basePath: './../..',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -15,18 +15,20 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/Canteen/build/canteen.min.js',
-      'lib/mock-raf.js',
+      'examples/face/node_modules/Canteen/build/canteen.min.js',
+      'examples/face/lib/mock-raf.js',
       // Can't use the rabbit file directly because systemjs will find the require() calls
       //and try to load it as commonjs module and resolve its dependencies which are
       //embedded in the same file anyway. The local version of rabbit.js has the
       //require() calls replaced with REQUIRE().
-      //'../../build/bundle/rabbit.js',
-      'rabbit.js',
-      'eye.js',
-      'mouth.js',
-      'face.js',
-      'face.spec.js'
+      // SystemJS can load any of the AMD, CommonJS and SystemJS formats.
+      //'build/amd/*',
+      //'build/commonjs/*',
+      'build/systemjs/*',
+      'examples/face/eye.js',
+      'examples/face/mouth.js',
+      'examples/face/face.js',
+      'examples/face/face.spec.js'
     ],
 
     // list of files to exclude
@@ -34,15 +36,21 @@ module.exports = function(config) {
 
     systemjs: {
       // Path to your SystemJS configuration file
-      configFile: 'system.conf.js',
+      configFile: 'examples/face/system.conf.js',
 
       config: {
         transpiler: null,
         paths: {
-          'phantomjs-polyfill': 'node_modules/phantomjs-polyfill/bind-polyfill.js',
-          'phantomjs-polyfill': 'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
-          "systemjs": "node_modules/systemjs/dist/*.js"
+          'phantomjs-polyfill': 'examples/face/node_modules/phantomjs-polyfill/bind-polyfill.js',
+          'phantomjs-polyfill': 'examples/face/node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
+          "systemjs": "examples/face/node_modules/systemjs/dist/*.js"
         },
+        
+        map: {
+          //'rabbit': 'build/amd'
+          //'rabbit': 'build/commonjs'
+          'rabbit': 'build/systemjs'
+        }
       },
 
       testFileSuffix: ".spec.js"
