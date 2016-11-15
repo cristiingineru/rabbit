@@ -5,6 +5,8 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
+    // In order to serve the rabbit build files that are outside the default
+    //current folder moving up to include those files as well.
     basePath: './../..',
 
     // frameworks to use
@@ -14,17 +16,21 @@ module.exports = function(config) {
     plugins: ['karma-systemjs', 'karma-jasmine-jquery', 'karma-jasmine', 'karma-jasmine-html-reporter', 'karma-firefox-launcher', 'karma-phantomjs-launcher'],
 
     // list of files / patterns to load in the browser
+    // karma-systemjs will change the default behavior of karma, not all
+    //patterns listed here will be included in the generated debug.html file
     files: [
       'examples/face/node_modules/Canteen/build/canteen.min.js',
       'examples/face/lib/mock-raf.js',
-      // Can't use the rabbit file directly because systemjs will find the require() calls
-      //and try to load it as commonjs module and resolve its dependencies which are
+
+      // SystemJS can load any AMD, CommonJS or SystemJS format.
+      // Can't use the bundle rabbit file directly because systemjs will find the require()
+      //calls and try to load it as commonjs module and resolve its dependencies which are
       //embedded in the same file anyway. The local version of rabbit.js has the
       //require() calls replaced with REQUIRE().
-      // SystemJS can load any of the AMD, CommonJS and SystemJS formats.
       //'build/amd/*',
       //'build/commonjs/*',
       'build/systemjs/*',
+
       'examples/face/eye.js',
       'examples/face/mouth.js',
       'examples/face/face.js',
@@ -41,11 +47,11 @@ module.exports = function(config) {
       config: {
         transpiler: null,
         paths: {
-          'phantomjs-polyfill': 'examples/face/node_modules/phantomjs-polyfill/bind-polyfill.js',
+          // These files will be included in the generated debug.html file
           'phantomjs-polyfill': 'examples/face/node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
-          "systemjs": "examples/face/node_modules/systemjs/dist/*.js"
+          'systemjs': 'examples/face/node_modules/systemjs/dist/*.js'
         },
-        
+
         map: {
           //'rabbit': 'build/amd'
           //'rabbit': 'build/commonjs'
@@ -53,7 +59,7 @@ module.exports = function(config) {
         }
       },
 
-      testFileSuffix: ".spec.js"
+      testFileSuffix: '.spec.js'
     },
 
     // test results reporter to use

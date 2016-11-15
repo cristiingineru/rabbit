@@ -16,7 +16,6 @@
     "karma-jasmine-jquery": "^0.1.1",
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-systemjs": "^0.15.0",
-    "phantomjs-polyfill": "0.0.2",
     "phantomjs-polyfill-object-assign": "0.0.2",
     "traceur": "0.0.111"
   }
