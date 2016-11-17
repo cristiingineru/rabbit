@@ -1,8 +1,8 @@
 {
-  "name": "rabbit",
+  "name": "rabbit.canvas",
   "version": "0.1.0",
-  "description": "Testing with Canteen",
-  "main": "?",
+  "description": "A JavaScript library for writing tests for code drawing on canvas",
+  "main": "rabbit.js",
   "scripts": {
     "test": "node node_modules/karma/bin/karma start --single-run",
     "build": "npm run buildAmd | npm run buildBundle | npm run buildCommonJS | npm run buildSystemJS",
@@ -16,16 +16,18 @@
     "url": "https://github.com/cristiingineru/rabbit.git"
   },
   "keywords": [
-    "canteen",
+    "test",
     "testing",
-    "canvas"
+    "canvas",
+    "getBBox",
+    "getBoundingClientRect"
   ],
   "author": "Cristi Ingineru",
-  "license": "?",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/cristiingineru/rabbit/issues"
   },
-  "homepage": "https://github.com/cristiingineru/rabbit",
+  "homepage": "https://github.com/cristiingineru/rabbit/blob/master/README.md",
   "devDependencies": {
     "Canteen": "1.0.4",
     "babel-cli": "^6.18.0",
