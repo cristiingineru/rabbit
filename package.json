@@ -5,8 +5,8 @@
   "main": "rabbit.js",
   "scripts": {
     "test": "node node_modules/karma/bin/karma start --single-run",
-    "build": "node node_modules/gulp-cli/bin/gulp.js build",
-    "buildBundle": "node node_modules/browserify/bin/cmd.js -r ./src/rabbit.js:rabbit --outfile build/bundle/rabbit.js -t [ babelify --presets [ es2015 ] ]"
+    "clean": "node node_modules/gulp-cli/bin/gulp.js clean",
+    "build": "node node_modules/gulp-cli/bin/gulp.js build"
   },
   "repository": {
     "type": "git",
@@ -53,6 +53,7 @@
     "mkdirp": "^0.5.1",
     "phantomjs-polyfill-object-assign": "0.0.2",
     "requirejs": "^2.3.2",
-    "requirejs-babel": "0.0.9"
+    "requirejs-babel": "0.0.9",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

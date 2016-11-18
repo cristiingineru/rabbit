@@ -3,13 +3,17 @@ var exec = require('gulp-exec');
 var del = require('del');
 var babel = require('gulp-babel');
 var mkdirp = require('mkdirp');
-var gulpSequence = require('gulp-sequence')
+var gulpSequence = require('gulp-sequence');
+var source = require('vinyl-source-stream');
+var browserify = require('browserify');
+var babelify = require('babelify');
 
 gulp.task('build', gulpSequence(
   'clean',
   'buildAmd',
   'buildCommonJS',
-  'buildSystemJS'));
+  'buildSystemJS',
+  'buildBundle'));
 
 gulp.task('clean', function() {
   del(['build']);
@@ -42,4 +46,19 @@ gulp.task('buildSystemJS', function() {
         plugins: ['transform-es2015-modules-systemjs']
     }))
     .pipe(gulp.dest('build/systemjs'));
+});
+
+gulp.task('buildBundle', function() {
+  mkdirp('build/bundle');
+  
+  var bundler = browserify('./src/rabbit.js', { 
+    debug: true,
+    require: './src/rabbit.js'
+  }).transform(babelify, {
+    presets: ['es2015']
+  });
+
+  return bundler.bundle()
+    .pipe(source('rabbit.js'))
+    .pipe(gulp.dest('./build/bundle'));
 });
