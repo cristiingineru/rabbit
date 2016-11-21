@@ -91,14 +91,6 @@ ctx.stroke();
 `,
 
 `//inputs: ctx, sizeIndex;
-ctx.beginPath();
-ctx.lineWidth = sizeIndex * 2 + 1;
-ctx.scale(sizeIndex + 1, sizeIndex + 1);
-ctx.arc(20, 20, 10, 2*Math.PI/4, 6*Math.PI/4);
-ctx.stroke();
-`,
-
-`//inputs: ctx, sizeIndex;
 ctx.scale(sizeIndex*0.3 + 1, sizeIndex*0.3 + 1);
 ctx.beginPath();
 ctx.lineWidth = 1;
