@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var exec = require('gulp-exec');
+var run = require('gulp-run');
 var del = require('del');
 var babel = require('gulp-babel');
 var mkdirp = require('mkdirp');
@@ -50,8 +50,8 @@ gulp.task('buildSystemJS', function() {
 
 gulp.task('buildBundle', function() {
   mkdirp('build/bundle');
-  
-  var bundler = browserify('./src/rabbit.js', { 
+
+  var bundler = browserify('./src/rabbit.js', {
     debug: true,
     require: './src/rabbit.js'
   }).transform(babelify, {
@@ -61,4 +61,11 @@ gulp.task('buildBundle', function() {
   return bundler.bundle()
     .pipe(source('rabbit.js'))
     .pipe(gulp.dest('./build/bundle'));
+});
+
+gulp.task('testExamples', function(cb) {
+  process.chdir('examples/face');
+  return gulp.src('.')
+    .pipe(run('npm install'))
+    .pipe(run('npm run test'));
 });
