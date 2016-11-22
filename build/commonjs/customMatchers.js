@@ -16,7 +16,7 @@ function CustomMatchers(geometry) {
       compare: function compare(actual, expected) {
         var match = false;
         for (var i = 0; i < expected.length - actual.length; i++) {
-          match = true;
+          match = actual.length > 0;
           for (var j = 0; j < actual.length; j++) {
             if (expected[i + j].method !== actual[j].method) {
               match = false;
