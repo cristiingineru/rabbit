@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var run = require('gulp-run');
+var execSync = require('child_process').execSync;
 var del = require('del');
 var babel = require('gulp-babel');
 var mkdirp = require('mkdirp');
@@ -7,6 +7,7 @@ var gulpSequence = require('gulp-sequence');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 var babelify = require('babelify');
+
 
 gulp.task('build', gulpSequence(
   'clean',
@@ -63,9 +64,12 @@ gulp.task('buildBundle', function() {
     .pipe(gulp.dest('./build/bundle'));
 });
 
-gulp.task('testExamples', function(cb) {
-  process.chdir('examples/face');
-  return gulp.src('.')
-    .pipe(run('npm install'))
-    .pipe(run('npm run test'));
+
+gulp.task('testExamples', function() {
+    var output;
+    process.chdir('examples/face');
+    output = execSync('npm install', {encoding: 'utf8'});
+    console.log(output);
+    output = execSync('npm run test', {encoding: 'utf8'});
+    console.log(output);
 });
