@@ -16,7 +16,7 @@ gulp.task('build', gulpSequence(
   'buildBundle'));
 
 gulp.task('clean', function() {
-  del(['build']);
+  del.sync(['build']);
 });
 
 gulp.task('buildAmd', function() {
