@@ -6,20 +6,20 @@ import { Rabbit } from '../src/rabbit.js'
 import '../node_modules/Canteen/build/canteen.min'
 
 
-describe('Rabbit', function () {
+describe('Rabbit', () => {
     'use strict';
 
     var rabbit;
 
-    beforeAll(function() {
+    beforeAll(() => {
       rabbit = new Rabbit();
     });
 
-    describe('getBBox', function() {
+    describe('getBBox', () => {
 
       var fixture, placeholder, ctx;
 
-      beforeEach(function () {
+      beforeEach(() => {
         fixture = setFixtures('<div id="demo-container" style="width: 400px;height: 300px">').find('#demo-container').get(0);
 
         placeholder = $('<canvas id="placeholder"  />');
@@ -27,7 +27,7 @@ describe('Rabbit', function () {
         ctx = placeholder[0].getContext('2d');
       });
 
-      it('should return {x: NaN, y: NaN, width: NaN, height: NaN} for an empty canvas', function () {
+      it('should return {x: NaN, y: NaN, width: NaN, height: NaN} for an empty canvas', () => {
           var box = rabbit.getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
@@ -36,7 +36,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(NaN);
       });
 
-      it('should return {x: NaN, y: NaN, width: NaN, height: NaN} when using unsupported canvas functions', function () {
+      it('should return {x: NaN, y: NaN, width: NaN, height: NaN} when using unsupported canvas functions', () => {
           ctx.bezierCurveTo(1, 2, 3, 4, 5, 6);
 
           var box = rabbit.getBBox(ctx.stack());
@@ -47,9 +47,9 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(NaN);
       });
 
-      describe('stroked arc', function() {
+      describe('stroked arc', () => {
 
-        it('should not return the box of just an arc', function () {
+        it('should not return the box of just an arc', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
 
@@ -61,7 +61,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should return the box of a stroked arc', function () {
+        it('should return the box of a stroked arc', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.stroke();
@@ -74,7 +74,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r);
         });
 
-        it('should not return the box of an arc after calling beginPath', function () {
+        it('should not return the box of an arc after calling beginPath', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.beginPath();
@@ -89,7 +89,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should return the box of a stroked arc width lineWidth = 2', function () {
+        it('should return the box of a stroked arc width lineWidth = 2', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             lineWidth = 2;
           ctx.lineWidth = lineWidth;
@@ -104,7 +104,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r + lineWidth);
         });
 
-        it('should return the box of a scaled stroked arc width lineWidth = 2', function () {
+        it('should return the box of a scaled stroked arc width lineWidth = 2', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xScale = 14, yScale = 15, lineWidth = 2;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -120,7 +120,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r + lineWidth * yScale);
         });
 
-        it('should use a previouse lineWidth after restoring', function () {
+        it('should use a previouse lineWidth after restoring', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             lineWidth1 = 11, lineWidth2 = 22, lineWidth3 = 33, lineWidth4 = 44;
 
@@ -147,9 +147,9 @@ describe('Rabbit', function () {
       });
 
 
-      describe('filled arc', function() {
+      describe('filled arc', () => {
 
-        it('should return the box of a filled arc', function () {
+        it('should return the box of a filled arc', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
@@ -162,7 +162,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r);
         });
 
-        it('should union the boxes of two filled arcs that are far from each other', function () {
+        it('should union the boxes of two filled arcs that are far from each other', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             toRightShift = 40, toBottomShift = 50;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -177,7 +177,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r + toBottomShift);
         });
 
-        it('should translate the box of a filled arc', function () {
+        it('should translate the box of a filled arc', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xTranslate = 15, yTranslate = 16;
           ctx.translate(xTranslate, yTranslate);
@@ -192,7 +192,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r);
         });
 
-        it('should not translate the box of a filled arc after restoring', function () {
+        it('should not translate the box of a filled arc after restoring', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xTranslate = 15, yTranslate = 16;
           ctx.save();
@@ -209,7 +209,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r);
         });
 
-        it('should scale the box of a filled arc', function () {
+        it('should scale the box of a filled arc', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xScale = 15, yScale = 16;
           ctx.scale(xScale, yScale);
@@ -224,7 +224,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r * yScale);
         });
 
-        it('should not scale the box of a filled arc after restoring', function () {
+        it('should not scale the box of a filled arc after restoring', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xScale = 15, yScale = 16;
           ctx.save();
@@ -241,7 +241,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r);
         });
 
-        it('should translate the box of a filled arc based on a previous scale', function () {
+        it('should translate the box of a filled arc based on a previous scale', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
           ctx.scale(xScale, yScale);
@@ -257,7 +257,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r * yScale);
         });
 
-        it('should translate the box of a filled arc based on all previous scales', function () {
+        it('should translate the box of a filled arc based on all previous scales', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17, xTranslate = 18, yTranslate = 19;
           ctx.scale(xScale1, yScale1);
@@ -274,7 +274,7 @@ describe('Rabbit', function () {
           expect(box.height).toBe(2 * r * yScale1 * yScale2);
         });
 
-        it('should translate the box of a filled arc multiple times based on all previous scales', function () {
+        it('should translate the box of a filled arc multiple times based on all previous scales', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
             xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17,
             xTranslate1 = 18, yTranslate1 = 19, xTranslate2 = 20, yTranslate2 = 21;
@@ -307,9 +307,9 @@ describe('Rabbit', function () {
           : testCase.shape,
           mustTestLineWidth = testCase.shape === 'strokeRect' || (testCase.shape === 'rect' && testCase.drawFunction === 'stroke');
 
-        describe(namedShapeUnderTest, function() {
+        describe(namedShapeUnderTest, () => {
 
-          it('should return the box of a ' + namedShapeUnderTest, function () {
+          it('should return the box of a ' + namedShapeUnderTest, () => {
             var x = 11, y = 12, width = 13, height = 14;
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
@@ -322,7 +322,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height);
           });
 
-          it('should union the boxes of two ' + namedShapeUnderTest + ' that are far from each other', function () {
+          it('should union the boxes of two ' + namedShapeUnderTest + ' that are far from each other', () => {
             var x = 11, y = 12, width = 13, height = 14,
               toRightShift = 40, toBottomShift = 50;
             ctx[testCase.shape](x, y, width, height);
@@ -337,7 +337,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height + toBottomShift);
           });
 
-          it('should translate the box of a ' + namedShapeUnderTest, function () {
+          it('should translate the box of a ' + namedShapeUnderTest, () => {
             var x = 11, y = 12, width = 13, height = 14,
               xTranslate = 15, yTranslate = 16;
             ctx.translate(xTranslate, yTranslate);
@@ -352,7 +352,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height);
           });
 
-          it('should not translate the box of a ' + namedShapeUnderTest + ' after restoring', function () {
+          it('should not translate the box of a ' + namedShapeUnderTest + ' after restoring', () => {
             var x = 11, y = 12, width = 13, height = 14,
               xTranslate = 15, yTranslate = 16;
             ctx.save();
@@ -369,7 +369,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height);
           });
 
-          it('should scale the box of a ' + namedShapeUnderTest, function () {
+          it('should scale the box of a ' + namedShapeUnderTest, () => {
             var x = 11, y = 12, width = 13, height = 14,
               xScale = 15, yScale = 16;
             ctx.scale(xScale, yScale);
@@ -384,7 +384,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height * yScale);
           });
 
-          it('should not scale the box of a ' + namedShapeUnderTest + ' after restoring', function () {
+          it('should not scale the box of a ' + namedShapeUnderTest + ' after restoring', () => {
             var x = 11, y = 12, width = 13, height = 14,
               xScale = 15, yScale = 16;
             ctx.save();
@@ -401,7 +401,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height);
           });
 
-          it('should translate the box of a ' + namedShapeUnderTest + ' based on a previous scale', function () {
+          it('should translate the box of a ' + namedShapeUnderTest + ' based on a previous scale', () => {
             var x = 11, y = 12, width = 13, height = 14,
               xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
             ctx.scale(xScale, yScale);
@@ -417,7 +417,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height * yScale);
           });
 
-          it('should translate the box of a ' + namedShapeUnderTest + ' based on all previous scales', function () {
+          it('should translate the box of a ' + namedShapeUnderTest + ' based on all previous scales', () => {
             var x = 11, y = 12, width = 13, height = 14,
               xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
               xTranslate = 19, yTranslate = 20;
@@ -435,7 +435,7 @@ describe('Rabbit', function () {
             expect(box.height).toBe(height * yScale1 * yScale2);
           });
 
-          it('should translate the box of a ' + namedShapeUnderTest + ' multiple times based on all previous scales', function () {
+          it('should translate the box of a ' + namedShapeUnderTest + ' multiple times based on all previous scales', () => {
             var x = 11, y = 12, width = 13, height = 14,
               xScale1 = 15, yScale1 = 16, xScale2 = 17, yScale2 = 18,
               xTranslate1 = 19, yTranslate1 = 20, xTranslate2 = 21, yTranslate2 = 22;
@@ -455,7 +455,7 @@ describe('Rabbit', function () {
           });
 
           if(mustTestLineWidth) {
-            it('should return the box of a ' + namedShapeUnderTest + ' with lineWidth = 2', function() {
+            it('should return the box of a ' + namedShapeUnderTest + ' with lineWidth = 2', () => {
               var x = 11, y = 12, width = 13, height = 14, lineWidth = 2;
               ctx.lineWidth = lineWidth;
               ctx[testCase.shape](x, y, width, height);
@@ -469,7 +469,7 @@ describe('Rabbit', function () {
               expect(box.height).toBe(height + lineWidth);
             });
 
-            it('should return the box of a scaled ' + namedShapeUnderTest + ' with lineWidth = 3', function() {
+            it('should return the box of a scaled ' + namedShapeUnderTest + ' with lineWidth = 3', () => {
               var x = 11, y = 12, width = 13, height = 14, lineWidth = 2,
                 xScale = 15, yScale = 16;
               ctx.lineWidth = lineWidth;
@@ -491,9 +491,9 @@ describe('Rabbit', function () {
       });
 
 
-      describe('lineTo', function() {
+      describe('lineTo', () => {
 
-        it('should not return the box of a stoked 1 point path given by moveTo', function () {
+        it('should not return the box of a stoked 1 point path given by moveTo', () => {
           var x = 10, y = 11;
           ctx.moveTo(x, y);
           ctx.stroke();
@@ -506,7 +506,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should not return the box of a stoked 2 points path given by 2 moveTo', function () {
+        it('should not return the box of a stoked 2 points path given by 2 moveTo', () => {
           var x1 = 10, y1 = 11, x2 = 12, y2 = 13;
           ctx.moveTo(x1, y1);
           ctx.moveTo(x2, y2);
@@ -520,7 +520,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should not return the box of a stoked 1 point path given by lineTo', function () {
+        it('should not return the box of a stoked 1 point path given by lineTo', () => {
           var x = 10, y = 11;
           ctx.lineTo(x, y);
           ctx.stroke();
@@ -533,7 +533,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should return the box of a stoked 2 points path', function () {
+        it('should return the box of a stoked 2 points path', () => {
           var x1 = 10, y1 = 11, x2 = 12, y2 = 13;
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
@@ -551,7 +551,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(maxY - minY);
         });
 
-        it('should return the box of a stoked 3 points path', function () {
+        it('should return the box of a stoked 3 points path', () => {
           var x1 = 10, y1 = 11, x2 = 12, y2 = 13, x3 = 14, y3 = 15;
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
@@ -570,7 +570,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(maxY - minY);
         });
 
-        it('should return the box of an oblique stoked 2 points path of width=1', function () {
+        it('should return the box of an oblique stoked 2 points path of width=1', () => {
           var width = 1,
             x1 = 10, y1 = 11, x2 = 12, y2 = 13;
           ctx.lineWidth = width;
@@ -590,7 +590,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(maxY - minY);
         });
 
-        it('should return the box of a horizontal stoked 2 points path of width=2', function () {
+        it('should return the box of a horizontal stoked 2 points path of width=2', () => {
           var width = 2,
             x1 = 10, y1 = 11, x2 = 20, y2 = 11;
           ctx.lineWidth = width;
@@ -610,7 +610,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(maxY - minY + width);
         });
 
-        it('should return the box of a vertical stoked 3 points path of width=3', function () {
+        it('should return the box of a vertical stoked 3 points path of width=3', () => {
           var width = 3,
             x1 = 10, y1 = 11, x2 = 10, y2 = 22;
           ctx.lineWidth = width;
@@ -630,7 +630,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(maxY - minY);
         });
 
-        it('should scale the box of a 2 points stroked path of width=2', function () {
+        it('should scale the box of a 2 points stroked path of width=2', () => {
           var width = 2,
             x1 = 10, y1 = 11, x2 = 20, y2 = 11,
             xScale = 20, yScale = 21;
@@ -652,7 +652,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual((maxY - minY + width) * yScale);
         });
 
-        it('should not scale the box of a 2 points stroked path of width=2 after restoring', function () {
+        it('should not scale the box of a 2 points stroked path of width=2 after restoring', () => {
           var width = 2,
             x1 = 10, y1 = 11, x2 = 20, y2 = y1,
             xScale = 20, yScale = 21;
@@ -676,7 +676,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual(maxY - minY + width);
         });
 
-        it('should translate the box of a 2 points stroked path of width=2 based on a previous scale', function () {
+        it('should translate the box of a 2 points stroked path of width=2 based on a previous scale', () => {
           var width = 2,
             x1 = 10, y1 = 11, x2 = 15, y2 = y1,
             xScale = 20, yScale = 21, xTranslate = 22, yTranslate = 23;
@@ -699,7 +699,7 @@ describe('Rabbit', function () {
           expect(box.height).toEqual((maxY - minY + width) * yScale);
         });
 
-        it('should return the rect of the widest line when the path is stroked multiple times with different widths', function () {
+        it('should return the rect of the widest line when the path is stroked multiple times with different widths', () => {
           var width = 2,
             x1 = 10, y1 = 11, y2 = 33,
             xScale = 20, yScale = 21,

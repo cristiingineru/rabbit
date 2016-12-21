@@ -204,26 +204,26 @@ export function Geometry() {
     }, createNewCanvasCallState());
     return state.box;
   },
-  
-  flatten = function(array) {
+
+  flatten = (array) => {
     return array
-      .reduce(function(previousArray, currentArray) {
+      .reduce((previousArray, currentArray) => {
         return previousArray.concat(currentArray);
       }, []);
   },
-      
-  lastElement = function(array) {
+
+  lastElement = (array) => {
     return array[array.length - 1];
   },
 
-  firstTruthyOrZero = function(val1, val2){
+  firstTruthyOrZero = (val1, val2) =>{
     if (val1 || val1 === 0) {
       return val1;
     }
     return val2;
   },
 
-  union = function(box1, box2) {
+  union = (box1, box2) => {
     box1 = {
       x: firstTruthyOrZero(box1.x, box2.x),
       y: firstTruthyOrZero(box1.y, box2.y),
@@ -249,15 +249,15 @@ export function Geometry() {
     return result;
   },
 
-  totalTransform = function(transforms) {
+  totalTransform = (transforms) => {
     return transforms
-      .map(function(value) {
+      .map((value) => {
         return {
           translate: value.translate || {x: 0, y: 0},
           scale: value.scale || {x: 1, y: 1}
         };
       })
-      .reduce(function(previousValue, currentValue) {
+      .reduce((previousValue, currentValue) => {
         return {
           translate: {
             x: previousValue.translate.x + currentValue.translate.x * previousValue.scale.x,
@@ -271,7 +271,7 @@ export function Geometry() {
       }, {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}});
   },
 
-  getRectAroundLine = function(x1, y1, x2, y2, width) {
+  getRectAroundLine = (x1, y1, x2, y2, width) => {
     var rect;
     if (x1 === y1 && x1 === x2 && x1 === y2) {
       rect = {
@@ -284,7 +284,7 @@ export function Geometry() {
     return rect;
   },
 
-  getRectAroundLongLine = function(x1, y1, x2, y2, width) {
+  getRectAroundLongLine = (x1, y1, x2, y2, width) => {
     //  r = the radius or the given distance from a given point to the nearest corners of the rect
     //  a = the angle between the line and the horizontal axis
     //  b1, b2 = the angle between half the hight of the rectangle and the horizontal axis
@@ -328,7 +328,7 @@ export function Geometry() {
     };
   },
 
-  getScaledWidthOfLine = function(x1, y1, x2, y2, sx, sy, width) {
+  getScaledWidthOfLine = (x1, y1, x2, y2, sx, sy, width) => {
     //  The original points are not moved. Only the width will be scaled.
     //  The width of an horizontal line will be scaled with the sy ratio only.
     //  The width of a vertival line will be scaled with the sx ratio only.
@@ -355,7 +355,7 @@ export function Geometry() {
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
-  isPointInsideRectangle = function(point, rectangle) {
+  isPointInsideRectangle = (point, rectangle) => {
     var segments = [{
       x1: rectangle.x,
       y1: rectangle.y,
@@ -375,13 +375,13 @@ export function Geometry() {
       y2: rectangle.y
     }];
 
-    var isInside = segments.map(function(segment) {
+    var isInside = segments.map((segment) => {
       var A = -(segment.y2 - segment.y1),
         B = segment.x2 - segment.x1,
         C = -(A * segment.x1 + B * segment.y1),
         D = A * point.x + B * point.y + C;
         return D;
-    }).every(function(D) {
+    }).every((D) => {
       return D > 0;
     });
 

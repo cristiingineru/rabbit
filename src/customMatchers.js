@@ -8,9 +8,9 @@ export function CustomMatchers(geometry) {
   geometry = geometry || new Geometry();
 
 
-  var toBePartOf = function (util, customEqualityTesters) {
+  var toBePartOf = (util, customEqualityTesters) => {
     return {
-      compare: function (actual, expected) {
+      compare: (actual, expected) => {
         var match = false;
         for (var i = 0; i < expected.length - actual.length; i++) {
           match = actual.length > 0;
@@ -30,9 +30,9 @@ export function CustomMatchers(geometry) {
     }
   },
 
-  toBeInsideTheAreaOf = function (util, customEqualityTesters) {
+  toBeInsideTheAreaOf = (util, customEqualityTesters) => {
     return {
-      compare: function (actual, expected) {
+      compare: (actual, expected) => {
         var smallShape = actual,
           bigShape = expected,
           bigShapeBBox = geometry.getBBox(bigShape),
@@ -45,9 +45,9 @@ export function CustomMatchers(geometry) {
     }
   },
 
-  toHaveTheSamePositionWith = function (util, customEqualityTesters) {
+  toHaveTheSamePositionWith = (util, customEqualityTesters) => {
     return {
-      compare: function (actual, expected) {
+      compare: (actual, expected) => {
         var actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
           haveTheSamePosition = actualBBox.x === expectedBBox.x && actualBBox.y === expectedBBox.y,
@@ -57,9 +57,9 @@ export function CustomMatchers(geometry) {
     }
   },
 
-  toHaveTheSameSizeWith = function (util, customEqualityTesters) {
+  toHaveTheSameSizeWith = (util, customEqualityTesters) => {
     return {
-      compare: function (actual, expected) {
+      compare: (actual, expected) => {
         var actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
           haveTheSameSize = actualBBox.width === expectedBBox.width && actualBBox.height === expectedBBox.height,
@@ -69,9 +69,9 @@ export function CustomMatchers(geometry) {
     }
   },
 
-  toBeHorizontallyAlignWith = function (util, customEqualityTesters) {
+  toBeHorizontallyAlignWith = (util, customEqualityTesters) => {
     return {
-      compare: function (actual, expected) {
+      compare: (actual, expected) => {
         var actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
           haveTheSameAlignment = actualBBox.y === expectedBBox.y,
@@ -81,9 +81,9 @@ export function CustomMatchers(geometry) {
     }
   },
 
-  toBeVerticallyAlignWith = function (util, customEqualityTesters) {
+  toBeVerticallyAlignWith = (util, customEqualityTesters) => {
     return {
-      compare: function (actual, expected) {
+      compare: (actual, expected) => {
         var actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
           haveTheSameAlignment = actualBBox.x === expectedBBox.x,

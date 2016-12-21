@@ -11,7 +11,7 @@ export function Rabbit(geometry, matchers) {
     matchers = matchers || new CustomMatchers();
 
 
-  var findAllShapesIgnoringArguments = function(shape, where) {
+  var findAllShapesIgnoringArguments = (shape, where) => {
     var found = [], index = 0;
     do {
       index = that.findShapeIgnoringArguments(shape, where, index);
@@ -23,7 +23,7 @@ export function Rabbit(geometry, matchers) {
     return found;
   },
 
-  findShapeIgnoringArguments = function(shape, where, startIndex) {
+  findShapeIgnoringArguments = (shape, where, startIndex) => {
     startIndex = startIndex || 0;
     var match = false, index = -1;
     for (var i = startIndex; i <= where.length - shape.length; i++) {
@@ -42,9 +42,9 @@ export function Rabbit(geometry, matchers) {
     return index;
   },
 
-  removeShapes = function(shapes, from) {
+  removeShapes = (shapes, from) => {
     var copy = from.slice(0, from.length);
-    shapes.forEach(function(shape) {
+    shapes.forEach((shape) => {
       var index = -1;
       do {
         index = that.findShapeIgnoringArguments(shape, copy);

@@ -1,16 +1,16 @@
 import { Geometry } from '../src/geometry.js'
 
 
-describe('Geometry', function () {
+describe('Geometry', () => {
     'use strict';
 
     var geometry;
 
-    beforeAll(function() {
+    beforeAll(() => {
       geometry = new Geometry();
     });
 
-    describe('union', function() {
+    describe('union', () => {
 
       /*
 
@@ -96,8 +96,8 @@ describe('Geometry', function () {
           box1: {x: 5, width: 3}, box2: {x: 0, width: 3},
           x: 0, width: 8
         }
-      ].forEach(function(testCase) {
-        it(testCase.description, function() {
+      ].forEach((testCase) => {
+        it(testCase.description, () => {
 
           var box = geometry.union(testCase.box1, testCase.box2);
 
@@ -151,8 +151,8 @@ describe('Geometry', function () {
           box1: {y: 5, height: 3}, box2: {y: 0, height: 3},
           y: 0, height: 8
         }
-      ].forEach(function(testCase) {
-        it(testCase.description, function() {
+      ].forEach((testCase) => {
+        it(testCase.description, () => {
 
           var box = geometry.union(testCase.box1, testCase.box2);
 
@@ -164,9 +164,9 @@ describe('Geometry', function () {
     });
 
 
-    describe('totalTransform', function() {
+    describe('totalTransform', () => {
 
-      it('[] => {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}}', function() {
+      it('[] => {translate: {x: 0, y: 0}, scale: {x: 1, y: 1}}', () => {
         var transforms = [];
 
         var result = geometry.totalTransform(transforms);
@@ -177,7 +177,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(1);
       });
 
-      it('[t1] => {translate: {x: t1.x, y: t1.y}, scale: {x: 1, y: 1}}', function() {
+      it('[t1] => {translate: {x: t1.x, y: t1.y}, scale: {x: 1, y: 1}}', () => {
         var transforms = [
           {translate: {x: 10, y: 11}}
         ];
@@ -190,7 +190,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(1);
       });
 
-      it('[t1, t2] => {translate: {x: t1.x + t2.x, y: t1.y + t2.y}, scale: {x: 1, y: 1}}', function() {
+      it('[t1, t2] => {translate: {x: t1.x + t2.x, y: t1.y + t2.y}, scale: {x: 1, y: 1}}', () => {
         var transforms = [
           {translate: {x: 10, y: 11}},
           {translate: {x: 12, y: 13}}
@@ -204,7 +204,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(1);
       });
 
-      it('[s1] => {translate: {x: 0, y: 0}, scale: {x: s1.x, y: s1.y}}', function() {
+      it('[s1] => {translate: {x: 0, y: 0}, scale: {x: s1.x, y: s1.y}}', () => {
         var transforms = [
           {scale: {x: 10, y: 11}}
         ];
@@ -217,7 +217,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(11);
       });
 
-      it('[s1, s2] => {translate: {x: 0, y: 0}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', function() {
+      it('[s1, s2] => {translate: {x: 0, y: 0}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', () => {
         var transforms = [
           {scale: {x: 10, y: 11}},
           {scale: {x: 12, y: 13}}
@@ -231,7 +231,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(11 * 13);
       });
 
-      it('[t1, s1] => {translate: {x: t1.x, y: t1.y}, scale: {x: s1.x, y: s1.y}}', function() {
+      it('[t1, s1] => {translate: {x: t1.x, y: t1.y}, scale: {x: s1.x, y: s1.y}}', () => {
         var transforms = [
           {translate: {x: 10, y: 11}},
           {scale: {x: 12, y: 13}}
@@ -245,7 +245,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(13);
       });
 
-      it('[s1, t1] => {translate: {x: t1.x * s1.x, y: t1.y * s1.y}, scale: {x: s1.x, y: s1.y}}', function() {
+      it('[s1, t1] => {translate: {x: t1.x * s1.x, y: t1.y * s1.y}, scale: {x: s1.x, y: s1.y}}', () => {
         var transforms = [
           {scale: {x: 10, y: 11}},
           {translate: {x: 12, y: 13}}
@@ -259,7 +259,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(11);
       });
 
-      it('[s1, t1, s2] => {translate: {x: t1.x * s1.x, y: t1.y * s1.y}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', function() {
+      it('[s1, t1, s2] => {translate: {x: t1.x * s1.x, y: t1.y * s1.y}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', () => {
         var transforms = [
           {scale: {x: 10, y: 11}},
           {translate: {x: 12, y: 13}},
@@ -274,7 +274,7 @@ describe('Geometry', function () {
         expect(result.scale.y).toBe(11 * 15);
       });
 
-      it('[s1, t1, s2, t2] => {translate: {x: t1.x * s1.x + t2.x * s1.x * s2.x, y: t1.y * s1.y + t2.t * s1.y * s2.y}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', function() {
+      it('[s1, t1, s2, t2] => {translate: {x: t1.x * s1.x + t2.x * s1.x * s2.x, y: t1.y * s1.y + t2.t * s1.y * s2.y}, scale: {x: s1.x * s2.x, y: s1.y * s2.y}}', () => {
         var transforms = [
           {scale: {x: 10, y: 11}},
           {translate: {x: 12, y: 13}},
@@ -293,10 +293,10 @@ describe('Geometry', function () {
     });
 
 
-    describe('getRectAroundLine', function() {
+    describe('getRectAroundLine', () => {
 
-      it('should return a rect with all the corners overlapping when the line has no length', function() {
-        [0, 1, -1].forEach(function(value) {
+      it('should return a rect with all the corners overlapping when the line has no length', () => {
+        [0, 1, -1].forEach((value) => {
           var width = 1;
 
           var rect = geometry.getRectAroundLine(value, value, value, value, width);
@@ -312,7 +312,7 @@ describe('Geometry', function () {
         });
       });
 
-      it('should return a rect overlapping the given line when the width is zero', function() {
+      it('should return a rect overlapping the given line when the width is zero', () => {
         [ {x1:  0, y1:  0, x2: 10, y2:  0}, // horizontal
           {x1: -1, y1: -1, x2: 10, y2: -1},
           {x1: 10, y1: 20, x2: -1, y2: 20},
@@ -321,7 +321,7 @@ describe('Geometry', function () {
           {x1:  0, y1:  0, x2: 10, y2:  0}, // oblique
           {x1: -1, y1: -1, x2: 10, y2: -1},
           {x1: 10, y1: 20, x2: -1, y2: 20}
-        ].forEach(function(line) {
+        ].forEach((line) => {
           var width = 0,
             x1 = line.x1, y1 = line.y1,
             x2 = line.x2, y2 = line.y2;
@@ -339,13 +339,13 @@ describe('Geometry', function () {
         });
       });
 
-      it('should return a rect of the specified width around the given line', function() {
+      it('should return a rect of the specified width around the given line', () => {
         [ {x1:  0, y1:  0, x2: 10, y2:  0},
           {x1: 10, y1:  2, x2:  5, y2:  2},
           {x1: -1, y1: -1, x2: 10, y2: -1},
           {x1: 10, y1: 20, x2: -1, y2: 20}
-        ].forEach(function(line) {
-          [1, 2, 3, 4, 5].forEach(function(width) {
+        ].forEach((line) => {
+          [1, 2, 3, 4, 5].forEach((width) => {
             var epsilon = 0.0001,
               x1 = line.x1, y1 = line.y1,
               x2 = line.x2, y2 = line.y2;
@@ -371,13 +371,13 @@ describe('Geometry', function () {
         });
       });
 
-      it('oblique line of a given width to be contained within a rect', function() {
+      it('oblique line of a given width to be contained within a rect', () => {
         [ {x1:  1, y1:  1, x2: 10, y2: 20},
           {x1: 10, y1: 20, x2:  1, y2:  1},
           {x1: -1, y1: -1, x2: 10, y2: 20},
           {x1: 10, y1: 20, x2: -1, y2: -1}
-        ].forEach(function(line) {
-          [1, 2, 3, 4, 5].forEach(function(width) {
+        ].forEach((line) => {
+          [1, 2, 3, 4, 5].forEach((width) => {
             var epsilon = 0.0001,
               x1 = line.x1, y1 = line.y1,
               x2 = line.x2, y2 = line.y2;
