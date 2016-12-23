@@ -405,4 +405,38 @@ describe('Geometry', () => {
 
     })
 
+
+    describe('getParallelsAroundSegment', () => {
+
+      it('should return 2 horizontal segments when the given segment is horizontal', () => {
+        var x1 = 10, y = 11, x2 = 20,
+            d = 2;
+
+        var lines = geometry.getParallelsAroundSegment(x1, y, x2, y, d);
+
+        expect(lines.length).toBe(2);
+        expect(lines[0].y1).toBe(y);
+        expect(lines[0].y2).toBe(y);
+        expect(lines[1].y1).toBe(y);
+        expect(lines[1].y2).toBe(y);
+        expect(Math.abs(lines[0].x1 - lines[0].x2)).toBe(2 * d);
+        expect(Math.abs(lines[1].x1 - lines[1].x2)).toBe(2 * d);
+      });
+
+      it('should return 2 vertical segments when the given segment is vertical', () => {
+        var x = 10, y1 = 11, y2 = 20,
+            d = 2;
+
+        var lines = geometry.getParallelsAroundSegment(x, y1, x, y2, d);
+
+        expect(lines.length).toBe(2);
+        expect(lines[0].x1).toBe(x);
+        expect(lines[0].x2).toBe(x);
+        expect(lines[1].x1).toBe(x);
+        expect(lines[1].x2).toBe(x);
+        expect(Math.abs(lines[0].y1 - lines[0].y2)).toBe(2 * d);
+        expect(Math.abs(lines[1].y1 - lines[1].y2)).toBe(2 * d);
+      });
+
+    });
 });

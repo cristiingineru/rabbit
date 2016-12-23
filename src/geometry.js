@@ -354,6 +354,14 @@ export function Geometry() {
     return scaledWidth;
   },
 
+  getParallelsAroundSegment = (x1, y1, x2, y2, distance) => {
+    var rect = getRectAroundLongLine(x1, y1, x2, y2, 2 * distance);
+    return [
+      {x1: rect.x1, y1: rect.y1, x2: rect.x2, y2: rect.y2},
+      {x1: rect.x3, y1: rect.y3, x2: rect.x4, y2: rect.y4}
+    ];
+  },
+
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
   isPointInsideRectangle = (point, rectangle) => {
     var segments = [{
@@ -393,6 +401,7 @@ export function Geometry() {
   this.union = union;
   this.totalTransform = totalTransform;
   this.getRectAroundLine = getRectAroundLine;
+  this.getParallelsAroundSegment = getParallelsAroundSegment;
   this.isPointInsideRectangle = isPointInsideRectangle;
 
 }
