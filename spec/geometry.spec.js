@@ -415,12 +415,10 @@ describe('Geometry', () => {
         var lines = geometry.getParallelsAroundSegment(x1, y, x2, y, d);
 
         expect(lines.length).toBe(2);
-        expect(lines[0].y1).toBe(y);
-        expect(lines[0].y2).toBe(y);
-        expect(lines[1].y1).toBe(y);
-        expect(lines[1].y2).toBe(y);
-        expect(Math.abs(lines[0].x1 - lines[0].x2)).toBe(2 * d);
-        expect(Math.abs(lines[1].x1 - lines[1].x2)).toBe(2 * d);
+        expect(Math.abs(lines[0].y1 - y)).toBe(d);
+        expect(Math.abs(lines[0].y2 - y)).toBe(d);
+        expect(Math.abs(lines[1].y1 - y)).toBe(d);
+        expect(Math.abs(lines[1].y2 - y)).toBe(d);
       });
 
       it('should return 2 vertical segments when the given segment is vertical', () => {
@@ -430,13 +428,87 @@ describe('Geometry', () => {
         var lines = geometry.getParallelsAroundSegment(x, y1, x, y2, d);
 
         expect(lines.length).toBe(2);
-        expect(lines[0].x1).toBe(x);
-        expect(lines[0].x2).toBe(x);
-        expect(lines[1].x1).toBe(x);
-        expect(lines[1].x2).toBe(x);
-        expect(Math.abs(lines[0].y1 - lines[0].y2)).toBe(2 * d);
-        expect(Math.abs(lines[1].y1 - lines[1].y2)).toBe(2 * d);
+        expect(Math.abs(lines[0].x1 - x)).toBe(d);
+        expect(Math.abs(lines[0].x2 - x)).toBe(d);
+        expect(Math.abs(lines[1].x1 - x)).toBe(d);
+        expect(Math.abs(lines[1].x2 - x)).toBe(d);
+      });
+
+      it('should return 2 oblique parallel segments when the given segment is oblique', () => {
+        var x1 = 10, y1 = 11, x2 = 20, y2 = 21,
+            d = 2;
+
+        var lines = geometry.getParallelsAroundSegment(x1, y1, x2, y2, d);
+
+        var m = (y2 - y1) / (x2 - x1),
+          m0 = (lines[0].y2 - lines[0].y1) / (lines[0].x2 - lines[0].x1),
+          m1 = (lines[1].y2 - lines[1].y1) / (lines[1].x2 - lines[1].x1);
+        expect(lines.length).toBe(2);
+        expect(m0).toBe(m);
+        expect(m1).toBe(m);
       });
 
     });
+
+
+    describe('getIntersectionOfTwoLines', () => {
+
+      it('should return the intersection point', () => {
+        var l1 = { x1: 1, y1: 10, x2: 2, y2: 12 },
+            l2 = { x1: 1, y1: 12, x2: 2, y2: 10 };
+
+        var p = geometry.getIntersectionOfTwoLines(l1, l2);
+
+        expect(p.x).toBe(1.5);
+        expect(p.y).toBe(11);
+      });
+
+      it('should return an undefined point when the lines are parallel', () => {
+        var l1 = { x1: 1, y1: 10, x2: 2, y2: 12 },
+            l2 = { x1: 2, y1: 12, x2: 3, y2: 14 };
+
+        var p = geometry.getIntersectionOfTwoLines(l1, l2);
+
+        expect(p.x).toEqual(NaN);
+        expect(p.y).toEqual(NaN);
+      });
+
+    });
+
+
+    describe('getAcuteAngleBetweenThreePoints', () => {
+
+      it('should return the angle between 3 arbitrary lines', () => {
+        var x1 = 0, y1 = 0,
+            x2 = 8, y2 = 6,
+            x3 = 8, y3 = 0;
+
+        var a = geometry.getAcuteAngleBetweenThreePoints(x1, y1, x2, y2, x3, y3);
+
+        expect(a).toBe(Math.atan(8 / 6));
+      });
+
+      it('should return PI/2 when the points describe 2 perpendicular lines', () => {
+        var x1 = 0, y1 = 0,
+            x2 = 8, y2 = 0,
+            x3 = 8, y3 = 6;
+
+        var a = geometry.getAcuteAngleBetweenThreePoints(x1, y1, x2, y2, x3, y3);
+
+        expect(a).toBe(Math.PI / 2);
+      });
+
+      it('should return 0 when the first and the last points are the same', () => {
+        var x1 = 0, y1 = 0,
+            x2 = 1, y2 = 2,
+            x3 = 0, y3 = 0;
+
+        var a = geometry.getAcuteAngleBetweenThreePoints(x1, y1, x2, y2, x3, y3);
+
+        expect(a).toEqual(0);
+      });
+
+    });
+
+
 });

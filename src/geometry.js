@@ -362,6 +362,23 @@ export function Geometry() {
     ];
   },
 
+  getIntersectionOfTwoLines = (l1, l2) => {
+    var a1 = l1.y2 - l1.y1, b1 = l1.x1 - l1.x2, c1 = l1.x2*l1.y1 - l1.x1*l1.y2,
+        a2 = l2.y2 - l2.y1, b2 = l2.x1 - l2.x2, c2 = l2.x2*l2.y1 - l2.x1*l2.y2,
+        x = (c2*b1 - c1*b2) / (a1*b2 - a2*b1),
+        y = (-c1 - a1*x) / b1;
+    return {x: x, y: y};
+  },
+
+  getAcuteAngleBetweenThreePoints = (x1, y1, x2, y2, x3, y3) => {
+    var m1 = (y2 - y1) / (x2 - x1),
+        m2 = (y2 - y3) / (x2 - x3),
+        alpha = Math.atan(m1),
+        beta = Math.atan(m2),
+        theta = Math.abs(beta - alpha);
+    return theta;
+  },
+
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
   isPointInsideRectangle = (point, rectangle) => {
     var segments = [{
@@ -402,6 +419,8 @@ export function Geometry() {
   this.totalTransform = totalTransform;
   this.getRectAroundLine = getRectAroundLine;
   this.getParallelsAroundSegment = getParallelsAroundSegment;
+  this.getIntersectionOfTwoLines = getIntersectionOfTwoLines;
+  this.getAcuteAngleBetweenThreePoints = getAcuteAngleBetweenThreePoints;
   this.isPointInsideRectangle = isPointInsideRectangle;
 
 }
