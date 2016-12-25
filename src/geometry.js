@@ -375,7 +375,9 @@ export function Geometry() {
         m2 = (y2 - y3) / (x2 - x3),
         alpha = Math.atan(m1),
         beta = Math.atan(m2),
-        theta = Math.abs(beta - alpha);
+        theta = beta >= 0
+          ? Math.abs(alpha - beta) % Math.PI
+          : Math.abs(alpha - (Math.PI + beta)) % Math.PI;
     return theta;
   },
 

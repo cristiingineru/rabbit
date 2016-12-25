@@ -478,16 +478,6 @@ describe('Geometry', () => {
 
     describe('getAcuteAngleBetweenThreePoints', () => {
 
-      it('should return the angle between 3 arbitrary lines', () => {
-        var x1 = 0, y1 = 0,
-            x2 = 8, y2 = 6,
-            x3 = 8, y3 = 0;
-
-        var a = geometry.getAcuteAngleBetweenThreePoints(x1, y1, x2, y2, x3, y3);
-
-        expect(a).toBe(Math.atan(8 / 6));
-      });
-
       it('should return PI/2 when the points describe 2 perpendicular lines', () => {
         var x1 = 0, y1 = 0,
             x2 = 8, y2 = 0,
@@ -506,6 +496,27 @@ describe('Geometry', () => {
         var a = geometry.getAcuteAngleBetweenThreePoints(x1, y1, x2, y2, x3, y3);
 
         expect(a).toEqual(0);
+      });
+
+      it('should return the angle between 3 arbitrary lines', () => {
+        [
+          {x1: 0, y1: 0, x2: 8, y2: 6, x3: 8, y3: 0, a: Math.atan(8 / 6)},
+          {x1: 8, y1: 6, x2: 0, y2: 0, x3: 8, y3: 0, a: Math.atan(6 / 8)},
+          {x1: 0, y1: 0, x2: 2, y2: 5, x3: 1, y3: 0, a: 0.5 * Math.atan(2 / 5)},
+          {x1: 0, y1: 0, x2: 2, y2: 5, x3: 2, y3: 0, a: Math.atan(2 / 5)},
+          {x1: 0, y1: 0, x2: 2, y2: 5, x3: 3, y3: 0, a: 1.5 * Math.atan(2 / 5)},
+          {x1: 0, y1: 0, x2: 2, y2: 5, x3: 4, y3: 0, a: 2 * Math.atan(2 / 5)},
+          {x1: 1, y1: 0, x2: 2, y2: 5, x3: 2, y3: 0, a: 0.5 * Math.atan(2 / 5)},
+          {x1: 1, y1: 0, x2: 2, y2: 5, x3: 3, y3: 0, a: Math.atan(2 / 5)},
+          {x1: 3, y1: 0, x2: 2, y2: 5, x3: 4, y3: 0, a: 0.5 * Math.atan(2 / 5)},
+          {x1: 2, y1: 5, x2: 0, y2: 0, x3: 4, y3: 0, a: Math.atan(5 / 2)},
+          {x1: 2, y1: 5, x2: 4, y2: 0, x3: 0, y3: 0, a: Math.atan(5 / 2)}
+        ].forEach((tc) => {
+
+          var a = geometry.getAcuteAngleBetweenThreePoints(tc.x1, tc.y1, tc.x2, tc.y2, tc.x3, tc.y3);
+
+          expect(a).toBeCloseTo(tc.a, 1);
+        });
       });
 
     });
