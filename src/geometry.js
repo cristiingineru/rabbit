@@ -383,6 +383,28 @@ export function Geometry() {
     return C;
   },
 
+  getTheCenterOfTheArc = (x0, y0, x1, y1, x2, y2, distance) => {
+    //                  d
+    //                    /  d
+    //                /  /
+    //   ------------/--/--/--------
+    //              /  /  /            d
+    //  ===P==========P==============
+    //            /  /  /              d
+    //   --------C--/--/------------
+    //          /  /  /
+    //         /  /  /
+    //        /  P  /
+    //          /
+    //
+    //  P = the given P0, P1, P2 points
+    //
+    //  d = the given distance / radius of the circle
+    //
+    //  C = the center of the circle to be determined
+    return null;
+  },
+
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
   isPointInsideRectangle = (point, rectangle) => {
     var segments = [{
