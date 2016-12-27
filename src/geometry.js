@@ -3,7 +3,8 @@
 
 export function Geometry() {
 
-  var that = this;
+  var that = this,
+      EPSILON = Number.EPSILON || 2.220446049250313e-16;
 
 
   var createNewCanvasCallState = () => {
@@ -358,7 +359,7 @@ export function Geometry() {
     var rect = getRectAroundLongLine(x1, y1, x2, y2, 2 * distance);
     return [
       {x1: rect.x1, y1: rect.y1, x2: rect.x2, y2: rect.y2},
-      {x1: rect.x3, y1: rect.y3, x2: rect.x4, y2: rect.y4}
+      {x1: rect.x4, y1: rect.y4, x2: rect.x3, y2: rect.y3}
     ];
   },
 
@@ -383,26 +384,58 @@ export function Geometry() {
     return C;
   },
 
-  getTheCenterOfTheArc = (x0, y0, x1, y1, x2, y2, distance) => {
-    //                  d
-    //                    /  d
-    //                /  /
-    //   ------------/--/--/--------
-    //              /  /  /            d
-    //  ===P==========P==============
-    //            /  /  /              d
-    //   --------C--/--/------------
-    //          /  /  /
-    //         /  /  /
-    //        /  P  /
-    //          /
+  permuteLines = (alphaLines, betaLines) => {
+    var permutations = [];
+    alphaLines.forEach((alphaLine) => {
+      betaLines.forEach((betaLine) => {
+        permutations.push({alpha: alphaLine, beta: betaLine});
+      });
+    })
+    return permutations;
+  },
+
+  almostEqual = (a, b) => {
+    // gross approximation to cover the flot and trigonometric precision
+    return Math.abs(a - b) < 5 * EPSILON;
+  },
+
+  isCenterInBetween = (cx, cy, x0, y0, x1, y1, x2, y2) => {
+    var a1 = getAngleBetweenThreePoints(cx, cy, x1, y1, x0, y0),
+        a2 = getAngleBetweenThreePoints(cx, cy, x1, y1, x2, y2);
+    return almostEqual(a1, a2) && a1 <= Math.PI / 2;
+  },
+
+  getTheCenterOfTheCorner = (x0, y0, x1, y1, x2, y2, distance) => {
+    //
+    //                                   d  d
+    //                                  '  /  '
+    //                                 '  /  '
+    //   alpha line 0    -------------'--/--'---------
+    //                               '  /  '             d
+    //     given line    ===P==========P==============
+    //                             '  /  '               d
+    //   alpha line 1    ---------C--/--'-------------
+    //                           '  /  '
+    //                          '  /  '
+    //                         '  P  '
+    //                        '  /  '
+    //
+    //     beta lines 0 & 1 with one of the given line inbetween
+    //
     //
     //  P = the given P0, P1, P2 points
     //
     //  d = the given distance / radius of the circle
     //
-    //  C = the center of the circle to be determined
-    return null;
+    //  C = the center of the circle/corner to be determined
+
+    var alphaLines = getParallelsAroundSegment(x0, y0, x1, y1, distance),
+        betaLines = getParallelsAroundSegment(x1, y1, x2, y2, distance),
+        permutations = permuteLines(alphaLines, betaLines),
+        intersections = permutations.map((p) => getIntersectionOfTwoLines(p.alpha, p.beta)),
+        center = intersections.filter((i) => isCenterInBetween(i.x, i.y, x0, y0, x1, y1, x2, y2))[0];
+
+    return center || {x: NaN, y: NaN};
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
@@ -447,6 +480,7 @@ export function Geometry() {
   this.getParallelsAroundSegment = getParallelsAroundSegment;
   this.getIntersectionOfTwoLines = getIntersectionOfTwoLines;
   this.getAngleBetweenThreePoints = getAngleBetweenThreePoints;
+  this.getTheCenterOfTheCorner = getTheCenterOfTheCorner;
   this.isPointInsideRectangle = isPointInsideRectangle;
 
 }

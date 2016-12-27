@@ -556,4 +556,76 @@ describe('Geometry', () => {
     });
 
 
+    describe('getTheCenterOfTheCorner', () => {
+
+      it('should return undefined center of the circle describing the corner for a zero angle', () => {
+        var x0 = 1, y0 = 1, x1 = 10, y1 = 1, x2 = -1, y2 = 1, r = 2;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+
+        expect(c.x).toEqual(NaN);
+        expect(c.y).toEqual(NaN);
+      });
+      
+      it('should return undefined center of the circle describing the corner for a straight angle', () => {
+        var x0 = 1, y0 = 1, x1 = 10, y1 = 1, x2 = 20, y2 = 1, r = 2;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+
+        expect(c.x).toEqual(NaN);
+        expect(c.y).toEqual(NaN);
+      });
+
+      it('should return the center of the circle describing the corner for an acute angle and a small radius', () => {
+        var x0 = 8, y0 = 10, x1 = 17, y1 = 10, x2 = 9, y2 = 15, r = 2;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+
+        expect(c.x).toBeGreaterThan(x0);
+        expect(c.x).toBeLessThan(x1);
+        expect(c.x).toBeGreaterThan(x2);
+        expect(c.y).toBeGreaterThan(y0);
+        expect(c.y).toBeGreaterThan(y1);
+        expect(c.y).toBeLessThan(y2);
+      });
+
+      it('should return the center of the circle describing the corner for an acute angle and a great radius', () => {
+        var x0 = 8, y0 = 10, x1 = 17, y1 = 10, x2 = 9, y2 = 15, r = 4;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+
+        expect(c.x).toBeLessThan(x0);
+        expect(c.x).toBeLessThan(x1);
+        expect(c.x).toBeLessThan(x2);
+        expect(c.y).toBeGreaterThan(y0);
+        expect(c.y).toBeGreaterThan(y1);
+        expect(c.y).toBeLessThan(y2);
+      });
+
+      it('should return the center of the circle describing the corner for an optuse angle and a small radius', () => {
+        var x0 = -10, y0 = 0, x1 = 10, y1 = 5, x2 = 10, y2 = 0, r = 2;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+
+        expect(c.x).toBeGreaterThan(x0);
+        expect(c.x).toBeLessThan(x2);
+        expect(c.y).toBeGreaterThan(y0);
+        expect(c.y).toBeLessThan(y1);
+        expect(c.y).toBeGreaterThan(y2);
+      });
+
+      it('should return the center of the circle describing the corner for an optuse angle and a great radius', () => {
+        var x0 = -10, y0 = 0, x1 = 10, y1 = 5, x2 = 10, y2 = 0, r = 8;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+
+        expect(c.x).toBeGreaterThan(x0);
+        expect(c.x).toBeLessThan(x2);
+        expect(c.y).toBeLessThan(y0);
+        expect(c.y).toBeLessThan(y1);
+        expect(c.y).toBeLessThan(y2);
+      });
+
+    });
+
 });
