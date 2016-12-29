@@ -407,7 +407,7 @@ export function Geometry() {
 
   getTheCenterOfTheCorner = (x0, y0, x1, y1, x2, y2, distance) => {
     //
-    //                                   d  d
+    //                                    d  d
     //                                  '  /  '
     //                                 '  /  '
     //   alpha line 0    -------------'--/--'---------
@@ -436,6 +436,15 @@ export function Geometry() {
         center = intersections.filter((i) => isCenterInBetween(i.x, i.y, x0, y0, x1, y1, x2, y2))[0];
 
     return center || {x: NaN, y: NaN};
+  },
+
+  getTheFootOfThePerpendicular = (x1, y1, x2, y2, cx, cy) => {
+    var m = (y2 - y1) / (x2 - x1),
+        cm = -1 / m,
+        C = y1*(x2 - x1) - x1*(y2 - y1),
+        x = (C - (x2 - x1)*(cy - cm*cx)) / (cm*(x2 - x1) + y1 - y2),
+        y = cm*(x - cx) + cy;
+    return {x: x, y: y};
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
@@ -481,6 +490,7 @@ export function Geometry() {
   this.getIntersectionOfTwoLines = getIntersectionOfTwoLines;
   this.getAngleBetweenThreePoints = getAngleBetweenThreePoints;
   this.getTheCenterOfTheCorner = getTheCenterOfTheCorner;
+  this.getTheFootOfThePerpendicular = getTheFootOfThePerpendicular;
   this.isPointInsideRectangle = isPointInsideRectangle;
 
 }

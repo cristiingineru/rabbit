@@ -566,7 +566,7 @@ describe('Geometry', () => {
         expect(c.x).toEqual(NaN);
         expect(c.y).toEqual(NaN);
       });
-      
+
       it('should return undefined center of the circle describing the corner for a straight angle', () => {
         var x0 = 1, y0 = 1, x1 = 10, y1 = 1, x2 = 20, y2 = 1, r = 2;
 
@@ -624,6 +624,20 @@ describe('Geometry', () => {
         expect(c.y).toBeLessThan(y0);
         expect(c.y).toBeLessThan(y1);
         expect(c.y).toBeLessThan(y2);
+      });
+
+    });
+
+
+    describe('getTheFootOfThePerpendicular', () => {
+
+      it('should return the foot of the perpendicular from a point to a line', () => {
+        var x1 = 10, y1 = 11, x2 = 12, y2 = 13, cx = 14, cy = 15;
+
+        var p = geometry.getTheFootOfThePerpendicular(x1, y1, x2, y2, cx, cy);
+
+        expect(p.x).toBeGreaterThan(0);
+        expect(p.y).toBeGreaterThan(0);
       });
 
     });
