@@ -444,7 +444,11 @@ export function Geometry() {
         C = y1*(x2 - x1) - x1*(y2 - y1),
         x = (C - (x2 - x1)*(cy - cm*cx)) / (cm*(x2 - x1) + y1 - y2),
         y = cm*(x - cx) + cy;
-    return {x: x, y: y};
+    return m === 0 // horizontal
+      ? {x: cx, y: y1}
+      : (m === Infinity // vertical
+        ? {x: x1, y: cy}
+        : {x: x, y: y});
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not

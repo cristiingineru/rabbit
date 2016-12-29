@@ -631,13 +631,69 @@ describe('Geometry', () => {
 
     describe('getTheFootOfThePerpendicular', () => {
 
-      it('should return the foot of the perpendicular from a point to a line', () => {
-        var x1 = 10, y1 = 11, x2 = 12, y2 = 13, cx = 14, cy = 15;
+      it('should return the foot of the perpendicular from a point to an oblique line', () => {
+        [
+          // m = 1
+          {x1: 10, y1: 11, x2: 12, y2: 13, cx: 12, cy: 11},
+          {x1: 10, y1: 11, x2: 12, y2: 13, cx: 10, cy: 13},
+          {x1: 12, y1: 13, x2: 10, y2: 11, cx: 12, cy: 11},
+          {x1: 12, y1: 13, x2: 10, y2: 11, cx: 10, cy: 13},
 
-        var p = geometry.getTheFootOfThePerpendicular(x1, y1, x2, y2, cx, cy);
+          // m = -1
+          {x1: 10, y1: 13, x2: 12, y2: 11, cx: 10, cy: 11},
+          {x1: 10, y1: 13, x2: 12, y2: 11, cx: 12, cy: 13},
+          {x1: 12, y1: 11, x2: 10, y2: 13, cx: 10, cy: 11},
+          {x1: 12, y1: 11, x2: 10, y2: 13, cx: 12, cy: 13}
+        ].forEach((tc) => {
+            var p = geometry.getTheFootOfThePerpendicular(tc.x1, tc.y1, tc.x2, tc.y2, tc.cx, tc.cy);
 
-        expect(p.x).toBeGreaterThan(0);
-        expect(p.y).toBeGreaterThan(0);
+            // reusing the same foot
+            expect(p.x).toBe(11);
+            expect(p.y).toBe(12);
+          });
+      });
+
+      it('should return the foot of the perpendicular from a point to an horizontal line', () => {
+        [
+          // m = 0
+          {x1: -1, y1: 1, x2: 10, y2: 1, cx:  50, cy:  6, px:  50, py: 1},
+          {x1: -1, y1: 1, x2: 10, y2: 1, cx: -50, cy: -6, px: -50, py: 1}
+        ].forEach((tc) => {
+            var p = geometry.getTheFootOfThePerpendicular(tc.x1, tc.y1, tc.x2, tc.y2, tc.cx, tc.cy);
+
+            // reusing the same foot
+            expect(p.x).toBe(tc.px);
+            expect(p.y).toBe(tc.py);
+          });
+      });
+
+      it('should return the foot of the perpendicular from a point to a vertical line', () => {
+        [
+          // m = Infinity
+          {x1: -1, y1:  1, x2: -1, y2: 10, cx:  50, cy:  6, px:  -1, py: 6},
+          {x1: -1, y1:  1, x2: -1, y2: 10, cx: -50, cy:  6, px:  -1, py: 6},
+          {x1: -1, y1: 10, x2: -1, y2:  1, cx:  50, cy:  6, px:  -1, py: 6},
+          {x1: -1, y1: 10, x2: -1, y2:  1, cx: -50, cy:  6, px:  -1, py: 6}
+        ].forEach((tc) => {
+            var p = geometry.getTheFootOfThePerpendicular(tc.x1, tc.y1, tc.x2, tc.y2, tc.cx, tc.cy);
+
+            // reusing the same foot
+            expect(p.x).toBe(tc.px);
+            expect(p.y).toBe(tc.py);
+          });
+      });
+
+      it('should return the point when the line is given by the same point twice', () => {
+        [
+          // m = NaN
+          {x1: 1, y1:  2, x2: 1, y2: 2, cx: 10, cy: 11}
+        ].forEach((tc) => {
+            var p = geometry.getTheFootOfThePerpendicular(tc.x1, tc.y1, tc.x2, tc.y2, tc.cx, tc.cy);
+
+            // reusing the same foot
+            expect(p.x).toEqual(NaN);
+            expect(p.y).toEqual(NaN);
+          });
       });
 
     });
