@@ -661,7 +661,6 @@ describe('Geometry', () => {
         ].forEach((tc) => {
             var p = geometry.getTheFootOfThePerpendicular(tc.x1, tc.y1, tc.x2, tc.y2, tc.cx, tc.cy);
 
-            // reusing the same foot
             expect(p.x).toBe(tc.px);
             expect(p.y).toBe(tc.py);
           });
@@ -677,7 +676,6 @@ describe('Geometry', () => {
         ].forEach((tc) => {
             var p = geometry.getTheFootOfThePerpendicular(tc.x1, tc.y1, tc.x2, tc.y2, tc.cx, tc.cy);
 
-            // reusing the same foot
             expect(p.x).toBe(tc.px);
             expect(p.y).toBe(tc.py);
           });
@@ -690,7 +688,6 @@ describe('Geometry', () => {
         ].forEach((tc) => {
             var p = geometry.getTheFootOfThePerpendicular(tc.x1, tc.y1, tc.x2, tc.y2, tc.cx, tc.cy);
 
-            // reusing the same foot
             expect(p.x).toEqual(NaN);
             expect(p.y).toEqual(NaN);
           });
