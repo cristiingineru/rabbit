@@ -60,7 +60,9 @@ export function Geometry() {
         xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
         yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
         newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth};
-      state.box = union(state.box, newBox);
+      if (!isNaN(cx) && !isNaN(cy)) {
+        state.box = union(state.box, newBox);
+      }
       return state;
     },
     lineTo: (state, shape) => {
@@ -77,19 +79,6 @@ export function Geometry() {
           height: Math.max(rect.y1, rect.y2, rect.y3, rect.y4) - Math.min(rect.y1, rect.y2, rect.y3, rect.y4)
         };
       state.box = union(state.box, newBox);
-      return state;
-    },
-    arcTo: (state, shape) => {
-      var x0 = shape.x0,
-          y0 = shape.y0,
-          x1 = shape.x1,
-          y1 = shape.y1,
-          x2 = shape.x2,
-          y2 = shape.y2,
-          r = shape.r,
-          decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
-      state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
-      state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r});
       return state;
     }
   },
@@ -157,8 +146,11 @@ export function Geometry() {
         y1 = call.arguments[1] /* * state.transform.scale.y + state.transform.translate.y */,
         x2 = call.arguments[2],
         y2 = call.arguments[3],
-        r = call.arguments[4];
-      state.shapesInPath.push({type: 'arcTo', x0: x0, y0: y0, x1: x1, y1: y1, x2: x2, y2: y2, r: r});
+        r = call.arguments[4],
+        decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+      state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
+      state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r});
+      state.moveToLocation = {x: decomposition.point.x, y: decomposition.point.y};
       return state;
     },
     save: (state, call) => {
