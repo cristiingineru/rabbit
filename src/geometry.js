@@ -462,6 +462,19 @@ export function Geometry() {
     return a;
   },
 
+  decomposeArcTo = (x0, y0, x1, y1, x2, y2, r) => {
+    var center = getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r),
+        foot1 = getTheFootOfThePerpendicular(x0, y0, x1, y1, center.x, center.y),
+        foot2 = getTheFootOfThePerpendicular(x1, y1, x2, y2, center.x, center.y),
+        angleFoot1 = xyToArcAngle(center.x, center.y, foot1.x, foot1.y),
+        angleFoot2 = xyToArcAngle(center.x, center.y, foot2.x, foot2.y);
+    return {
+      line: {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y},
+      arc: {x: center.x, y: center.y, r: r, sAngle: 1, eAngle: 1, counterclockwise: false},
+      point: {x: foot2.x, y: foot2.y}
+    };
+  },
+
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
   isPointInsideRectangle = (point, rectangle) => {
     var segments = [{
@@ -507,6 +520,7 @@ export function Geometry() {
   this.getTheCenterOfTheCorner = getTheCenterOfTheCorner;
   this.getTheFootOfThePerpendicular = getTheFootOfThePerpendicular;
   this.xyToArcAngle = xyToArcAngle;
+  this.decomposeArcTo = decomposeArcTo;
   this.isPointInsideRectangle = isPointInsideRectangle;
 
 }

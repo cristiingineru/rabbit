@@ -737,4 +737,41 @@ describe('Geometry', () => {
 
     });
 
+
+    describe('decomposeArcTo', () => {
+
+      it('should return a line, an arc and an end point', () => {
+        var x0 = 10, y0 = 11, x1 = 21, y1 = 22, x2 = 1, y2 = 2, r = 0.1;
+
+        var arcTo = geometry.decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+
+        [arcTo.line, arcTo.line.x1, arcTo.line.y1, arcTo.line.x2, arcTo.line.y2].forEach((m) => expect(m).toBeTruthy());
+        [arcTo.arc, arcTo.arc.x, arcTo.arc.y, arcTo.arc.r, arcTo.arc.sAngle, arcTo.arc.eAngle].forEach((m) => expect(m).toBeTruthy());
+        expect(arcTo.arc.counterclockwise).toBe(false);
+        [arcTo.point, arcTo.point.x, arcTo.point.y].forEach((m) => expect(m).toBeTruthy());
+      });
+
+      it('should return a valid line, an arc and an end point for a 90 degrees corner', () => {
+        var x0 = 10, y0 = 5, x1 = 20, y1 = 5, x2 = 20, y2 = 30, r = 3;
+
+        var arcTo = geometry.decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+
+        expect(arcTo.line.x1).toBe(x0);
+        expect(arcTo.line.y1).toBe(y0);
+        expect(arcTo.line.x2).toBe(x1 - r);
+        expect(arcTo.line.y2).toBe(y1);
+
+        expect(arcTo.arc.x).toBe(x1 - r);
+        expect(arcTo.arc.y).toBe(y1 + r);
+        expect(arcTo.arc.r).toBe(r);
+        expect(arcTo.arc.sAngle).toBeCloseTo(3 * Math.PI / 2, 8);
+        expect(arcTo.arc.eAngle).toBeCloseTo(0 * Math.PI / 2, 8);
+        expect(arcTo.arc.counterclockwise).toBe(false);
+
+        expect(arcTo.point.x).toBe(x1);
+        expect(arcTo.point.y).toBe(y1 + r);
+      });
+
+    });
+
 });
