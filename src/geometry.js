@@ -146,6 +146,11 @@ export function Geometry() {
         y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
         x2 = call.arguments[2] * state.transform.scale.x + state.transform.translate.x,
         y2 = call.arguments[3] * state.transform.scale.y + state.transform.translate.y,
+        //
+        //            TODO !!
+        //
+        // To simplify the math, the scaling has to be moved after decomposing the arc,
+        //but before adding the new shapes to the state.shapesInPath array.
         r = call.arguments[4] * state.transform.scale.x,
         decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
       state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
