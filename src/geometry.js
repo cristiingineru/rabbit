@@ -78,6 +78,19 @@ export function Geometry() {
         };
       state.box = union(state.box, newBox);
       return state;
+    },
+    arcTo: (state, shape) => {
+      var x0 = shape.x0,
+          y0 = shape.y0,
+          x1 = shape.x1,
+          y1 = shape.y1,
+          x2 = shape.x2,
+          y2 = shape.y2,
+          r = shape.r,
+          decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+      state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
+      state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r});
+      return state;
     }
   },
 
@@ -137,6 +150,17 @@ export function Geometry() {
       state.shapesInPath.push({type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2});
       return state;
     },
+    arcTo: (state, call) => {
+      var x0 = state.moveToLocation.x,
+        y0 = state.moveToLocation.y,
+        x1 = call.arguments[0] /* * state.transform.scale.x + state.transform.translate.x */,
+        y1 = call.arguments[1] /* * state.transform.scale.y + state.transform.translate.y */,
+        x2 = call.arguments[2],
+        y2 = call.arguments[3],
+        r = call.arguments[4];
+      state.shapesInPath.push({type: 'arcTo', x0: x0, y0: y0, x1: x1, y1: y1, x2: x2, y2: y2, r: r});
+      return state;
+    },
     save: (state, call) => {
       state.transforms.push([]);
       state.lineWidths.push(lastElement(state.lineWidths));
@@ -168,10 +192,12 @@ export function Geometry() {
       }, state);
     },
     stroke: (state, call) => {
-      return state.shapesInPath.reduce((state, shape) => {
-        var handler = getPathStrokeShapeHandler(shape);
-        return handler(state, shape);
-      }, state);
+      for(var i = 0; i < state.shapesInPath.length; i++) {
+        var shape = state.shapesInPath[i],
+            handler = getPathStrokeShapeHandler(shape);
+        state = handler(state, shape);
+      }
+      return state;
     }
   },
 
@@ -476,11 +502,13 @@ export function Geometry() {
         arc: {x: NaN, y: NaN, r: NaN, sAngle: NaN, eAngle: NaN, counterclockwise: false},
         point: {x: x1, y: y1}
       };
-    } else if (x0 === x1 && x1 === x2 && y0 === y1 && y1 === y2) {
+    } else if (isNaN(x0)
+            || isNaN(y0)
+            || (x0 === x1 && x1 === x2 && y0 === y1 && y1 === y2)) {
       decomposition = {
         line: {x1: NaN, y1: NaN, x2: NaN, y2: NaN},
         arc: {x: NaN, y: NaN, r: NaN, sAngle: NaN, eAngle: NaN, counterclockwise: false},
-        point: {x: x0, y: y0}
+        point: {x: x1, y: y1}
       };
     } else {
       var center = getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r),

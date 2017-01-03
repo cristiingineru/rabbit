@@ -491,7 +491,7 @@ describe('Rabbit', () => {
       });
 
 
-      describe('lineTo', () => {
+      describe('moveTo', () => {
 
         it('should not return the box of a stoked 1 point path given by moveTo', () => {
           var x = 10, y = 11;
@@ -519,6 +519,57 @@ describe('Rabbit', () => {
           expect(box.width).toEqual(NaN);
           expect(box.height).toEqual(NaN);
         });
+
+      });
+
+
+      describe('arcTo', () => {
+
+        it('should not return the box of a stoked arcTo without a call to moveTo first', () => {
+          var x1 = 10, y1 = 11, x2 = 10, y2 = 20, r = 0.2;
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
+        });
+
+        it('should return the box of a stoked arcTo that contains an arc only', () => {
+          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(5);
+          expect(box.y).toBe(0);
+          expect(box.width).toBe(4);
+          expect(box.height).toBe(4);
+        });
+
+        it('should return the box of a stoked arcTo that contains an arc and a line', () => {
+          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(5);
+          expect(box.y).toBe(0);
+          expect(box.width).toBe(6);
+          expect(box.height).toBe(4);
+        });
+
+      });
+
+
+      describe('lineTo', () => {
 
         it('should not return the box of a stoked 1 point path given by lineTo', () => {
           var x = 10, y = 11;

@@ -765,10 +765,11 @@ describe('Geometry', () => {
 
     describe('decomposeArcTo', () => {
 
-      it('should return only a valid end point when the points are the same', () => {
+      it('should return only a valid end point when the points are the same or the (x0, y0) is not specified', () => {
         [
           {x0: 10, y0:  5, x1: 10, y1:  5, x2: 10, y2:  5, r: 3},
-          {x0: 10, y0: 10, x1: 10, y1: 10, x2: 10, y2: 10, r: 3}
+          {x0: 10, y0: 10, x1: 10, y1: 10, x2: 10, y2: 10, r: 3},
+          {x0: NaN, y0: NaN, x1: 11, y1: 12, x2: 13, y2: 14, r: 3}
         ].forEach((tc) => {
 
           var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
@@ -785,8 +786,8 @@ describe('Geometry', () => {
           expect(arcTo.arc.eAngle).toEqual(NaN);
           expect(arcTo.arc.counterclockwise).toBe(false);
 
-          expect(arcTo.point.x).toBe(tc.x0);
-          expect(arcTo.point.y).toBe(tc.y0);
+          expect(arcTo.point.x).toBe(tc.x1);
+          expect(arcTo.point.y).toBe(tc.y1);
         });
       });
 
