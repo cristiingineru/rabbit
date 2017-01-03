@@ -453,24 +453,49 @@ describe('Geometry', () => {
 
     describe('getIntersectionOfTwoLines', () => {
 
-      it('should return the intersection point', () => {
-        var l1 = { x1: 1, y1: 10, x2: 2, y2: 12 },
-            l2 = { x1: 1, y1: 12, x2: 2, y2: 10 };
-
-        var p = geometry.getIntersectionOfTwoLines(l1, l2);
-
-        expect(p.x).toBe(1.5);
-        expect(p.y).toBe(11);
-      });
-
-      it('should return an undefined point when the lines are parallel', () => {
+      it('should return an undefined point when the given lines are parallel', () => {
         var l1 = { x1: 1, y1: 10, x2: 2, y2: 12 },
             l2 = { x1: 2, y1: 12, x2: 3, y2: 14 };
 
-        var p = geometry.getIntersectionOfTwoLines(l1, l2);
+        [
+          {l1: l1, l2: l2},
+          {l1: l2, l2: l1}
+        ].forEach((tc) => {
+          var p = geometry.getIntersectionOfTwoLines(l1, l2);
 
-        expect(p.x).toEqual(NaN);
-        expect(p.y).toEqual(NaN);
+          expect(p.x).toEqual(NaN);
+          expect(p.y).toEqual(NaN);
+        });
+      });
+
+      it('should return the intersection point of two arbitrary lines', () => {
+        var l1 = { x1: 1, y1: 10, x2: 2, y2: 12 },
+            l2 = { x1: 1, y1: 12, x2: 2, y2: 10 };
+
+        [
+          {l1: l1, l2: l2},
+          {l1: l2, l2: l1}
+        ].forEach((tc) => {
+          var p = geometry.getIntersectionOfTwoLines(l1, l2);
+
+          expect(p.x).toBe(1.5);
+          expect(p.y).toBe(11);
+        });
+      });
+
+      it('should return the intersection point of two perpendicular lines', () => {
+        var l1 = { x1: 17, y1:  1, x2: 17, y2:  5 },
+            l2 = { x1: 20, y1:  8, x2: 30, y2:  8 };
+
+        [
+          {l1: l1, l2: l2},
+          {l1: l2, l2: l1}
+        ].forEach((tc) => {
+          var p = geometry.getIntersectionOfTwoLines(tc.l1, tc.l2);
+
+          expect(p.x).toBe(17);
+          expect(p.y).toBe(8);
+        });
       });
 
     });
@@ -740,36 +765,92 @@ describe('Geometry', () => {
 
     describe('decomposeArcTo', () => {
 
-      it('should return a line, an arc and an end point', () => {
-        var x0 = 10, y0 = 11, x1 = 21, y1 = 22, x2 = 1, y2 = 2, r = 0.1;
+      it('should return only a valid end point when the points are the same', () => {
+        [
+          {x0: 10, y0:  5, x1: 10, y1:  5, x2: 10, y2:  5, r: 3},
+          {x0: 10, y0: 10, x1: 10, y1: 10, x2: 10, y2: 10, r: 3}
+        ].forEach((tc) => {
 
-        var arcTo = geometry.decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
 
-        [arcTo.line, arcTo.line.x1, arcTo.line.y1, arcTo.line.x2, arcTo.line.y2].forEach((m) => expect(m).toBeTruthy());
-        [arcTo.arc, arcTo.arc.x, arcTo.arc.y, arcTo.arc.r, arcTo.arc.sAngle, arcTo.arc.eAngle].forEach((m) => expect(m).toBeTruthy());
-        expect(arcTo.arc.counterclockwise).toBe(false);
-        [arcTo.point, arcTo.point.x, arcTo.point.y].forEach((m) => expect(m).toBeTruthy());
+          expect(arcTo.line.x1).toEqual(NaN);
+          expect(arcTo.line.y1).toEqual(NaN);
+          expect(arcTo.line.x2).toEqual(NaN);
+          expect(arcTo.line.y2).toEqual(NaN);
+
+          expect(arcTo.arc.x).toEqual(NaN);
+          expect(arcTo.arc.y).toEqual(NaN);
+          expect(arcTo.arc.r).toEqual(NaN);
+          expect(arcTo.arc.sAngle).toEqual(NaN);
+          expect(arcTo.arc.eAngle).toEqual(NaN);
+          expect(arcTo.arc.counterclockwise).toBe(false);
+
+          expect(arcTo.point.x).toBe(tc.x0);
+          expect(arcTo.point.y).toBe(tc.y0);
+        });
+      });
+
+      it('should return only a valid line from (x0, y0) to (x1, y1) and an end point when the points are collinear', () => {
+        [
+          {x0: 10, y0:  5, x1: 20, y1:  5, x2: 30, y2:  5, r: 3},
+          {x0: 10, y0:  5, x1: 10, y1: 15, x2: 10, y2: 20, r: 3},
+          {x0: 10, y0: 11, x1: 20, y1: 21, x2: 30, y2: 31, r: 3}
+        ].forEach((tc) => {
+
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
+
+          expect(arcTo.line.x1).toBe(tc.x0);
+          expect(arcTo.line.y1).toBe(tc.y0);
+          expect(arcTo.line.x2).toBe(tc.x1);
+          expect(arcTo.line.y2).toBe(tc.y1);
+
+          expect(arcTo.arc.x).toEqual(NaN);
+          expect(arcTo.arc.y).toEqual(NaN);
+          expect(arcTo.arc.r).toEqual(NaN);
+          expect(arcTo.arc.sAngle).toEqual(NaN);
+          expect(arcTo.arc.eAngle).toEqual(NaN);
+          expect(arcTo.arc.counterclockwise).toBe(false);
+
+          expect(arcTo.point.x).toBe(tc.x1);
+          expect(arcTo.point.y).toBe(tc.y1);
+        });
       });
 
       it('should return a valid line, an arc and an end point for a 90 degrees corner', () => {
-        var x0 = 10, y0 = 5, x1 = 20, y1 = 5, x2 = 20, y2 = 30, r = 3;
+        var r = 3;
 
-        var arcTo = geometry.decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+        [
+          {// └
+            x0: 20, y0: 0, x1: 20, y1: 5, x2: 30, y2: 5, r: r,
+            linex1: +0, liney1: +0, linex2: +0, liney2: -r,
+            arcx: +r, arcy: -r, arcsAngle: 1 * Math.PI / 2, arceAngle: 2 * Math.PI / 2,
+            pointx: +r, pointy: +0
+          },
+          { // ┐
+            x0: 10, y0: 5, x1: 20, y1: 5, x2: 20, y2: 30, r: r,
+            linex1: +0, liney1: +0, linex2: -r, liney2: +0,
+            arcx: -r, arcy: +r, arcsAngle: 3 * Math.PI / 2, arceAngle: 0 * Math.PI / 2,
+            pointx: +0, pointy: +r
+          }
+        ].forEach((tc) => {
 
-        expect(arcTo.line.x1).toBe(x0);
-        expect(arcTo.line.y1).toBe(y0);
-        expect(arcTo.line.x2).toBe(x1 - r);
-        expect(arcTo.line.y2).toBe(y1);
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
 
-        expect(arcTo.arc.x).toBe(x1 - r);
-        expect(arcTo.arc.y).toBe(y1 + r);
-        expect(arcTo.arc.r).toBe(r);
-        expect(arcTo.arc.sAngle).toBeCloseTo(3 * Math.PI / 2, 8);
-        expect(arcTo.arc.eAngle).toBeCloseTo(0 * Math.PI / 2, 8);
-        expect(arcTo.arc.counterclockwise).toBe(false);
+          expect(arcTo.line.x1).toBe(tc.x0 + tc.linex1);
+          expect(arcTo.line.y1).toBe(tc.y0 + tc.liney1);
+          expect(arcTo.line.x2).toBe(tc.x1 + tc.linex2);
+          expect(arcTo.line.y2).toBe(tc.y1 + tc.liney2);
 
-        expect(arcTo.point.x).toBe(x1);
-        expect(arcTo.point.y).toBe(y1 + r);
+          expect(arcTo.arc.x).toBe(tc.x1 + tc.arcx);
+          expect(arcTo.arc.y).toBe(tc.y1 + tc.arcy);
+          expect(arcTo.arc.r).toBe(tc.r);
+          expect(arcTo.arc.sAngle).toBeCloseTo(tc.arcsAngle, 8);
+          expect(arcTo.arc.eAngle).toBeCloseTo(tc.arceAngle, 8);
+          expect(arcTo.arc.counterclockwise).toBe(false);
+
+          expect(arcTo.point.x).toBe(tc.x1 + tc.pointx);
+          expect(arcTo.point.y).toBe(tc.y1 + tc.pointy);
+        });
       });
 
     });

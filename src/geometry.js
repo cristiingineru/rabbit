@@ -367,7 +367,7 @@ export function Geometry() {
     var a1 = l1.y2 - l1.y1, b1 = l1.x1 - l1.x2, c1 = l1.x2*l1.y1 - l1.x1*l1.y2,
         a2 = l2.y2 - l2.y1, b2 = l2.x1 - l2.x2, c2 = l2.x2*l2.y1 - l2.x1*l2.y2,
         x = (c2*b1 - c1*b2) / (a1*b2 - a2*b1),
-        y = (-c1 - a1*x) / b1;
+        y = l2.y1 === l2.y2 ? l2.y1 : (-c1 - a1*x) / b1;
     return {x: x, y: y};
   },
 
@@ -396,7 +396,7 @@ export function Geometry() {
 
   almostEqual = (a, b) => {
     // gross approximation to cover the flot and trigonometric precision
-    return Math.abs(a - b) < 5 * EPSILON;
+    return a === b || Math.abs(a - b) < 5 * EPSILON;
   },
 
   isCenterInBetween = (cx, cy, x0, y0, x1, y1, x2, y2) => {
@@ -462,17 +462,41 @@ export function Geometry() {
     return a;
   },
 
+  collinear = (x0, y0, x1, y1, x2, y2) => {
+    var m1 = (y1 - y0) / (x1 - x0),
+        m2 = (y2 - y1) / (x2 - x1);
+    return almostEqual(m1, m2);
+  },
+
   decomposeArcTo = (x0, y0, x1, y1, x2, y2, r) => {
-    var center = getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r),
-        foot1 = getTheFootOfThePerpendicular(x0, y0, x1, y1, center.x, center.y),
-        foot2 = getTheFootOfThePerpendicular(x1, y1, x2, y2, center.x, center.y),
-        angleFoot1 = xyToArcAngle(center.x, center.y, foot1.x, foot1.y),
-        angleFoot2 = xyToArcAngle(center.x, center.y, foot2.x, foot2.y);
-    return {
-      line: {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y},
-      arc: {x: center.x, y: center.y, r: r, sAngle: 1, eAngle: 1, counterclockwise: false},
-      point: {x: foot2.x, y: foot2.y}
-    };
+    var decomposition;
+    if(collinear(x0, y0, x1, y1, x2, y2)) {
+      decomposition = {
+        line: {x1: x0, y1: y0, x2: x1, y2: y1},
+        arc: {x: NaN, y: NaN, r: NaN, sAngle: NaN, eAngle: NaN, counterclockwise: false},
+        point: {x: x1, y: y1}
+      };
+    } else if (x0 === x1 && x1 === x2 && y0 === y1 && y1 === y2) {
+      decomposition = {
+        line: {x1: NaN, y1: NaN, x2: NaN, y2: NaN},
+        arc: {x: NaN, y: NaN, r: NaN, sAngle: NaN, eAngle: NaN, counterclockwise: false},
+        point: {x: x0, y: y0}
+      };
+    } else {
+      var center = getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r),
+          foot1 = getTheFootOfThePerpendicular(x0, y0, x1, y1, center.x, center.y),
+          foot2 = getTheFootOfThePerpendicular(x1, y1, x2, y2, center.x, center.y),
+          angleFoot1 = xyToArcAngle(center.x, center.y, foot1.x, foot1.y),
+          angleFoot2 = xyToArcAngle(center.x, center.y, foot2.x, foot2.y),
+          sAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot2 : angleFoot1,
+          eAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot1 : angleFoot2;
+      decomposition = {
+        line: {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y},
+        arc: {x: center.x, y: center.y, r: r, sAngle: sAngle, eAngle: eAngle, counterclockwise: false},
+        point: {x: foot2.x, y: foot2.y}
+      };
+    }
+    return decomposition;
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
