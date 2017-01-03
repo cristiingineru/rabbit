@@ -705,7 +705,7 @@ describe('Rabbit', () => {
           expect(box.height).toEqual(maxY - minY + width);
         });
 
-        it('should return the box of a vertical stoked 3 points path of width=3', () => {
+        it('should return the box of a vertical stoked 2 points path of width=3', () => {
           var width = 3,
             x1 = 10, y1 = 11, x2 = 10, y2 = 22;
           ctx.lineWidth = width;
