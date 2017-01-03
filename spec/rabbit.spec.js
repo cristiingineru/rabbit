@@ -523,96 +523,6 @@ describe('Rabbit', () => {
       });
 
 
-      describe('arcTo', () => {
-
-        it('should not return the box of a stoked arcTo without a call to moveTo first', () => {
-          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
-          ctx.arcTo(x1, y1, x2, y2, r);
-          ctx.stroke();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toEqual(NaN);
-          expect(box.y).toEqual(NaN);
-          expect(box.width).toEqual(NaN);
-          expect(box.height).toEqual(NaN);
-        });
-
-        it('should move the cursor for the next draw instruction even when there is nothing to draw because the cursor was not previously initialized', () => {
-          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
-          ctx.arcTo(x1, y1, x2, y2, r);
-          ctx.lineTo(6, 1);
-          ctx.stroke();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toEqual(5);
-          expect(box.y).toEqual(0);
-          expect(box.width).toEqual(1);
-          expect(box.height).toEqual(1);
-        });
-
-        it('should return the box of a stoked arcTo that contains an arc only', () => {
-          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
-          ctx.moveTo(x0, y0);
-          ctx.arcTo(x1, y1, x2, y2, r);
-          ctx.stroke();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(5);
-          expect(box.y).toBe(0);
-          expect(box.width).toBe(4);
-          expect(box.height).toBe(4);
-        });
-
-        it('should move the cursor for the next draw instruction for a stoked arcTo that contains an arc only', () => {
-          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
-          ctx.moveTo(x0, y0);
-          ctx.arcTo(x1, y1, x2, y2, r);
-          ctx.lineTo(3, 4);
-          ctx.stroke();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toEqual(3);
-          expect(box.y).toEqual(0);
-          expect(box.width).toEqual(6);
-          expect(box.height).toEqual(4);
-        });
-
-        it('should return the box of a stoked arcTo that contains an arc and a line', () => {
-          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
-          ctx.moveTo(x0, y0);
-          ctx.arcTo(x1, y1, x2, y2, r);
-          ctx.stroke();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(5);
-          expect(box.y).toBe(0);
-          expect(box.width).toBe(6);
-          expect(box.height).toBe(4);
-        });
-
-        it('should move the cursor for the next draw instruction for a stoked arcTo that contains an arc and a line', () => {
-          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
-          ctx.moveTo(x0, y0);
-          ctx.arcTo(x1, y1, x2, y2, r);
-          ctx.lineTo(3, 4);
-          ctx.stroke();
-
-          var box = rabbit.getBBox(ctx.stack());
-
-          expect(box.x).toBe(3);
-          expect(box.y).toBe(0);
-          expect(box.width).toBe(8);
-          expect(box.height).toBe(4);
-        });
-
-      });
-
-
       describe('lineTo', () => {
 
         it('should not return the box of a stoked 1 point path given by lineTo', () => {
@@ -821,6 +731,110 @@ describe('Rabbit', () => {
           expect(box.height).toEqual(y2 - y1);
         });
 
+      });
+
+
+      describe('arcTo', () => {
+
+        it('should not return the box of a stoked arcTo without a call to moveTo first', () => {
+          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(NaN);
+          expect(box.y).toEqual(NaN);
+          expect(box.width).toEqual(NaN);
+          expect(box.height).toEqual(NaN);
+        });
+
+        it('should move the cursor for the next draw instruction even when there is nothing to draw because the cursor was not previously initialized', () => {
+          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.lineTo(6, 1);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(5);
+          expect(box.y).toEqual(0);
+          expect(box.width).toEqual(1);
+          expect(box.height).toEqual(1);
+        });
+
+        it('should return the box of a stoked arcTo that contains an arc only', () => {
+          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(5);
+          expect(box.y).toBe(0);
+          expect(box.width).toBe(4);
+          expect(box.height).toBe(4);
+        });
+
+        it('should move the cursor for the next draw instruction for a stoked arcTo that contains an arc only', () => {
+          var x0 = 7, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.lineTo(3, 4);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toEqual(3);
+          expect(box.y).toEqual(0);
+          expect(box.width).toEqual(6);
+          expect(box.height).toEqual(4);
+        });
+
+        it('should return the box of a stoked arcTo that contains an arc and a line', () => {
+          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(5);
+          expect(box.y).toBe(0);
+          expect(box.width).toBe(6);
+          expect(box.height).toBe(4);
+        });
+
+        it('should move the cursor for the next draw instruction for a stoked arcTo that contains an arc and a line', () => {
+          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.lineTo(3, 4);
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(3);
+          expect(box.y).toBe(0);
+          expect(box.width).toBe(8);
+          expect(box.height).toBe(4);
+        });
+
+        it('should return the box of a stoked arcTo with lineWidth=4', () => {
+          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2;
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(3);
+          expect(box.y).toBe(-2);
+          expect(box.width).toBe(8);
+          expect(box.height).toBe(8);
+        });
       });
 
       // tests for each path shape that it moves the cursor position!!
