@@ -451,6 +451,17 @@ export function Geometry() {
         : {x: x, y: y});
   },
 
+  xyToArcAngle = (cx, cy, x, y) => {
+    var horizontalX = cx + 1,
+        horizontalY = cy,
+        a = Math.abs(getAngleBetweenThreePoints(x, y, cx, cy, horizontalX, horizontalY));
+    if(y < cy) {
+      //third & forth quadrants
+      a = Math.PI + Math.PI - a;
+    }
+    return a;
+  },
+
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
   isPointInsideRectangle = (point, rectangle) => {
     var segments = [{
@@ -495,6 +506,7 @@ export function Geometry() {
   this.getAngleBetweenThreePoints = getAngleBetweenThreePoints;
   this.getTheCenterOfTheCorner = getTheCenterOfTheCorner;
   this.getTheFootOfThePerpendicular = getTheFootOfThePerpendicular;
+  this.xyToArcAngle = xyToArcAngle;
   this.isPointInsideRectangle = isPointInsideRectangle;
 
 }

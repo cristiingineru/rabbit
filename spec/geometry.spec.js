@@ -498,7 +498,7 @@ describe('Geometry', () => {
         expect(a).toEqual(0);
       });
 
-      it('should return the angle between 3 arbitrary lines', () => {
+      it('should return the angle between 3 arbitrary points', () => {
 
         //  The next test cases are based on a triangle of this shape.
         //  All the angles of the given triangle will be measured and then
@@ -690,6 +690,48 @@ describe('Geometry', () => {
 
             expect(p.x).toEqual(NaN);
             expect(p.y).toEqual(NaN);
+          });
+      });
+
+    });
+
+
+    describe('xyToArcAngle', () => {
+
+      it('should return undefined angle when the center of the circle and the point are the same', () => {
+          var cx = 10, cy = 11, x = 10, y = 11;
+
+          var a = geometry.xyToArcAngle(cx, cy, x, y);
+
+          expect(a).toEqual(NaN);
+      });
+
+      it('should return the angle given by a center of a circle and an arbitrary point', () => {
+        var r = 2;
+
+          [
+            {cx: 10, cy: 11, x: 12, y: 11, a: 0 * Math.PI / 4},
+            {cx: 10, cy: 11, x: 12, y: 13, a: 1 * Math.PI / 4},
+            {cx: 10, cy: 11, x: 10, y: 13, a: 2 * Math.PI / 4},
+            {cx: 10, cy: 11, x:  8, y: 13, a: 3 * Math.PI / 4},
+            {cx: 10, cy: 11, x:  8, y: 11, a: 4 * Math.PI / 4},
+            {cx: 10, cy: 11, x:  8, y:  9, a: 5 * Math.PI / 4},
+            {cx: 10, cy: 11, x: 10, y:  9, a: 6 * Math.PI / 4},
+            {cx: 10, cy: 11, x: 12, y:  9, a: 7 * Math.PI / 4},
+
+            {cx: 10, cy: 11, x: 10 + r             , y: 11                 , a: 0 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10 + r*Math.sqrt(3), y: 11 + r             , a: 1 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10 + r             , y: 11 + r*Math.sqrt(3), a: 2 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10                 , y: 11 + r             , a: 3 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10 - r             , y: 11 + r*Math.sqrt(3), a: 4 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10 - r*Math.sqrt(3), y: 11 + r             , a: 5 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10 - r             , y: 11                 , a: 6 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10 - r*Math.sqrt(3), y: 11 - r             , a: 7 * Math.PI / 6},
+            {cx: 10, cy: 11, x: 10 - r             , y: 11 - r*Math.sqrt(3), a: 8 * Math.PI / 6}
+          ].forEach((tc) => {
+            var a = geometry.xyToArcAngle(tc.cx, tc.cy, tc.x, tc.y);
+
+            expect(a).toBeCloseTo(tc.a, 8);
           });
       });
 
