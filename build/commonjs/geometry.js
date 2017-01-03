@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.Geometry = Geometry;
 function Geometry() {
 
-  var that = this;
+  var that = this,
+      EPSILON = Number.EPSILON || 2.220446049250313e-16;
 
   var createNewCanvasCallState = function createNewCanvasCallState() {
     return {
@@ -59,7 +60,9 @@ function Geometry() {
           xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
           yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
           newBox = { x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth };
-      state.box = union(state.box, newBox);
+      if (!isNaN(cx) && !isNaN(cy)) {
+        state.box = union(state.box, newBox);
+      }
       return state;
     },
     lineTo: function lineTo(state, shape) {
@@ -135,6 +138,20 @@ function Geometry() {
       state.shapesInPath.push({ type: 'lineTo', x1: x1, y1: y1, x2: x2, y2: y2 });
       return state;
     },
+    arcTo: function arcTo(state, call) {
+      var x0 = state.moveToLocation.x,
+          y0 = state.moveToLocation.y,
+          x1 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
+          y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
+          x2 = call.arguments[2] * state.transform.scale.x + state.transform.translate.x,
+          y2 = call.arguments[3] * state.transform.scale.y + state.transform.translate.y,
+          r = call.arguments[4] * state.transform.scale.x,
+          decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+      state.shapesInPath.push({ type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2 });
+      state.shapesInPath.push({ type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r });
+      state.moveToLocation = { x: decomposition.point.x, y: decomposition.point.y };
+      return state;
+    },
     save: function save(state, call) {
       state.transforms.push([]);
       state.lineWidths.push(lastElement(state.lineWidths));
@@ -164,10 +181,12 @@ function Geometry() {
       }, state);
     },
     stroke: function stroke(state, call) {
-      return state.shapesInPath.reduce(function (state, shape) {
-        var handler = getPathStrokeShapeHandler(shape);
-        return handler(state, shape);
-      }, state);
+      for (var i = 0; i < state.shapesInPath.length; i++) {
+        var shape = state.shapesInPath[i],
+            handler = getPathStrokeShapeHandler(shape);
+        state = handler(state, shape);
+      }
+      return state;
     }
   },
       nullCanvasCallHandler = function nullCanvasCallHandler(state, call) {
@@ -330,6 +349,137 @@ function Geometry() {
         scaledWidth = width * Math.sqrt(sx * sx * sina * sina + sy * sy * cosa * cosa);
     return scaledWidth;
   },
+      getParallelsAroundSegment = function getParallelsAroundSegment(x1, y1, x2, y2, distance) {
+    var rect = getRectAroundLongLine(x1, y1, x2, y2, 2 * distance);
+    return [{ x1: rect.x1, y1: rect.y1, x2: rect.x2, y2: rect.y2 }, { x1: rect.x4, y1: rect.y4, x2: rect.x3, y2: rect.y3 }];
+  },
+      getIntersectionOfTwoLines = function getIntersectionOfTwoLines(l1, l2) {
+    var a1 = l1.y2 - l1.y1,
+        b1 = l1.x1 - l1.x2,
+        c1 = l1.x2 * l1.y1 - l1.x1 * l1.y2,
+        a2 = l2.y2 - l2.y1,
+        b2 = l2.x1 - l2.x2,
+        c2 = l2.x2 * l2.y1 - l2.x1 * l2.y2,
+        x = (c2 * b1 - c1 * b2) / (a1 * b2 - a2 * b1),
+        y = l2.y1 === l2.y2 ? l2.y1 : (-c1 - a1 * x) / b1;
+    return { x: x, y: y };
+  },
+      getDistanceBetweenTwoPoints = function getDistanceBetweenTwoPoints(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+  },
+      getAngleBetweenThreePoints = function getAngleBetweenThreePoints(x1, y1, x2, y2, x3, y3) {
+    var a = getDistanceBetweenTwoPoints(x1, y1, x2, y2),
+        b = getDistanceBetweenTwoPoints(x2, y2, x3, y3),
+        c = getDistanceBetweenTwoPoints(x3, y3, x1, y1),
+        cosC = (a * a + b * b - c * c) / (2 * a * b),
+        C = Math.acos(cosC);
+    return C;
+  },
+      permuteLines = function permuteLines(alphaLines, betaLines) {
+    var permutations = [];
+    alphaLines.forEach(function (alphaLine) {
+      betaLines.forEach(function (betaLine) {
+        permutations.push({ alpha: alphaLine, beta: betaLine });
+      });
+    });
+    return permutations;
+  },
+      almostEqual = function almostEqual(a, b) {
+    // gross approximation to cover the flot and trigonometric precision
+    return a === b || Math.abs(a - b) < 5 * EPSILON;
+  },
+      isCenterInBetween = function isCenterInBetween(cx, cy, x0, y0, x1, y1, x2, y2) {
+    var a1 = getAngleBetweenThreePoints(cx, cy, x1, y1, x0, y0),
+        a2 = getAngleBetweenThreePoints(cx, cy, x1, y1, x2, y2);
+    return almostEqual(a1, a2) && a1 <= Math.PI / 2;
+  },
+      getTheCenterOfTheCorner = function getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, distance) {
+    //
+    //                                    d  d
+    //                                  '  /  '
+    //                                 '  /  '
+    //   alpha line 0    -------------'--/--'---------
+    //                               '  /  '             d
+    //     given line    ===P==========P==============
+    //                             '  /  '               d
+    //   alpha line 1    ---------C--/--'-------------
+    //                           '  /  '
+    //                          '  /  '
+    //                         '  P  '
+    //                        '  /  '
+    //
+    //     beta lines 0 & 1 with one of the given line inbetween
+    //
+    //
+    //  P = the given P0, P1, P2 points
+    //
+    //  d = the given distance / radius of the circle
+    //
+    //  C = the center of the circle/corner to be determined
+
+    var alphaLines = getParallelsAroundSegment(x0, y0, x1, y1, distance),
+        betaLines = getParallelsAroundSegment(x1, y1, x2, y2, distance),
+        permutations = permuteLines(alphaLines, betaLines),
+        intersections = permutations.map(function (p) {
+      return getIntersectionOfTwoLines(p.alpha, p.beta);
+    }),
+        center = intersections.filter(function (i) {
+      return isCenterInBetween(i.x, i.y, x0, y0, x1, y1, x2, y2);
+    })[0];
+
+    return center || { x: NaN, y: NaN };
+  },
+      getTheFootOfThePerpendicular = function getTheFootOfThePerpendicular(x1, y1, x2, y2, cx, cy) {
+    var m = (y2 - y1) / (x2 - x1),
+        cm = -1 / m,
+        C = y1 * (x2 - x1) - x1 * (y2 - y1),
+        x = (C - (x2 - x1) * (cy - cm * cx)) / (cm * (x2 - x1) + y1 - y2),
+        y = cm * (x - cx) + cy;
+    return m === 0 // horizontal
+    ? { x: cx, y: y1 } : m === Infinity // vertical
+    ? { x: x1, y: cy } : { x: x, y: y };
+  },
+      xyToArcAngle = function xyToArcAngle(cx, cy, x, y) {
+    var horizontalX = cx + 1,
+        horizontalY = cy,
+        a = Math.abs(getAngleBetweenThreePoints(x, y, cx, cy, horizontalX, horizontalY));
+    if (y < cy) {
+      //third & forth quadrants
+      a = Math.PI + Math.PI - a;
+    }
+    return a;
+  },
+      collinear = function collinear(x0, y0, x1, y1, x2, y2) {
+    var m1 = (y1 - y0) / (x1 - x0),
+        m2 = (y2 - y1) / (x2 - x1);
+    return almostEqual(m1, m2);
+  },
+      decomposeArcTo = function decomposeArcTo(x0, y0, x1, y1, x2, y2, r) {
+    var decomposition = {
+      line: { x1: NaN, y1: NaN, x2: NaN, y2: NaN },
+      arc: { x: NaN, y: NaN, r: NaN, sAngle: NaN, eAngle: NaN, counterclockwise: false },
+      point: { x: x1, y: y1 }
+    };
+    if (collinear(x0, y0, x1, y1, x2, y2)) {
+      decomposition.line = { x1: x0, y1: y0, x2: x1, y2: y1 };
+    } else if (!isNaN(x0) && !isNaN(y0)) {
+      var center = getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r),
+          foot1 = getTheFootOfThePerpendicular(x0, y0, x1, y1, center.x, center.y),
+          foot2 = getTheFootOfThePerpendicular(x1, y1, x2, y2, center.x, center.y),
+          angleFoot1 = xyToArcAngle(center.x, center.y, foot1.x, foot1.y),
+          angleFoot2 = xyToArcAngle(center.x, center.y, foot2.x, foot2.y),
+          sAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot2 : angleFoot1,
+          eAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot1 : angleFoot2;
+      if (!isNaN(center.x) && !isNaN(center.y)) {
+        decomposition = {
+          line: { x1: x0, y1: y0, x2: foot1.x, y2: foot1.y },
+          arc: { x: center.x, y: center.y, r: r, sAngle: sAngle, eAngle: eAngle, counterclockwise: false },
+          point: { x: foot2.x, y: foot2.y }
+        };
+      }
+    }
+    return decomposition;
+  },
 
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
@@ -370,5 +520,12 @@ function Geometry() {
   this.union = union;
   this.totalTransform = totalTransform;
   this.getRectAroundLine = getRectAroundLine;
+  this.getParallelsAroundSegment = getParallelsAroundSegment;
+  this.getIntersectionOfTwoLines = getIntersectionOfTwoLines;
+  this.getAngleBetweenThreePoints = getAngleBetweenThreePoints;
+  this.getTheCenterOfTheCorner = getTheCenterOfTheCorner;
+  this.getTheFootOfThePerpendicular = getTheFootOfThePerpendicular;
+  this.xyToArcAngle = xyToArcAngle;
+  this.decomposeArcTo = decomposeArcTo;
   this.isPointInsideRectangle = isPointInsideRectangle;
 }

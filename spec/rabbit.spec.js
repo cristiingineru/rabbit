@@ -835,6 +835,41 @@ describe('Rabbit', () => {
           expect(box.width).toBe(8);
           expect(box.height).toBe(8);
         });
+
+        it('should return the box of a translated stoked arcTo with lineWidth=4', () => {
+          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2,
+              tx = 10, ty = 11;
+          ctx.translate(tx, ty);
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(3 + tx);
+          expect(box.y).toBe(-2 + ty);
+          expect(box.width).toBe(8);
+          expect(box.height).toBe(8);
+        });
+
+        it('should return the box of a scaled stoked arcTo with lineWidth=4', () => {
+          var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2,
+              sx = 10, sy = 10;
+          ctx.scale(sx, sy);
+          ctx.moveTo(x0, y0);
+          ctx.arcTo(x1, y1, x2, y2, r);
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          var box = rabbit.getBBox(ctx.stack());
+
+          expect(box.x).toBe(3 * sx);
+          expect(box.y).toBe(-2 * sy);
+          expect(box.width).toBe(8 * sx);
+          expect(box.height).toBe(8 * sy);
+        });
+
       });
 
       // tests for each path shape that it moves the cursor position!!
