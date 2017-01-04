@@ -7,7 +7,10 @@ exports.Geometry = Geometry;
 function Geometry() {
 
   var that = this,
-      EPSILON = Number.EPSILON || 2.220446049250313e-16;
+      EPSILON = Number.EPSILON || 2.220446049250313e-16,
+      PI = Math.PI,
+      sin = Math.sin,
+      cos = Math.cos;
 
   var createNewCanvasCallState = function createNewCanvasCallState() {
     return {
@@ -56,11 +59,17 @@ function Geometry() {
           cy = shape.cy,
           rx = shape.rx,
           ry = shape.ry,
-          scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
-          xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
-          yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
-          newBox = { x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth };
-      if (!isNaN(cx) && !isNaN(cy)) {
+          sAngle = shape.sAngle,
+          eAngle = shape.eAngle,
+          counterclockwise = shape.counterclockwise,
+
+      //scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
+      //xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
+      //yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
+      //newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth},
+      arcPoints = relevantArcPoints(cx, cy, rx, sAngle, eAngle, counterclockwise),
+          newBox = boxPoints(arcPoints);
+      if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
         state.box = union(state.box, newBox);
       }
       return state;
@@ -119,9 +128,13 @@ function Geometry() {
     arc: function arc(state, call) {
       var cx = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
           cy = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
-          rx = call.arguments[2] * state.transform.scale.x,
-          ry = call.arguments[2] * state.transform.scale.y;
-      state.shapesInPath.push({ type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry });
+          r = call.arguments[2],
+          rx = r * state.transform.scale.x,
+          ry = r * state.transform.scale.y,
+          sAngle = call.arguments[3],
+          eAngle = call.arguments[4],
+          counterclockwise = call.arguments[5] || false;
+      state.shapesInPath.push({ type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry, sAngle: sAngle, eAngle: eAngle, counterclockwise: counterclockwise });
       return state;
     },
     moveTo: function moveTo(state, call) {
@@ -151,7 +164,7 @@ function Geometry() {
         state.shapesInPath.push({ type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2 });
       }
       if (decomposition.arc) {
-        state.shapesInPath.push({ type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r });
+        state.shapesInPath.push({ type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r, sAngle: decomposition.arc.sAngle, eAngle: decomposition.arc.eAngle, counterclockwise: decomposition.arc.counterclockwise });
       }
       state.moveToLocation = { x: decomposition.point.x, y: decomposition.point.y };
       return state;
@@ -252,6 +265,28 @@ function Geometry() {
       height: Math.max(box1.height, box2.height, box1.y < box2.y ? box1.height + box2.height + (box2.y - (box1.y + box1.height)) : box1.height + box2.height + (box1.y - (box2.y + box2.height)))
     };
     return result;
+  },
+      boxPoints = function boxPoints(points) {
+    var xes = points.map(function (p) {
+      return p.x;
+    }),
+        yes = points.map(function (p) {
+      return p.y;
+    }),
+        minX = Math.min.apply(null, xes),
+        maxX = Math.max.apply(null, xes),
+        minY = Math.min.apply(null, yes),
+        maxY = Math.max.apply(null, yes),
+        box = { x: NaN, y: NaN, width: NaN, height: NaN };
+    if (minX !== +Infinity && maxX !== -Infinity && minY !== +Infinity && maxY !== -Infinity) {
+      box = {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY
+      };
+    }
+    return box;
   },
       totalTransform = function totalTransform(transforms) {
     return transforms.map(function (value) {
@@ -472,6 +507,11 @@ function Geometry() {
           angleFoot2 = xyToArcAngle(center.x, center.y, foot2.x, foot2.y),
           sAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot2 : angleFoot1,
           eAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot1 : angleFoot2;
+      if (sAngle > eAngle) {
+        var temp = sAngle;
+        sAngle = eAngle;
+        eAngle = temp + 2 * PI;
+      }
       if (!isNaN(center.x) && !isNaN(center.y)) {
         decomposition.line = { x1: x0, y1: y0, x2: foot1.x, y2: foot1.y };
         decomposition.arc = { x: center.x, y: center.y, r: r, sAngle: sAngle, eAngle: eAngle, counterclockwise: false };
@@ -479,6 +519,36 @@ function Geometry() {
       }
     }
     return decomposition;
+  },
+      relevantArcPoints = function relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise) {
+    var points = [],
+        relevantPoints = [];
+    points.push({ x: cx + r * cos(sAngle), y: cy + r * sin(sAngle) });
+    points.push({ x: cx + r * cos(eAngle), y: cy + r * sin(eAngle) });
+    if (counterclockwise) {
+      var temp = sAngle;
+      sAngle = eAngle;
+      eAngle = sAngle + 2 * PI;
+    }
+    [1 * PI / 2, 2 * PI / 2, 3 * PI / 2, 4 * PI / 2].forEach(function (a) {
+      if (eAngle > a && a > sAngle) {
+        points.push({ x: cx + r * cos(a), y: cy + r * sin(a) });
+      }
+    });
+
+    //removing the duplicated points
+    relevantPoints.push(points.pop());
+    while (points.length > 0) {
+      var point = points.pop(),
+          found = relevantPoints.find(function (p) {
+        return almostEqual(point.x, p.x) && almostEqual(point.y, p.y);
+      });
+      if (!found) {
+        relevantPoints.push(point);
+      }
+    }
+
+    return relevantPoints;
   },
 
 

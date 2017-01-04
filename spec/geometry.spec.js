@@ -817,7 +817,7 @@ describe('Geometry', () => {
           { // ┐
             x0: 10, y0: 5, x1: 20, y1: 5, x2: 20, y2: 30, r: r,
             linex1: +0, liney1: +0, linex2: -r, liney2: +0,
-            arcx: -r, arcy: +r, arcsAngle: 3 * Math.PI / 2, arceAngle: 0 * Math.PI / 2,
+            arcx: -r, arcy: +r, arcsAngle: 0 * Math.PI / 2, arceAngle: 3 * Math.PI / 2,
             pointx: +0, pointy: +r
           }
         ].forEach((tc) => {
@@ -832,9 +832,12 @@ describe('Geometry', () => {
           expect(arcTo.arc.x).toBe(tc.x1 + tc.arcx);
           expect(arcTo.arc.y).toBe(tc.y1 + tc.arcy);
           expect(arcTo.arc.r).toBe(tc.r);
-          expect(arcTo.arc.sAngle).toBeCloseTo(tc.arcsAngle, 8);
-          expect(arcTo.arc.eAngle).toBeCloseTo(tc.arceAngle, 8);
+          expect(arcTo.arc.sAngle % (2*Math.PI)).toBeCloseTo(tc.arcsAngle, 8);
+          expect(arcTo.arc.eAngle % (2*Math.PI)).toBeCloseTo(tc.arceAngle, 8);
           expect(arcTo.arc.counterclockwise).toBe(false);
+
+          //the order of the angles is also important
+          expect(arcTo.arc.sAngle).toBeLessThan(arcTo.arc.eAngle);
 
           expect(arcTo.point.x).toBe(tc.x1 + tc.pointx);
           expect(arcTo.point.y).toBe(tc.y1 + tc.pointy);

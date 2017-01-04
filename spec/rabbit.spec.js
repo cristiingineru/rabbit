@@ -61,8 +61,8 @@ describe('Rabbit', () => {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should return the box of a stroked arc', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
+        it('should return the box of a stroked 2*PI arc', () => {
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.stroke();
 
@@ -89,8 +89,8 @@ describe('Rabbit', () => {
           expect(box.height).toEqual(NaN);
         });
 
-        it('should return the box of a stroked arc width lineWidth = 2', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+        it('should return the box of a stroked 2*PI arc width lineWidth = 2', () => {
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise,
             lineWidth = 2;
           ctx.lineWidth = lineWidth;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -144,7 +144,7 @@ describe('Rabbit', () => {
           expect(box.height).toBe(2 * r + lineWidth2);
         });
 
-        it('should return an undefined box when the angle is zero or almost zero', () => {
+        it('should return an undefined box when the angle is zero or almost zero (different counterclockwise)', () => {
           var cx = 10, cy = 20, r = 7;
 
           [{
@@ -170,7 +170,7 @@ describe('Rabbit', () => {
           });
         });
 
-        it('should return the box of a stroked arc segment', () => {
+        it('should return the box of a stroked arc segment (different counterclockwise)', () => {
           var cx = 10, cy = 20, r = 7;
 
           [{
@@ -831,8 +831,8 @@ describe('Rabbit', () => {
 
           expect(box.x).toBe(5);
           expect(box.y).toBe(0);
-          expect(box.width).toBe(4);
-          expect(box.height).toBe(4);
+          expect(box.width).toBeCloseTo(2, 8);
+          expect(box.height).toBeCloseTo(2, 8);
         });
 
         it('should move the cursor for the next draw instruction for a stoked arcTo that contains an arc only', () => {
@@ -846,8 +846,8 @@ describe('Rabbit', () => {
 
           expect(box.x).toEqual(3);
           expect(box.y).toEqual(0);
-          expect(box.width).toEqual(6);
-          expect(box.height).toEqual(4);
+          expect(box.width).toBeCloseTo(4);
+          expect(box.height).toBeCloseTo(4);
         });
 
         it('should return the box of a stoked arcTo that contains an arc and a line', () => {
@@ -860,8 +860,8 @@ describe('Rabbit', () => {
 
           expect(box.x).toBe(5);
           expect(box.y).toBe(0);
-          expect(box.width).toBe(6);
-          expect(box.height).toBe(4);
+          expect(box.width).toBeCloseTo(6);
+          expect(box.height).toBeCloseTo(2);
         });
 
         it('should move the cursor for the next draw instruction for a stoked arcTo that contains an arc and a line', () => {
@@ -875,8 +875,8 @@ describe('Rabbit', () => {
 
           expect(box.x).toBe(3);
           expect(box.y).toBe(0);
-          expect(box.width).toBe(8);
-          expect(box.height).toBe(4);
+          expect(box.width).toBeCloseTo(8);
+          expect(box.height).toBeCloseTo(4);
         });
 
         it('should return the box of a stoked arcTo with lineWidth=4', () => {

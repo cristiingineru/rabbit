@@ -125,7 +125,7 @@ ctx.stroke();
 `,
 
 `//inputs: ctx, sizeIndex;
-var r = 6;
+var r = 8;
 ctx.scale(sizeIndex + 1, sizeIndex + 1);
 ctx.moveTo(5 + r, 25 - r);
 ctx.arcTo(25,  5, 45, 25, r);

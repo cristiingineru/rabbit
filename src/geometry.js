@@ -68,7 +68,7 @@ export function Geometry() {
         //newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth},
         arcPoints = relevantArcPoints(cx, cy, rx, sAngle, eAngle, counterclockwise),
         newBox = boxPoints(arcPoints);
-      if (!isNaN(cx) && !isNaN(cy)) {
+      if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
         state.box = union(state.box, newBox);
       }
       return state;
@@ -164,7 +164,7 @@ export function Geometry() {
         state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
       }
       if (decomposition.arc) {
-        state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r});
+        state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r, sAngle: decomposition.arc.sAngle, eAngle: decomposition.arc.eAngle, counterclockwise: decomposition.arc.counterclockwise});
       }
       state.moveToLocation = {x: decomposition.point.x, y: decomposition.point.y};
       return state;
@@ -535,6 +535,11 @@ export function Geometry() {
           angleFoot2 = xyToArcAngle(center.x, center.y, foot2.x, foot2.y),
           sAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot2 : angleFoot1,
           eAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot1 : angleFoot2;
+      if (sAngle > eAngle) {
+        var temp = sAngle;
+        sAngle = eAngle;
+        eAngle = temp + 2*PI;
+      }
       if (!isNaN(center.x) && !isNaN(center.y)) {
         decomposition.line = {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y};
         decomposition.arc = {x: center.x, y: center.y, r: r, sAngle: sAngle, eAngle: eAngle, counterclockwise: false};
@@ -544,15 +549,8 @@ export function Geometry() {
     return decomposition;
   },
 
-  //normalizeAngle = (a) => {
-  //  return Math.atan2(Math.sin(a), Math.cos(a));
-  //},
-
   relevantArcPoints = (cx, cy, r, sAngle, eAngle, counterclockwise) => {
-    var points = [];
-    //sAngle = normalizeAngle(sAngle);
-    //eAngle = normalizeAngle(eAngle);
-    //if (!almostEqual(sAngle, eAngle) || (almostEqual(sAngle, eAngle) && counterclockwise)) {
+    var points = [], relevantPoints = [];
       points.push({x: cx + r*cos(sAngle), y: cy + r*sin(sAngle)});
       points.push({x: cx + r*cos(eAngle), y: cy + r*sin(eAngle)});
       if (counterclockwise) {
@@ -565,8 +563,18 @@ export function Geometry() {
           points.push({x: cx + r*cos(a), y: cy + r*sin(a)});
         }
       });
-    //}
-    return points;
+
+    //removing the duplicated points
+    relevantPoints.push(points.pop());
+    while(points.length > 0) {
+      var point = points.pop(),
+          found = relevantPoints.find((p) => almostEqual(point.x, p.x) && almostEqual(point.y, p.y));
+      if (!found) {
+        relevantPoints.push(point);
+      }
+    }
+
+    return relevantPoints;
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
