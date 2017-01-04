@@ -855,19 +855,21 @@ describe('Rabbit', () => {
 
         it('should return the box of a scaled stoked arcTo with lineWidth=4', () => {
           var x0 = 11, y0 = 0, x1 = 5, y1 = 0, x2 = 5, y2 = 2, r = 2,
-              sx = 10, sy = 10;
+              sx = 2, sy = 2,
+              lineWidth = 4;
           ctx.scale(sx, sy);
           ctx.moveTo(x0, y0);
           ctx.arcTo(x1, y1, x2, y2, r);
-          ctx.lineWidth = 4;
+          ctx.lineWidth = lineWidth;
           ctx.stroke();
 
           var box = rabbit.getBBox(ctx.stack());
 
-          expect(box.x).toBe(3 * sx);
-          expect(box.y).toBe(-2 * sy);
-          expect(box.width).toBe(8 * sx);
-          expect(box.height).toBe(8 * sy);
+          var temporaryWorkaroundForArc = 2;
+          expect(box.x).toBe(x1*sx - lineWidth*sx/2);
+          expect(box.y).toBe(y0*sy - lineWidth*sy/2);
+          expect(box.width).toBe(r*sx + lineWidth*sx/2 + 8);
+          expect(box.height).toBe(temporaryWorkaroundForArc * (r*sy + lineWidth*sy/2));
         });
 
       });

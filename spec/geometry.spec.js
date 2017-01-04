@@ -774,17 +774,9 @@ describe('Geometry', () => {
 
           var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
 
-          expect(arcTo.line.x1).toEqual(NaN);
-          expect(arcTo.line.y1).toEqual(NaN);
-          expect(arcTo.line.x2).toEqual(NaN);
-          expect(arcTo.line.y2).toEqual(NaN);
+          expect(arcTo.line).toBeFalsy();
 
-          expect(arcTo.arc.x).toEqual(NaN);
-          expect(arcTo.arc.y).toEqual(NaN);
-          expect(arcTo.arc.r).toEqual(NaN);
-          expect(arcTo.arc.sAngle).toEqual(NaN);
-          expect(arcTo.arc.eAngle).toEqual(NaN);
-          expect(arcTo.arc.counterclockwise).toBe(false);
+          expect(arcTo.arc).toBeFalsy();
 
           expect(arcTo.point.x).toBe(tc.x1);
           expect(arcTo.point.y).toBe(tc.y1);
@@ -805,12 +797,7 @@ describe('Geometry', () => {
           expect(arcTo.line.x2).toBe(tc.x1);
           expect(arcTo.line.y2).toBe(tc.y1);
 
-          expect(arcTo.arc.x).toEqual(NaN);
-          expect(arcTo.arc.y).toEqual(NaN);
-          expect(arcTo.arc.r).toEqual(NaN);
-          expect(arcTo.arc.sAngle).toEqual(NaN);
-          expect(arcTo.arc.eAngle).toEqual(NaN);
-          expect(arcTo.arc.counterclockwise).toBe(false);
+          expect(arcTo.arc).toBeFalsy();
 
           expect(arcTo.point.x).toBe(tc.x1);
           expect(arcTo.point.y).toBe(tc.y1);

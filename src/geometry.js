@@ -141,20 +141,19 @@ export function Geometry() {
     },
     arcTo: (state, call) => {
       var x0 = state.moveToLocation.x,
-        y0 = state.moveToLocation.y,
-        x1 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
-        y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
-        x2 = call.arguments[2] * state.transform.scale.x + state.transform.translate.x,
-        y2 = call.arguments[3] * state.transform.scale.y + state.transform.translate.y,
-        //
-        //            TODO !!
-        //
-        // To simplify the math, the scaling has to be moved after decomposing the arc,
-        //but before adding the new shapes to the state.shapesInPath array.
-        r = call.arguments[4] * state.transform.scale.x,
-        decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
-      state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
-      state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r});
+          y0 = state.moveToLocation.y,
+          x1 = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
+          y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
+          x2 = call.arguments[2] * state.transform.scale.x + state.transform.translate.x,
+          y2 = call.arguments[3] * state.transform.scale.y + state.transform.translate.y,
+          r = call.arguments[4] * state.transform.scale.x,
+          decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+      if (decomposition.line) {
+        state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
+      }
+      if (decomposition.arc) {
+        state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r});
+      }
       state.moveToLocation = {x: decomposition.point.x, y: decomposition.point.y};
       return state;
     },
@@ -419,7 +418,7 @@ export function Geometry() {
 
   almostEqual = (a, b) => {
     // gross approximation to cover the flot and trigonometric precision
-    return a === b || Math.abs(a - b) < 5 * EPSILON;
+    return a === b || Math.abs(a - b) < 20 * EPSILON;
   },
 
   isCenterInBetween = (cx, cy, x0, y0, x1, y1, x2, y2) => {
@@ -493,8 +492,6 @@ export function Geometry() {
 
   decomposeArcTo = (x0, y0, x1, y1, x2, y2, r) => {
     var decomposition = {
-      line: {x1: NaN, y1: NaN, x2: NaN, y2: NaN},
-      arc: {x: NaN, y: NaN, r: NaN, sAngle: NaN, eAngle: NaN, counterclockwise: false},
       point: {x: x1, y: y1}
     };
     if(collinear(x0, y0, x1, y1, x2, y2)) {
@@ -508,11 +505,9 @@ export function Geometry() {
           sAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot2 : angleFoot1,
           eAngle = Math.abs(angleFoot2 - angleFoot1) < Math.PI ? angleFoot1 : angleFoot2;
       if (!isNaN(center.x) && !isNaN(center.y)) {
-        decomposition = {
-          line: {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y},
-          arc: {x: center.x, y: center.y, r: r, sAngle: sAngle, eAngle: eAngle, counterclockwise: false},
-          point: {x: foot2.x, y: foot2.y}
-        };
+        decomposition.line = {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y};
+        decomposition.arc = {x: center.x, y: center.y, r: r, sAngle: sAngle, eAngle: eAngle, counterclockwise: false};
+        decomposition.point = {x: foot2.x, y: foot2.y};
       }
     }
     return decomposition;
