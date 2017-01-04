@@ -122,6 +122,21 @@ ctx.stroke();
 ctx.strokeStyle = 'black';
 ctx.lineWidth = 4;
 ctx.stroke();
+`,
+
+`//inputs: ctx, sizeIndex;
+var r = 6;
+ctx.scale(sizeIndex + 1, sizeIndex + 1);
+ctx.moveTo(5 + r, 25 - r);
+ctx.arcTo(25,  5, 45, 25, r);
+ctx.arcTo(45, 25, 25, 45, r);
+ctx.arcTo(25, 45,  5, 25, r);
+ctx.arcTo( 5, 25, 25,  5, r);
+ctx.closePath();
+ctx.strokeStyle = 'black';
+ctx.lineWidth = 2 * sizeIndex + 1;
+//ctx.lineWidth = 1 / (sizeIndex + 1);
+ctx.stroke();
 `
 
 ];
