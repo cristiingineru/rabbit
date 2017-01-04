@@ -763,6 +763,30 @@ describe('Geometry', () => {
     });
 
 
+    describe('scaledRadius', () => {
+
+      it('should return the scaled radius when the x and y scales are the same', () => {
+        [
+          {r: 1, sx: 1, sx: 1, a: 0*Math.PI/6, sr: 1},
+          {r: 1, sx: 1, sx: 1, a: 1*Math.PI/6, sr: 1},
+          {r: 1, sx: 2, sx: 2, a: 2*Math.PI/6, sr: 2},
+          {r: 3, sx: 3, sx: 3, a: 3*Math.PI/6, sr: 9},
+          {r: 2, sx: 2, sx: 2, a: 4*Math.PI/6, sr: 4},
+          {r: 1, sx: 3, sx: 3, a: 5*Math.PI/6, sr: 3},
+          {r: 1, sx: 3, sx: 3, a: 6*Math.PI/6, sr: 3},
+          {r: 1, sx: 3, sx: 3, a: 7*Math.PI/6, sr: 3},
+          {r: 1, sx: 3, sx: 3, a: 8*Math.PI/6, sr: 3},
+          {r: 1, sx: 3, sx: 3, a: 9*Math.PI/6, sr: 3}
+        ].forEach((tc) => {
+          var d = geometry.scaledRadius(tc.r, tc.sx, tc.sy, tc.a);
+
+          expect(d).toBeCloseTo(tc.sr, 8);
+        });
+      });
+
+    });
+
+
     describe('decomposeArcTo', () => {
 
       it('should return only a valid end point when the points are the same or the (x0, y0) is not specified', () => {

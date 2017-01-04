@@ -515,6 +515,10 @@ export function Geometry() {
     return a;
   },
 
+  scaledRadius = (r, sx, sy, a) => {
+    return r * sx;
+  },
+
   collinear = (x0, y0, x1, y1, x2, y2) => {
     var m1 = (y1 - y0) / (x1 - x0),
         m2 = (y2 - y1) / (x2 - x1);
@@ -622,6 +626,7 @@ export function Geometry() {
   this.getTheCenterOfTheCorner = getTheCenterOfTheCorner;
   this.getTheFootOfThePerpendicular = getTheFootOfThePerpendicular;
   this.xyToArcAngle = xyToArcAngle;
+  this.scaledRadius = scaledRadius;
   this.decomposeArcTo = decomposeArcTo;
   this.isPointInsideRectangle = isPointInsideRectangle;
 
