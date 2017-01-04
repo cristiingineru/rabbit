@@ -4,7 +4,10 @@
 export function Geometry() {
 
   var that = this,
-      EPSILON = Number.EPSILON || 2.220446049250313e-16;
+      EPSILON = Number.EPSILON || 2.220446049250313e-16,
+      PI = Math.PI,
+      sin = Math.sin,
+      cos = Math.cos;
 
 
   var createNewCanvasCallState = () => {
@@ -56,10 +59,15 @@ export function Geometry() {
         cy = shape.cy,
         rx = shape.rx,
         ry = shape.ry,
-        scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
-        xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
-        yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
-        newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth};
+        sAngle = shape.sAngle,
+        eAngle = shape.eAngle,
+        counterclockwise = shape.counterclockwise,
+        //scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
+        //xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
+        //yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
+        //newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth},
+        arcPoints = relevantArcPoints(cx, cy, rx, sAngle, eAngle, counterclockwise),
+        newBox = boxPoints(arcPoints);
       if (!isNaN(cx) && !isNaN(cy)) {
         state.box = union(state.box, newBox);
       }
@@ -120,9 +128,13 @@ export function Geometry() {
     arc: (state, call) => {
       var cx = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         cy = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
-        rx = call.arguments[2] * state.transform.scale.x,
-        ry = call.arguments[2] * state.transform.scale.y;
-      state.shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry});
+        r = call.arguments[2],
+        rx = r * state.transform.scale.x,
+        ry = r * state.transform.scale.y,
+        sAngle = call.arguments[3],
+        eAngle = call.arguments[4],
+        counterclockwise = call.arguments[5] || false;
+      state.shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry, sAngle: sAngle, eAngle: eAngle, counterclockwise: counterclockwise});
       return state;
     },
     moveTo: (state, call) => {
@@ -270,6 +282,25 @@ export function Geometry() {
         : box1.height + box2.height + (box1.y - (box2.y + box2.height)))
     };
     return result;
+  },
+
+  boxPoints = (points) => {
+    var xes = points.map((p) => p.x),
+        yes = points.map((p) => p.y),
+        minX = Math.min.apply(null, xes),
+        maxX = Math.max.apply(null, xes),
+        minY = Math.min.apply(null, yes),
+        maxY = Math.max.apply(null, yes),
+        box = {x: NaN, y: NaN, width: NaN, height: NaN};
+    if (minX !== +Infinity && maxX !== -Infinity && minY !== +Infinity && maxY !== -Infinity) {
+      box = {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY
+      };
+    }
+    return box;
   },
 
   totalTransform = (transforms) => {
@@ -511,6 +542,31 @@ export function Geometry() {
       }
     }
     return decomposition;
+  },
+
+  //normalizeAngle = (a) => {
+  //  return Math.atan2(Math.sin(a), Math.cos(a));
+  //},
+
+  relevantArcPoints = (cx, cy, r, sAngle, eAngle, counterclockwise) => {
+    var points = [];
+    //sAngle = normalizeAngle(sAngle);
+    //eAngle = normalizeAngle(eAngle);
+    //if (!almostEqual(sAngle, eAngle) || (almostEqual(sAngle, eAngle) && counterclockwise)) {
+      points.push({x: cx + r*cos(sAngle), y: cy + r*sin(sAngle)});
+      points.push({x: cx + r*cos(eAngle), y: cy + r*sin(eAngle)});
+      if (counterclockwise) {
+        var temp = sAngle;
+        sAngle = eAngle;
+        eAngle = sAngle + 2*PI;
+      }
+      [1*PI/2, 2*PI/2, 3*PI/2, 4*PI/2].forEach((a) => {
+        if(eAngle > a && a > sAngle) {
+          points.push({x: cx + r*cos(a), y: cy + r*sin(a)});
+        }
+      });
+    //}
+    return points;
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not

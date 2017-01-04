@@ -144,6 +144,64 @@ describe('Rabbit', () => {
           expect(box.height).toBe(2 * r + lineWidth2);
         });
 
+        it('should return an undefined box when the angle is zero or almost zero', () => {
+          var cx = 10, cy = 20, r = 7;
+
+          [{
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 0, counterclockwise: false,
+            box: {x: cx - r, y: cy - r, width: 2*r, height: 2*r}
+          }, {
+            cx: cx, cy: cy, r: r, sAngle: Math.PI/2, eAngle: Math.PI/2, counterclockwise: false,
+            box: {x: cx - r, y: cy - r, width: 2*r, height: 2*r}
+          }, {
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 4*Math.PI/2, counterclockwise: true,
+            box: {x: cx - r, y: cy - r, width: 2*r, height: 2*r}
+          }].forEach((tc) => {
+            ctx.clear();
+            ctx.arc(tc.cx, tc.cy, tc.r, tc.sAngle, tc.eAngle, tc.counterclockwise);
+            ctx.stroke();
+
+            var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+
+            expect(box.x).toEqual(NaN);
+            expect(box.y).toEqual(NaN);
+            expect(box.width).toEqual(NaN);
+            expect(box.height).toEqual(NaN);
+          });
+        });
+
+        it('should return the box of a stroked arc segment', () => {
+          var cx = 10, cy = 20, r = 7;
+
+          [{
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 4*Math.PI/2, counterclockwise: false,
+            box: {x: cx - r, y: cy - r, width: 2*r, height: 2*r}
+          }, {
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 2*Math.PI/2, counterclockwise: false,
+            box: {x: cx - r, y: cy, width: 2*r, height: r}
+          }, {
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: Math.PI, counterclockwise: true,
+            box: {x: cx - r, y: cy - r, width: 2*r, height: r}
+          }, {
+            cx: cx, cy: cy, r: r, sAngle: Math.PI/2, eAngle: Math.PI, counterclockwise: false,
+            box: {x: cx - r, y: cy, width: r, height: r}
+          }, {
+            cx: cx, cy: cy, r: r, sAngle: Math.PI/2, eAngle: Math.PI, counterclockwise: true,
+            box: {x: cx - r, y: cy - r, width: 2*r, height: 2*r}
+          }].forEach((tc) => {
+            ctx.clear();
+            ctx.arc(tc.cx, tc.cy, tc.r, tc.sAngle, tc.eAngle, tc.counterclockwise);
+            ctx.stroke();
+
+            var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+
+            expect(box.x).toBeCloseTo(tc.box.x, 8);
+            expect(box.y).toBeCloseTo(tc.box.y, 8);
+            expect(box.width).toBeCloseTo(tc.box.width, 8);
+            expect(box.height).toBeCloseTo(tc.box.height, 8);
+          });
+        });
+
       });
 
 
