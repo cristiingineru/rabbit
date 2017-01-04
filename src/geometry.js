@@ -516,7 +516,17 @@ export function Geometry() {
   },
 
   scaledRadius = (r, sx, sy, a) => {
-    return r * sx;
+    var na = a % (2*PI);
+    if (sx === sy) {
+      return r * sx;
+    } else if (almostEqual(na, 0) || almostEqual(na, PI)) {
+      return r * sx;
+    }
+    else if (almostEqual(na, PI/2) || almostEqual(na, 3*PI/2)) {
+      return r * sy;
+    } else if (na > PI/2) {
+      return r * (sx * (PI/2-na)/(PI/2) + sy * (na)/(PI/2));
+    }
   },
 
   collinear = (x0, y0, x1, y1, x2, y2) => {

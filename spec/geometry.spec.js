@@ -767,20 +767,70 @@ describe('Geometry', () => {
 
       it('should return the scaled radius when the x and y scales are the same', () => {
         [
-          {r: 1, sx: 1, sx: 1, a: 0*Math.PI/6, sr: 1},
-          {r: 1, sx: 1, sx: 1, a: 1*Math.PI/6, sr: 1},
-          {r: 1, sx: 2, sx: 2, a: 2*Math.PI/6, sr: 2},
-          {r: 3, sx: 3, sx: 3, a: 3*Math.PI/6, sr: 9},
-          {r: 2, sx: 2, sx: 2, a: 4*Math.PI/6, sr: 4},
-          {r: 1, sx: 3, sx: 3, a: 5*Math.PI/6, sr: 3},
-          {r: 1, sx: 3, sx: 3, a: 6*Math.PI/6, sr: 3},
-          {r: 1, sx: 3, sx: 3, a: 7*Math.PI/6, sr: 3},
-          {r: 1, sx: 3, sx: 3, a: 8*Math.PI/6, sr: 3},
-          {r: 1, sx: 3, sx: 3, a: 9*Math.PI/6, sr: 3}
+          {r: 1, sx: 1, sy: 1, a: 0*Math.PI/6},
+          {r: 1, sx: 1, sy: 1, a: 1*Math.PI/6},
+          {r: 1, sx: 2, sy: 2, a: 2*Math.PI/6},
+          {r: 3, sx: 3, sy: 3, a: 3*Math.PI/6},
+          {r: 2, sx: 2, sy: 2, a: 4*Math.PI/6},
+          {r: 1, sx: 3, sy: 3, a: 5*Math.PI/6},
+          {r: 2, sx: 3, sy: 3, a: 6*Math.PI/6},
+          {r: 3, sx: 3, sy: 3, a: 7*Math.PI/6},
+          {r: 4, sx: 3, sy: 3, a: 8*Math.PI/6},
+          {r: 5, sx: 3, sy: 3, a: 9*Math.PI/6}
         ].forEach((tc) => {
           var d = geometry.scaledRadius(tc.r, tc.sx, tc.sy, tc.a);
 
-          expect(d).toBeCloseTo(tc.sr, 8);
+          expect(d).toBeCloseTo(tc.r * tc.sx, 8);
+          expect(d).toBeCloseTo(tc.r * tc.sy, 8);
+        });
+      });
+
+      it('should return the scaled radius with sx only for a = 0 or PI', () => {
+        [
+          {r: 1, sx: 1, sy: 11, a: 0*Math.PI/2},
+          {r: 1, sx: 1, sy: 11, a: 2*Math.PI/2},
+          {r: 1, sx: 2, sy: 22, a: 4*Math.PI/2},
+          {r: 3, sx: 3, sy: 33, a: 6*Math.PI/2},
+          {r: 2, sx: 2, sy: 22, a: 8*Math.PI/2}
+        ].forEach((tc) => {
+          var d = geometry.scaledRadius(tc.r, tc.sx, tc.sy, tc.a);
+
+          expect(d).toBeCloseTo(tc.r * tc.sx, 8);
+        });
+      });
+
+      it('should return the scaled radius with sy only for a = PI/2 or 3*PI/2', () => {
+        [
+          {r: 1, sx: 1, sy: 11, a: 1*Math.PI/2},
+          {r: 1, sx: 1, sy: 11, a: 3*Math.PI/2},
+          {r: 1, sx: 2, sy: 22, a: 5*Math.PI/2},
+          {r: 3, sx: 3, sy: 33, a: 7*Math.PI/2},
+          {r: 2, sx: 2, sy: 22, a: 9*Math.PI/2}
+        ].forEach((tc) => {
+          var d = geometry.scaledRadius(tc.r, tc.sx, tc.sy, tc.a);
+
+          expect(d).toBeCloseTo(tc.r * tc.sy, 8);
+        });
+      });
+
+      it('should return the scaled radius with sx and sy depending on the angle', () => {
+        [
+          //{r: 1, sx: 1, sy: 1, a: 0*Math.PI/6},
+          {r: 1, sx: 1, sy: 11, a: 1*Math.PI/6},
+          {r: 1, sx: 2, sy: 22, a: 2*Math.PI/6},
+          //{r: 3, sx: 3, sy: 3, a: 3*Math.PI/6},
+          {r: 2, sx: 2, sy: 22, a: 4*Math.PI/6},
+          {r: 1, sx: 3, sy: 33, a: 5*Math.PI/6},
+          //{r: 1, sx: 3, sy: 3, a: 6*Math.PI/6},
+          {r: 1, sx: 3, sy: 33, a: 7*Math.PI/6},
+          {r: 1, sx: 3, sy: 33, a: 8*Math.PI/6},
+          //{r: 1, sx: 3, sy: 3, a: 9*Math.PI/6}
+        ].forEach((tc) => {
+          var d = geometry.scaledRadius(tc.r, tc.sx, tc.sy, tc.a);
+
+          expect(tc.sx).toBeLessThan(tc.sy);
+          expect(d).toBeGreaterThan(tc.r * tc.sx);
+          expect(d).toBeLessThan(tc.r * tc.sy);
         });
       });
 
