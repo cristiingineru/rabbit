@@ -584,27 +584,40 @@ describe('Geometry', () => {
     describe('getTheCenterOfTheCorner', () => {
 
       it('should return undefined center of the circle describing the corner for a zero angle', () => {
-        var x0 = 1, y0 = 1, x1 = 10, y1 = 1, x2 = -1, y2 = 1, r = 2;
+        var x0 = 1, y0 = 1, x1 = 10, y1 = 1, x2 = -1, y2 = 1, r = 2, sx = 1, sy = 1;
 
-        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
 
         expect(c.x).toEqual(NaN);
         expect(c.y).toEqual(NaN);
       });
 
       it('should return undefined center of the circle describing the corner for a straight angle', () => {
-        var x0 = 1, y0 = 1, x1 = 10, y1 = 1, x2 = 20, y2 = 1, r = 2;
+        var x0 = 1, y0 = 1, x1 = 10, y1 = 1, x2 = 20, y2 = 1, r = 2, sx = 1, sy = 1;
 
-        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
 
         expect(c.x).toEqual(NaN);
         expect(c.y).toEqual(NaN);
       });
 
       it('should return the center of the circle describing the corner for an acute angle and a small radius', () => {
-        var x0 = 8, y0 = 10, x1 = 17, y1 = 10, x2 = 9, y2 = 15, r = 2;
+        var x0 = 8, y0 = 10, x1 = 17, y1 = 10, x2 = 9, y2 = 15, r = 2, sx = 1, sy = 1;
 
-        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
+
+        expect(c.x).toBeGreaterThan(x0);
+        expect(c.x).toBeLessThan(x1);
+        expect(c.x).toBeGreaterThan(x2);
+        expect(c.y).toBeGreaterThan(y0);
+        expect(c.y).toBeGreaterThan(y1);
+        expect(c.y).toBeLessThan(y2);
+      });
+
+      it('should return the center of the circle describing the corner for an acute angle and a small radius with different sx and sy scalings', () => {
+        var x0 = 8, y0 = 10, x1 = 17, y1 = 10, x2 = 9, y2 = 25, r = 1, sx = 2, sy = 3;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
 
         expect(c.x).toBeGreaterThan(x0);
         expect(c.x).toBeLessThan(x1);
@@ -615,9 +628,9 @@ describe('Geometry', () => {
       });
 
       it('should return the center of the circle describing the corner for an acute angle and a great radius', () => {
-        var x0 = 8, y0 = 10, x1 = 17, y1 = 10, x2 = 9, y2 = 15, r = 4;
+        var x0 = 8, y0 = 10, x1 = 17, y1 = 10, x2 = 9, y2 = 15, r = 4, sx = 1, sy = 1;
 
-        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
 
         expect(c.x).toBeLessThan(x0);
         expect(c.x).toBeLessThan(x1);
@@ -628,9 +641,21 @@ describe('Geometry', () => {
       });
 
       it('should return the center of the circle describing the corner for an optuse angle and a small radius', () => {
-        var x0 = -10, y0 = 0, x1 = 10, y1 = 5, x2 = 10, y2 = 0, r = 2;
+        var x0 = -10, y0 = 0, x1 = 10, y1 = 5, x2 = 10, y2 = 0, r = 2, sx = 1, sy = 1;
 
-        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
+
+        expect(c.x).toBeGreaterThan(x0);
+        expect(c.x).toBeLessThan(x2);
+        expect(c.y).toBeGreaterThan(y0);
+        expect(c.y).toBeLessThan(y1);
+        expect(c.y).toBeGreaterThan(y2);
+      });
+
+      it('should return the center of the circle describing the corner for an optuse angle and a small radius with different sx and sy scalings', () => {
+        var x0 = -10, y0 = -2, x1 = 5, y1 = 5, x2 = 10, y2 = -2, r = 2, sx = 2, sy = 3;
+
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
 
         expect(c.x).toBeGreaterThan(x0);
         expect(c.x).toBeLessThan(x2);
@@ -640,9 +665,9 @@ describe('Geometry', () => {
       });
 
       it('should return the center of the circle describing the corner for an optuse angle and a great radius', () => {
-        var x0 = -10, y0 = 0, x1 = 10, y1 = 5, x2 = 10, y2 = 0, r = 8;
+        var x0 = -10, y0 = 0, x1 = 10, y1 = 5, x2 = 10, y2 = 0, r = 8, sx = 1, sy = 1;
 
-        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r);
+        var c = geometry.getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy);
 
         expect(c.x).toBeGreaterThan(x0);
         expect(c.x).toBeLessThan(x2);
@@ -841,12 +866,12 @@ describe('Geometry', () => {
 
       it('should return only a valid end point when the points are the same or the (x0, y0) is not specified', () => {
         [
-          {x0: 10, y0:  5, x1: 10, y1:  5, x2: 10, y2:  5, r: 3},
-          {x0: 10, y0: 10, x1: 10, y1: 10, x2: 10, y2: 10, r: 3},
-          {x0: NaN, y0: NaN, x1: 11, y1: 12, x2: 13, y2: 14, r: 3}
+          {x0: 10, y0:  5, x1: 10, y1:  5, x2: 10, y2:  5, r: 3, sx: 1, sy: 1},
+          {x0: 10, y0: 10, x1: 10, y1: 10, x2: 10, y2: 10, r: 3, sx: 1, sy: 1},
+          {x0: NaN, y0: NaN, x1: 11, y1: 12, x2: 13, y2: 14, r: 3, sx: 1, sy: 1}
         ].forEach((tc) => {
 
-          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r, tc.sx, tc.sy);
 
           expect(arcTo.line).toBeFalsy();
 
@@ -859,12 +884,12 @@ describe('Geometry', () => {
 
       it('should return only a valid line from (x0, y0) to (x1, y1) and an end point when the points are collinear', () => {
         [
-          {x0: 10, y0:  5, x1: 20, y1:  5, x2: 30, y2:  5, r: 3},
-          {x0: 10, y0:  5, x1: 10, y1: 15, x2: 10, y2: 20, r: 3},
-          {x0: 10, y0: 11, x1: 20, y1: 21, x2: 30, y2: 31, r: 3}
+          {x0: 10, y0:  5, x1: 20, y1:  5, x2: 30, y2:  5, r: 3, sx: 1, sy: 1},
+          {x0: 10, y0:  5, x1: 10, y1: 15, x2: 10, y2: 20, r: 3, sx: 1, sy: 1},
+          {x0: 10, y0: 11, x1: 20, y1: 21, x2: 30, y2: 31, r: 3, sx: 1, sy: 1}
         ].forEach((tc) => {
 
-          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r, tc.sx, tc.sy);
 
           expect(arcTo.line.x1).toBe(tc.x0);
           expect(arcTo.line.y1).toBe(tc.y0);
@@ -880,10 +905,10 @@ describe('Geometry', () => {
 
       it('should return only a valid arc and an end point when the length of the line is zero', () => {
         [
-          {x0: 7, y0:  0, x1: 5, y1: 0, x2: 5, y2:  2, r: 2}
+          {x0: 7, y0:  0, x1: 5, y1: 0, x2: 5, y2:  2, r: 2, sx: 1, sy: 1}
         ].forEach((tc) => {
 
-          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r, tc.sx, tc.sy);
 
           expect(arcTo.line).toBeFalsy();
 
@@ -901,20 +926,60 @@ describe('Geometry', () => {
 
         [
           {// └
-            x0: 20, y0: 0, x1: 20, y1: 5, x2: 30, y2: 5, r: r,
+            x0: 20, y0: 0, x1: 20, y1: 5, x2: 30, y2: 5, r: r, sx: 1, sy: 1,
             linex1: +0, liney1: +0, linex2: +0, liney2: -r,
             arcx: +r, arcy: -r, arcsAngle: 1 * Math.PI / 2, arceAngle: 2 * Math.PI / 2,
             pointx: +r, pointy: +0
           },
           { // ┐
-            x0: 10, y0: 5, x1: 20, y1: 5, x2: 20, y2: 30, r: r,
+            x0: 10, y0: 5, x1: 20, y1: 5, x2: 20, y2: 30, r: r, sx: 1, sy: 1,
             linex1: +0, liney1: +0, linex2: -r, liney2: +0,
             arcx: -r, arcy: +r, arcsAngle: 0 * Math.PI / 2, arceAngle: 3 * Math.PI / 2,
             pointx: +0, pointy: +r
           }
         ].forEach((tc) => {
 
-          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r, tc.sx, tc.sy);
+
+          expect(arcTo.line.x1).toBe(tc.x0 + tc.linex1);
+          expect(arcTo.line.y1).toBe(tc.y0 + tc.liney1);
+          expect(arcTo.line.x2).toBe(tc.x1 + tc.linex2);
+          expect(arcTo.line.y2).toBe(tc.y1 + tc.liney2);
+
+          expect(arcTo.arc.x).toBe(tc.x1 + tc.arcx);
+          expect(arcTo.arc.y).toBe(tc.y1 + tc.arcy);
+          expect(arcTo.arc.r).toBe(tc.r);
+          expect(arcTo.arc.sAngle % (2*Math.PI)).toBeCloseTo(tc.arcsAngle, 8);
+          expect(arcTo.arc.eAngle % (2*Math.PI)).toBeCloseTo(tc.arceAngle, 8);
+          expect(arcTo.arc.counterclockwise).toBe(false);
+
+          //the order of the angles is also important
+          expect(arcTo.arc.sAngle).toBeLessThan(arcTo.arc.eAngle);
+
+          expect(arcTo.point.x).toBe(tc.x1 + tc.pointx);
+          expect(arcTo.point.y).toBe(tc.y1 + tc.pointy);
+        });
+      });
+
+        it('should return a valid line, an arc and an end point for a 90 degrees corner with different x and y scalings', () => {
+        var r = 3, sx = 2, sy = 3;
+
+        [
+          {// └
+            x0: 20, y0: 0, x1: 20, y1: 5, x2: 30, y2: 5, r: r, sx: sx, sy: sy,
+            linex1: +0, liney1: +0, linex2: +0, liney2: -r*sy,
+            arcx: +r*sx, arcy: -r*sy, arcsAngle: 1 * Math.PI / 2, arceAngle: 2 * Math.PI / 2,
+            pointx: +r*sx, pointy: +0
+          },
+          { // ┐
+            x0: 10, y0: 5, x1: 20, y1: 5, x2: 20, y2: 30, r: r, sx: sx, sy: sy,
+            linex1: +0, liney1: +0, linex2: -r*sx, liney2: +0,
+            arcx: -r*sx, arcy: +r*sy, arcsAngle: 0 * Math.PI / 2, arceAngle: 3 * Math.PI / 2,
+            pointx: +0, pointy: +r*sy
+          }
+        ].forEach((tc) => {
+
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r, tc.sx, tc.sy);
 
           expect(arcTo.line.x1).toBe(tc.x0 + tc.linex1);
           expect(arcTo.line.y1).toBe(tc.y0 + tc.liney1);
