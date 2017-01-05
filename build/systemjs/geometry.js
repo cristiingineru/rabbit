@@ -177,7 +177,7 @@ System.register([], function (_export, _context) {
             r = call.arguments[4],
             sx = state.transform.scale.x,
             sy = state.transform.scale.y,
-            decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
+            decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r, sx, sy);
         if (decomposition.line) {
           state.shapesInPath.push({ type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2 });
         }
@@ -446,11 +446,12 @@ System.register([], function (_export, _context) {
       return a === b || Math.abs(a - b) < 20 * EPSILON;
     },
         isCenterInBetween = function isCenterInBetween(cx, cy, x0, y0, x1, y1, x2, y2) {
-      var a1 = getAngleBetweenThreePoints(cx, cy, x1, y1, x0, y0),
+      var a = getAngleBetweenThreePoints(x2, y2, x1, y1, x0, y0),
+          a1 = getAngleBetweenThreePoints(cx, cy, x1, y1, x0, y0),
           a2 = getAngleBetweenThreePoints(cx, cy, x1, y1, x2, y2);
-      return almostEqual(a1, a2) && a1 <= Math.PI / 2;
+      return almostEqual(a, a1 + a2) && a1 + a2 <= Math.PI;
     },
-        getTheCenterOfTheCorner = function getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, distance) {
+        getTheCenterOfTheCorner = function getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, distance, sx, sy) {
       //
       //                                    d  d
       //                                  '  /  '
@@ -474,8 +475,10 @@ System.register([], function (_export, _context) {
       //
       //  C = the center of the circle/corner to be determined
 
-      var alphaLines = getParallelsAroundSegment(x0, y0, x1, y1, distance),
-          betaLines = getParallelsAroundSegment(x1, y1, x2, y2, distance),
+      var d1 = getScaledWidthOfLine(x0, y0, x1, y1, sx, sy, distance),
+          d2 = getScaledWidthOfLine(x1, y1, x2, y2, sx, sy, distance),
+          alphaLines = getParallelsAroundSegment(x0, y0, x1, y1, d1),
+          betaLines = getParallelsAroundSegment(x1, y1, x2, y2, d2),
           permutations = permuteLines(alphaLines, betaLines),
           intersections = permutations.map(function (p) {
         return getIntersectionOfTwoLines(p.alpha, p.beta);
@@ -533,14 +536,14 @@ System.register([], function (_export, _context) {
           m2 = (y2 - y1) / (x2 - x1);
       return almostEqual(m1, m2);
     },
-        decomposeArcTo = function decomposeArcTo(x0, y0, x1, y1, x2, y2, r) {
+        decomposeArcTo = function decomposeArcTo(x0, y0, x1, y1, x2, y2, r, sx, sy) {
       var decomposition = {
         point: { x: x1, y: y1 }
       };
       if (collinear(x0, y0, x1, y1, x2, y2)) {
         decomposition.line = { x1: x0, y1: y0, x2: x1, y2: y1 };
       } else if (!isNaN(x0) && !isNaN(y0)) {
-        var center = getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r),
+        var center = getTheCenterOfTheCorner(x0, y0, x1, y1, x2, y2, r, sx, sy),
             foot1 = getTheFootOfThePerpendicular(x0, y0, x1, y1, center.x, center.y),
             foot2 = getTheFootOfThePerpendicular(x1, y1, x2, y2, center.x, center.y),
             angleFoot1 = xyToArcAngle(center.x, center.y, foot1.x, foot1.y),
