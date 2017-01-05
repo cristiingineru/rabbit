@@ -878,6 +878,24 @@ describe('Geometry', () => {
         });
       });
 
+      it('should return only a valid arc and an end point when the length of the line is zero', () => {
+        [
+          {x0: 7, y0:  0, x1: 5, y1: 0, x2: 5, y2:  2, r: 2}
+        ].forEach((tc) => {
+
+          var arcTo = geometry.decomposeArcTo(tc.x0, tc.y0, tc.x1, tc.y1, tc.x2, tc.y2, tc.r);
+
+          expect(arcTo.line).toBeFalsy();
+
+          expect(arcTo.arc.x).toBe(7);
+          expect(arcTo.arc.y).toBe(2);
+          expect(arcTo.arc.r).toBe(2);
+
+          expect(arcTo.point.x).toBe(5);
+          expect(arcTo.point.y).toBe(2);
+        });
+      });
+
       it('should return a valid line, an arc and an end point for a 90 degrees corner', () => {
         var r = 3;
 

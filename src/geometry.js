@@ -32,11 +32,23 @@ export function Geometry() {
     },
     arc: (state, shape) => {
       var cx = shape.cx,
-        cy = shape.cy,
-        rx = shape.rx,
-        ry = shape.ry,
-        newBox = {x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry};
-      state.box = union(state.box, newBox);
+          cy = shape.cy,
+          r = shape.r,
+          sx = shape.sx,
+          sy = shape.sy,
+          sAngle = shape.sAngle,
+          eAngle = shape.eAngle,
+          counterclockwise = shape.counterclockwise,
+          arcPoints = relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise),
+          arcAngles = arcPoints.map((p) => p.a),
+          scaledArcPoints = arcAngles.map((a) => {
+            var sr = scaledRadius(r, sx, sy, a);
+            return {x: cx + sr*cos(a), y: cy + sr*sin(a)};
+          }),
+          newBox = boxPoints(scaledArcPoints);
+      if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
+        state.box = union(state.box, newBox);
+      }
       return state;
     }
   },
@@ -56,18 +68,20 @@ export function Geometry() {
     },
     arc: (state, shape) => {
       var cx = shape.cx,
-        cy = shape.cy,
-        rx = shape.rx,
-        ry = shape.ry,
-        sAngle = shape.sAngle,
-        eAngle = shape.eAngle,
-        counterclockwise = shape.counterclockwise,
-        //scaledLineWidth = state.lineWidth !== 1 ? state.lineWidth : 0,
-        //xScaledLineWidth = scaledLineWidth * state.transform.scale.x,
-        //yScaledLineWidth = scaledLineWidth * state.transform.scale.y,
-        //newBox = {x: cx - rx - xScaledLineWidth / 2, y: cy - ry - yScaledLineWidth / 2, width: 2 * rx + xScaledLineWidth, height: 2 * ry + yScaledLineWidth},
-        arcPoints = relevantArcPoints(cx, cy, rx, sAngle, eAngle, counterclockwise),
-        newBox = boxPoints(arcPoints);
+          cy = shape.cy,
+          r = shape.r,
+          sx = shape.sx,
+          sy = shape.sy,
+          sAngle = shape.sAngle,
+          eAngle = shape.eAngle,
+          counterclockwise = shape.counterclockwise,
+          arcPoints = relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise),
+          arcAngles = arcPoints.map((p) => p.a),
+          scaledArcPoints = arcAngles.map((a) => {
+            var sr = scaledRadius(r, sx, sy, a);
+            return {x: cx + sr*cos(a), y: cy + sr*sin(a)};
+          }),
+          newBox = boxPoints(scaledArcPoints);
       if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
         state.box = union(state.box, newBox);
       }
@@ -129,12 +143,12 @@ export function Geometry() {
       var cx = call.arguments[0] * state.transform.scale.x + state.transform.translate.x,
         cy = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
         r = call.arguments[2],
-        rx = r * state.transform.scale.x,
-        ry = r * state.transform.scale.y,
+        sx = state.transform.scale.x,
+        sy = state.transform.scale.y,
         sAngle = call.arguments[3],
         eAngle = call.arguments[4],
         counterclockwise = call.arguments[5] || false;
-      state.shapesInPath.push({type: 'arc', cx: cx, cy: cy, rx: rx, ry: ry, sAngle: sAngle, eAngle: eAngle, counterclockwise: counterclockwise});
+      state.shapesInPath.push({type: 'arc', cx: cx, cy: cy, r: r, sx: sx, sy: sy, sAngle: sAngle, eAngle: eAngle, counterclockwise: counterclockwise});
       return state;
     },
     moveTo: (state, call) => {
@@ -158,13 +172,15 @@ export function Geometry() {
           y1 = call.arguments[1] * state.transform.scale.y + state.transform.translate.y,
           x2 = call.arguments[2] * state.transform.scale.x + state.transform.translate.x,
           y2 = call.arguments[3] * state.transform.scale.y + state.transform.translate.y,
-          r = call.arguments[4] * state.transform.scale.x,
+          r = call.arguments[4],
+          sx = state.transform.scale.x,
+          sy = state.transform.scale.y,
           decomposition = decomposeArcTo(x0, y0, x1, y1, x2, y2, r);
       if (decomposition.line) {
         state.shapesInPath.push({type: 'lineTo', x1: decomposition.line.x1, y1: decomposition.line.y1, x2: decomposition.line.x2, y2: decomposition.line.y2});
       }
       if (decomposition.arc) {
-        state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, rx: r, ry: r, sAngle: decomposition.arc.sAngle, eAngle: decomposition.arc.eAngle, counterclockwise: decomposition.arc.counterclockwise});
+        state.shapesInPath.push({type: 'arc', cx: decomposition.arc.x, cy: decomposition.arc.y, r: r, sx: sx, sy: sy, sAngle: decomposition.arc.sAngle, eAngle: decomposition.arc.eAngle, counterclockwise: decomposition.arc.counterclockwise});
       }
       state.moveToLocation = {x: decomposition.point.x, y: decomposition.point.y};
       return state;
@@ -565,7 +581,9 @@ export function Geometry() {
         eAngle = temp + 2*PI;
       }
       if (!isNaN(center.x) && !isNaN(center.y)) {
-        decomposition.line = {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y};
+        if (!almostEqual(getDistanceBetweenTwoPoints(x0, y0, foot1.x, foot1.y), 0)) {
+          decomposition.line = {x1: x0, y1: y0, x2: foot1.x, y2: foot1.y};
+        }
         decomposition.arc = {x: center.x, y: center.y, r: r, sAngle: sAngle, eAngle: eAngle, counterclockwise: false};
         decomposition.point = {x: foot2.x, y: foot2.y};
       }
@@ -575,8 +593,8 @@ export function Geometry() {
 
   relevantArcPoints = (cx, cy, r, sAngle, eAngle, counterclockwise) => {
     var points = [], relevantPoints = [];
-      points.push({x: cx + r*cos(sAngle), y: cy + r*sin(sAngle)});
-      points.push({x: cx + r*cos(eAngle), y: cy + r*sin(eAngle)});
+      points.push({x: cx + r*cos(sAngle), y: cy + r*sin(sAngle), a: sAngle});
+      points.push({x: cx + r*cos(eAngle), y: cy + r*sin(eAngle), a: eAngle});
       if (counterclockwise) {
         var temp = sAngle;
         sAngle = eAngle;
@@ -584,7 +602,7 @@ export function Geometry() {
       }
       [1*PI/2, 2*PI/2, 3*PI/2, 4*PI/2].forEach((a) => {
         if(eAngle > a && a > sAngle) {
-          points.push({x: cx + r*cos(a), y: cy + r*sin(a)});
+          points.push({x: cx + r*cos(a), y: cy + r*sin(a), a: a});
         }
       });
 

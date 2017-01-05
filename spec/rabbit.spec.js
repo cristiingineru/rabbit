@@ -9,7 +9,13 @@ import '../node_modules/Canteen/build/canteen.min'
 describe('Rabbit', () => {
     'use strict';
 
-    var rabbit;
+    var rabbit,
+        resetCanvas = (ctx) => {
+          ctx.clearRect(0, 0, ctx.context.canvas.width, ctx.context.canvas.height);
+          ctx.setTransform(1,0,0,1,0,0);
+          ctx.beginPath();
+          ctx.clear();
+        };
 
     beforeAll(() => {
       rabbit = new Rabbit();
@@ -174,10 +180,10 @@ describe('Rabbit', () => {
           var cx = 10, cy = 20, r = 7;
 
           [{
-            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 4*Math.PI/2, counterclockwise: false,
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 2*Math.PI, counterclockwise: false,
             box: {x: cx - r, y: cy - r, width: 2*r, height: 2*r}
           }, {
-            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 2*Math.PI/2, counterclockwise: false,
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: Math.PI, counterclockwise: false,
             box: {x: cx - r, y: cy, width: 2*r, height: r}
           }, {
             cx: cx, cy: cy, r: r, sAngle: 0, eAngle: Math.PI, counterclockwise: true,
@@ -202,13 +208,52 @@ describe('Rabbit', () => {
           });
         });
 
+        it('should return the box of a scaled stroked arc segment (different counterclockwise)', () => {
+          var sx = 2, sy = 3,
+              cx = 10, cy = 20, r = 7;
+
+          [{
+            sx: sx, sy: sy,
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 2*Math.PI, counterclockwise: false,
+            box: {x: sx*(cx - r), y: sy*(cy - r), width: 2*r*sx, height: 2*r*sy}
+          }, {
+            sx: sx, sy: sy,
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: Math.PI, counterclockwise: false,
+            box: {x: sx*(cx - r), y: sy*(cy), width: 2*r*sx, height: r*sy}
+          }, {
+            sx: sx, sy: sy,
+            cx: cx, cy: cy, r: r, sAngle: 0, eAngle: Math.PI, counterclockwise: true,
+            box: {x: sx*(cx - r), y: sy*(cy - r), width: 2*r*sx, height: r*sy}
+          }, {
+            sx: sx, sy: sy,
+            cx: cx, cy: cy, r: r, sAngle: Math.PI/2, eAngle: Math.PI, counterclockwise: false,
+            box: {x: sx*(cx - r), y: sy*(cy), width: r*sx, height: r*sy}
+          }, {
+            sx: sx, sy: sy,
+            cx: cx, cy: cy, r: r, sAngle: Math.PI/2, eAngle: Math.PI, counterclockwise: true,
+            box: {x: sx*(cx - r), y: sy*(cy - r), width: 2*r*sx, height: 2*r*sy}
+          }].forEach((tc) => {
+            resetCanvas(ctx);
+            ctx.scale(tc.sx, tc.sy);
+            ctx.arc(tc.cx, tc.cy, tc.r, tc.sAngle, tc.eAngle, tc.counterclockwise);
+            ctx.stroke();
+
+            var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+
+            expect(box.x).toBeCloseTo(tc.box.x, 8);
+            expect(box.y).toBeCloseTo(tc.box.y, 8);
+            expect(box.width).toBeCloseTo(tc.box.width, 8);
+            expect(box.height).toBeCloseTo(tc.box.height, 8);
+          });
+        });
+
       });
 
 
       describe('filled arc', () => {
 
         it('should return the box of a filled arc', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
@@ -221,7 +266,7 @@ describe('Rabbit', () => {
         });
 
         it('should union the boxes of two filled arcs that are far from each other', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             toRightShift = 40, toBottomShift = 50;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.arc(cx + toRightShift, cy + toBottomShift, r, sAngle, eAngle, counterclockwise);
@@ -236,7 +281,7 @@ describe('Rabbit', () => {
         });
 
         it('should translate the box of a filled arc', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             xTranslate = 15, yTranslate = 16;
           ctx.translate(xTranslate, yTranslate);
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
@@ -251,7 +296,7 @@ describe('Rabbit', () => {
         });
 
         it('should not translate the box of a filled arc after restoring', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             xTranslate = 15, yTranslate = 16;
           ctx.save();
           ctx.translate(xTranslate, yTranslate);
@@ -268,13 +313,13 @@ describe('Rabbit', () => {
         });
 
         it('should scale the box of a filled arc', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             xScale = 15, yScale = 16;
           ctx.scale(xScale, yScale);
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe((cx - r) * xScale);
           expect(box.y).toBe((cy - r) * yScale);
@@ -283,7 +328,7 @@ describe('Rabbit', () => {
         });
 
         it('should not scale the box of a filled arc after restoring', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             xScale = 15, yScale = 16;
           ctx.save();
           ctx.scale(xScale, yScale);
@@ -300,14 +345,14 @@ describe('Rabbit', () => {
         });
 
         it('should translate the box of a filled arc based on a previous scale', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             xScale = 15, yScale = 16, xTranslate = 17, yTranslate = 18;
           ctx.scale(xScale, yScale);
           ctx.translate(xTranslate, yTranslate);
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe((cx - r + xTranslate) * xScale);
           expect(box.y).toBe((cy - r + yTranslate) * yScale);
@@ -316,7 +361,7 @@ describe('Rabbit', () => {
         });
 
         it('should translate the box of a filled arc based on all previous scales', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17, xTranslate = 18, yTranslate = 19;
           ctx.scale(xScale1, yScale1);
           ctx.scale(xScale2, yScale2);
@@ -324,7 +369,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe((cx - r + xTranslate) * xScale1 * xScale2);
           expect(box.y).toBe((cy - r + yTranslate) * yScale1 * yScale2);
@@ -333,7 +378,7 @@ describe('Rabbit', () => {
         });
 
         it('should translate the box of a filled arc multiple times based on all previous scales', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise = false,
             xScale1 = 15, yScale1 = 16, xScale2 = 16, yScale2 = 17,
             xTranslate1 = 18, yTranslate1 = 19, xTranslate2 = 20, yTranslate2 = 21;
           ctx.scale(xScale1, yScale1);
@@ -343,7 +388,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe(xTranslate1 * xScale1 + (cx - r + xTranslate2) * xScale1 * xScale2);
           expect(box.y).toBe(yTranslate1 * yScale1 + (cy - r + yTranslate2) * yScale1 * yScale2);
