@@ -111,8 +111,8 @@ describe('Rabbit', () => {
         });
 
         it('should return the box of a scaled stroked arc width lineWidth = 2', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
-            xScale = 14, yScale = 15, lineWidth = 2;
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise,
+            xScale = 2, yScale = 3, lineWidth = 2;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.scale(xScale, yScale);
           ctx.lineWidth = lineWidth;
@@ -122,12 +122,12 @@ describe('Rabbit', () => {
 
           expect(box.x).toBe(cx - r - lineWidth / 2 * xScale);
           expect(box.y).toBe(cy - r - lineWidth / 2 * yScale);
-          expect(box.width).toBe(2 * r + lineWidth * xScale);
-          expect(box.height).toBe(2 * r + lineWidth * yScale);
+          expect(box.width).toBeCloseTo(2 * r + lineWidth * xScale, 2);
+          expect(box.height).toBeCloseTo(2 * r + lineWidth * yScale, 2);
         });
 
         it('should use a previouse lineWidth after restoring', () => {
-          var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise,
+          var cx = 11, cy = 12, r = 13, sAngle = 0, eAngle = 2*Math.PI, counterclockwise,
             lineWidth1 = 11, lineWidth2 = 22, lineWidth3 = 33, lineWidth4 = 44;
 
           ctx.lineWidth = lineWidth1;
@@ -209,32 +209,33 @@ describe('Rabbit', () => {
         });
 
         it('should return the box of a scaled stroked arc segment (different counterclockwise)', () => {
-          var sx = 2, sy = 3,
+          var w = 1, sx = 2, sy = 3,
               cx = 10, cy = 20, r = 7;
 
           [{
             sx: sx, sy: sy,
             cx: cx, cy: cy, r: r, sAngle: 0, eAngle: 2*Math.PI, counterclockwise: false,
-            box: {x: sx*(cx - r), y: sy*(cy - r), width: 2*r*sx, height: 2*r*sy}
+            box: {x: (cx - r - w/2)*sx, y: (cy - r - w/2)*sy, width: (2*r + w)*sx, height: (2*r+w)*sy}
           }, {
             sx: sx, sy: sy,
             cx: cx, cy: cy, r: r, sAngle: 0, eAngle: Math.PI, counterclockwise: false,
-            box: {x: sx*(cx - r), y: sy*(cy), width: 2*r*sx, height: r*sy}
+            box: {x: (cx - r - w/2)*sx, y: (cy)*sy, width: (2*r + w)*sx, height: (r + w/2)*sy}
           }, {
             sx: sx, sy: sy,
             cx: cx, cy: cy, r: r, sAngle: 0, eAngle: Math.PI, counterclockwise: true,
-            box: {x: sx*(cx - r), y: sy*(cy - r), width: 2*r*sx, height: r*sy}
+            box: {x: (cx - r - w/2)*sx, y: (cy - r - w/2)*sy, width: (2*r + w)*sx, height: (r + w/2)*sy}
           }, {
             sx: sx, sy: sy,
             cx: cx, cy: cy, r: r, sAngle: Math.PI/2, eAngle: Math.PI, counterclockwise: false,
-            box: {x: sx*(cx - r), y: sy*(cy), width: r*sx, height: r*sy}
+            box: {x: (cx - r - w/2)*sx, y: (cy)*sy, width: (r + w/2)*sx, height: (r + w/2)*sy}
           }, {
             sx: sx, sy: sy,
             cx: cx, cy: cy, r: r, sAngle: Math.PI/2, eAngle: Math.PI, counterclockwise: true,
-            box: {x: sx*(cx - r), y: sy*(cy - r), width: 2*r*sx, height: 2*r*sy}
+            box: {x: (cx - r - w/2)*sx, y: (cy - r - w/2)*sy, width: (2*r + w)*sx, height: (2*r + w)*sy}
           }].forEach((tc) => {
             resetCanvas(ctx);
             ctx.scale(tc.sx, tc.sy);
+            ctx.lineWidth = w;
             ctx.arc(tc.cx, tc.cy, tc.r, tc.sAngle, tc.eAngle, tc.counterclockwise);
             ctx.stroke();
 
@@ -936,7 +937,7 @@ describe('Rabbit', () => {
           expect(box.x).toBe(3);
           expect(box.y).toBe(-2);
           expect(box.width).toBe(8);
-          expect(box.height).toBe(8);
+          expect(box.height).toBe(4);
         });
 
         it('should return the box of a translated stoked arcTo with lineWidth=4', () => {
@@ -953,7 +954,7 @@ describe('Rabbit', () => {
           expect(box.x).toBe(3 + tx);
           expect(box.y).toBe(-2 + ty);
           expect(box.width).toBe(8);
-          expect(box.height).toBe(8);
+          expect(box.height).toBe(4);
         });
 
         it('should return the box of a scaled stoked arcTo with lineWidth=4', () => {
@@ -968,11 +969,10 @@ describe('Rabbit', () => {
 
           var box = rabbit.getBBox(ctx.stack());
 
-          var temporaryWorkaroundForArc = 2;
           expect(box.x).toBe(x1*sx - lineWidth*sx/2);
           expect(box.y).toBe(y0*sy - lineWidth*sy/2);
           expect(box.width).toBe(r*sx + lineWidth*sx/2 + 8);
-          expect(box.height).toBe(temporaryWorkaroundForArc * (r*sy + lineWidth*sy/2));
+          expect(box.height).toBe(r*sy + lineWidth*sy/2);
         });
 
       });
