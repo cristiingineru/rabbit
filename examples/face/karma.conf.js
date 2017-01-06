@@ -20,6 +20,7 @@ module.exports = function(config) {
     //patterns listed here will be included in the generated debug.html file
     files: [
       'examples/face/node_modules/Canteen/build/canteen.min.js',
+      'examples/face/node_modules/phantomjs-polyfill-find/find-polyfill.js',
       'examples/face/lib/mock-raf.js',
 
       // SystemJS can load any AMD, CommonJS or SystemJS format.
