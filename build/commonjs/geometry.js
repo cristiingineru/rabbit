@@ -81,10 +81,23 @@ function Geometry() {
           arcAngles = arcPoints.map(function (p) {
         return p.a;
       }),
-          scaledArcPoints = arcAngles.map(function (a) {
-        var sr = scaledRadius(r, sx, sy, a);
-        return { x: cx + sr * cos(a), y: cy + sr * sin(a) };
-      }),
+          scaledArcPoints = flatten(arcAngles.map(function (a) {
+        var w = scaledRadius(state.lineWidth, state.transform.scale.x, state.transform.scale.y, a),
+            sir = scaledRadius(r, sx, sy, a) - w / 2,
+            // inner radius
+        sr = scaledRadius(r, sx, sy, a),
+            // radius
+        sor = scaledRadius(r, sx, sy, a) + w / 2,
+            // outer radius
+        points = [];
+        if (w === 1) {
+          points.push({ x: cx + sr * cos(a), y: cy + sr * sin(a) });
+        } else {
+          points.push({ x: cx + sir * cos(a), y: cy + sir * sin(a) });
+          points.push({ x: cx + sor * cos(a), y: cy + sor * sin(a) });
+        }
+        return points;
+      })),
           newBox = boxPoints(scaledArcPoints);
       if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
         state.box = union(state.box, newBox);

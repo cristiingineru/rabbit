@@ -91,6 +91,14 @@ ctx.stroke();
 `,
 
 `//inputs: ctx, sizeIndex;
+var PI = Math.PI
+ctx.arc(0, 0, 40*sizeIndex + 40, PI/6, 2*PI/6);
+ctx.scale(2*sizeIndex + 2, 2*sizeIndex + 2);
+ctx.lineWidth = 6;
+ctx.stroke();
+`,
+
+`//inputs: ctx, sizeIndex;
 ctx.scale(sizeIndex*0.3 + 1, sizeIndex*0.3 + 1);
 ctx.beginPath();
 ctx.lineWidth = 1;
@@ -113,7 +121,7 @@ ctx.stroke();
 
 `//inputs: ctx, sizeIndex;
 var x0=35, y0=9, x1=8, y1=9, x2=8, y2=22, r=10;
-ctx.scale(sizeIndex + 1, sizeIndex + 1);
+ctx.scale(1.5*sizeIndex + 1, 1.5*sizeIndex + 1);
 ctx.moveTo(x0, y0);
 ctx.arcTo(x1, y1, x2, y2, r);
 ctx.strokeStyle = 'yellow';
