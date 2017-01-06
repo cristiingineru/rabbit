@@ -39,14 +39,13 @@ export function Geometry() {
           sAngle = shape.sAngle,
           eAngle = shape.eAngle,
           counterclockwise = shape.counterclockwise,
-          arcPoints = relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise),
-          arcAngles = arcPoints.map((p) => p.a),
+          arcAngles = relevantArcAngles(r, sAngle, eAngle, counterclockwise),
           scaledArcPoints = arcAngles.map((a) => {
             var sr = scaledRadius(r, sx, sy, a);
             return {x: cx + sr*cos(a), y: cy + sr*sin(a)};
           }),
           newBox = boxPoints(scaledArcPoints);
-      if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
+      if (!isNaN(cx) && !isNaN(cy) && arcAngles.length > 1) {
         state.box = union(state.box, newBox);
       }
       return state;
@@ -75,8 +74,7 @@ export function Geometry() {
           sAngle = shape.sAngle,
           eAngle = shape.eAngle,
           counterclockwise = shape.counterclockwise,
-          arcPoints = relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise),
-          arcAngles = arcPoints.map((p) => p.a),
+          arcAngles = relevantArcAngles(sAngle, eAngle, counterclockwise),
           scaledArcPoints = flatten(arcAngles.map((a) => {
             var w = scaledRadius(state.lineWidth, state.transform.scale.x, state.transform.scale.y, a),
                 sir = scaledRadius(r, sx, sy, a) - w/2, // inner radius
@@ -92,7 +90,7 @@ export function Geometry() {
             return points;
           })),
           newBox = boxPoints(scaledArcPoints);
-      if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
+      if (!isNaN(cx) && !isNaN(cy) && arcAngles.length > 1) {
         state.box = union(state.box, newBox);
       }
       return state;
@@ -479,6 +477,21 @@ export function Geometry() {
   },
 
   isCenterInBetween = (cx, cy, x0, y0, x1, y1, x2, y2) => {
+    //
+    //  True is returned in situations like this one:
+    //
+    //                             '   /
+    //                            '   /
+    //                           '   /
+    //                          '   /
+    //              ===P0==========P1=============
+    //                        '   /
+    //              ---------C---/----------------
+    //                      '   /
+    //                     '   /
+    //                    '   P2
+    //                   '   /
+    //
     var a = getAngleBetweenThreePoints(x2, y2, x1, y1, x0, y0),
         a1 = getAngleBetweenThreePoints(cx, cy, x1, y1, x0, y0),
         a2 = getAngleBetweenThreePoints(cx, cy, x1, y1, x2, y2);
@@ -545,6 +558,21 @@ export function Geometry() {
   },
 
   scaledRadius = (r, sx, sy, a) => {
+    //
+    //  The sx and sy scalings can be different so the circle looks more like an
+    //ellipse. This function is returning the radius corrsponding to the specified angle
+    //and taking into account the sx and sy values.
+    //
+    //            *   *                                  *        *
+    //         *         *                         *                   *
+    //       *             *           sx       *                        *
+    //                             +------>    *                          *
+    //       *             *       |
+    //         *         *      sy v           *                          *
+    //            *   *                         *                        *
+    //                                            *                    *
+    //                                                  *         *
+    //
     var na = a % (2*PI); //normalized angle
     if (sx === sy) {
       return r * sx;
@@ -574,6 +602,10 @@ export function Geometry() {
   },
 
   decomposeArcTo = (x0, y0, x1, y1, x2, y2, r, sx, sy) => {
+    //
+    //  The sx and sy is used to scale the radius (r) only.
+    //All other coordinates have to be already scaled.
+    //
     var decomposition = {
       point: {x: x1, y: y1}
     };
@@ -603,32 +635,42 @@ export function Geometry() {
     return decomposition;
   },
 
-  relevantArcPoints = (cx, cy, r, sAngle, eAngle, counterclockwise) => {
-    var points = [], relevantPoints = [];
-      points.push({x: cx + r*cos(sAngle), y: cy + r*sin(sAngle), a: sAngle});
-      points.push({x: cx + r*cos(eAngle), y: cy + r*sin(eAngle), a: eAngle});
-      if (counterclockwise) {
-        var temp = sAngle;
-        sAngle = eAngle;
-        eAngle = sAngle + 2*PI;
+  relevantArcAngles = (sAngle, eAngle, counterclockwise) => {
+    //
+    //  The function is returning the specified sAngle and eAngle and
+    //all the multiple of PI/2. The results doesn't contain duplications.
+    //  Example: For sAngle = PI/6 and eAngle = 7*PI/6,
+    // When counterclockwise = false the result is: [PI/6, 7*PI/6, PI/2, 2*PI/2]
+    // When counterclockwise = true the result is: [PI/6, 7*PI/6, 3*PI/2, 4*PI/2]
+    //
+    var angles = [], relevantAngles = [];
+    angles.push(sAngle);
+    angles.push(eAngle);
+    if (counterclockwise) {
+      var temp = sAngle;
+          sAngle = eAngle;
+          eAngle = sAngle + 2*PI;
+    }
+    [1*PI/2, 2*PI/2, 3*PI/2, 4*PI/2].forEach((a) => {
+      if(eAngle > a && a > sAngle) {
+        angles.push(a);
       }
-      [1*PI/2, 2*PI/2, 3*PI/2, 4*PI/2].forEach((a) => {
-        if(eAngle > a && a > sAngle) {
-          points.push({x: cx + r*cos(a), y: cy + r*sin(a), a: a});
-        }
-      });
+    });
 
     //removing the duplicated points
-    relevantPoints.push(points.pop());
-    while(points.length > 0) {
-      var point = points.pop(),
-          found = relevantPoints.find((p) => almostEqual(point.x, p.x) && almostEqual(point.y, p.y));
-      if (!found) {
-        relevantPoints.push(point);
+    relevantAngles.push(angles.pop());
+    while(angles.length > 0) {
+      var angle = angles.pop(),
+          found = relevantAngles.find((a) =>
+            almostEqual(angle, a) ||
+            almostEqual(angle - 2*PI, a) ||
+            almostEqual(angle, a - 2*PI));
+      if (found === undefined) {
+        relevantAngles.push(angle);
       }
     }
 
-    return relevantPoints;
+    return relevantAngles;
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not

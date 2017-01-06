@@ -72,7 +72,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe(cx - r);
           expect(box.y).toBe(cy - r);
@@ -87,7 +87,7 @@ describe('Rabbit', () => {
           ctx.fill();
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -102,7 +102,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe(cx - r - lineWidth / 2);
           expect(box.y).toBe(cy - r - lineWidth / 2);

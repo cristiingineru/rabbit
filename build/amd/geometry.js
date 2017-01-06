@@ -41,16 +41,13 @@ define(['exports'], function (exports) {
             sAngle = shape.sAngle,
             eAngle = shape.eAngle,
             counterclockwise = shape.counterclockwise,
-            arcPoints = relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise),
-            arcAngles = arcPoints.map(function (p) {
-          return p.a;
-        }),
+            arcAngles = relevantArcAngles(r, sAngle, eAngle, counterclockwise),
             scaledArcPoints = arcAngles.map(function (a) {
           var sr = scaledRadius(r, sx, sy, a);
           return { x: cx + sr * cos(a), y: cy + sr * sin(a) };
         }),
             newBox = boxPoints(scaledArcPoints);
-        if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
+        if (!isNaN(cx) && !isNaN(cy) && arcAngles.length > 1) {
           state.box = union(state.box, newBox);
         }
         return state;
@@ -78,10 +75,7 @@ define(['exports'], function (exports) {
             sAngle = shape.sAngle,
             eAngle = shape.eAngle,
             counterclockwise = shape.counterclockwise,
-            arcPoints = relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise),
-            arcAngles = arcPoints.map(function (p) {
-          return p.a;
-        }),
+            arcAngles = relevantArcAngles(sAngle, eAngle, counterclockwise),
             scaledArcPoints = flatten(arcAngles.map(function (a) {
           var w = scaledRadius(state.lineWidth, state.transform.scale.x, state.transform.scale.y, a),
               sir = scaledRadius(r, sx, sy, a) - w / 2,
@@ -100,7 +94,7 @@ define(['exports'], function (exports) {
           return points;
         })),
             newBox = boxPoints(scaledArcPoints);
-        if (!isNaN(cx) && !isNaN(cy) && arcPoints.length > 1) {
+        if (!isNaN(cx) && !isNaN(cy) && arcAngles.length > 1) {
           state.box = union(state.box, newBox);
         }
         return state;
@@ -461,6 +455,21 @@ define(['exports'], function (exports) {
       return a === b || Math.abs(a - b) < 20 * EPSILON;
     },
         isCenterInBetween = function isCenterInBetween(cx, cy, x0, y0, x1, y1, x2, y2) {
+      //
+      //  True is returned in situations like this one:
+      //
+      //                             '   /
+      //                            '   /
+      //                           '   /
+      //                          '   /
+      //              ===P0==========P1=============
+      //                        '   /
+      //              ---------C---/----------------
+      //                      '   /
+      //                     '   /
+      //                    '   P2
+      //                   '   /
+      //
       var a = getAngleBetweenThreePoints(x2, y2, x1, y1, x0, y0),
           a1 = getAngleBetweenThreePoints(cx, cy, x1, y1, x0, y0),
           a2 = getAngleBetweenThreePoints(cx, cy, x1, y1, x2, y2);
@@ -525,6 +534,21 @@ define(['exports'], function (exports) {
       return a;
     },
         scaledRadius = function scaledRadius(r, sx, sy, a) {
+      //
+      //  The sx and sy scalings can be different so the circle looks more like an
+      //ellipse. This function is returning the radius corrsponding to the specified angle
+      //and taking into account the sx and sy values.
+      //
+      //            *   *                                  *        *
+      //         *         *                         *                   *
+      //       *             *           sx       *                        *
+      //                             +------>    *                          *
+      //       *             *       |
+      //         *         *      sy v           *                          *
+      //            *   *                         *                        *
+      //                                            *                    *
+      //                                                  *         *
+      //
       var na = a % (2 * PI); //normalized angle
       if (sx === sy) {
         return r * sx;
@@ -552,6 +576,10 @@ define(['exports'], function (exports) {
       return almostEqual(m1, m2);
     },
         decomposeArcTo = function decomposeArcTo(x0, y0, x1, y1, x2, y2, r, sx, sy) {
+      //
+      //  The sx and sy is used to scale the radius (r) only.
+      //All other coordinates have to be already scaled.
+      //
       var decomposition = {
         point: { x: x1, y: y1 }
       };
@@ -580,11 +608,18 @@ define(['exports'], function (exports) {
       }
       return decomposition;
     },
-        relevantArcPoints = function relevantArcPoints(cx, cy, r, sAngle, eAngle, counterclockwise) {
-      var points = [],
-          relevantPoints = [];
-      points.push({ x: cx + r * cos(sAngle), y: cy + r * sin(sAngle), a: sAngle });
-      points.push({ x: cx + r * cos(eAngle), y: cy + r * sin(eAngle), a: eAngle });
+        relevantArcAngles = function relevantArcAngles(sAngle, eAngle, counterclockwise) {
+      //
+      //  The function is returning the specified sAngle and eAngle and
+      //all the multiple of PI/2. The results doesn't contain duplications.
+      //  Example: For sAngle = PI/6 and eAngle = 7*PI/6,
+      // When counterclockwise = false the result is: [PI/6, 7*PI/6, PI/2, 2*PI/2]
+      // When counterclockwise = true the result is: [PI/6, 7*PI/6, 3*PI/2, 4*PI/2]
+      //
+      var angles = [],
+          relevantAngles = [];
+      angles.push(sAngle);
+      angles.push(eAngle);
       if (counterclockwise) {
         var temp = sAngle;
         sAngle = eAngle;
@@ -592,23 +627,23 @@ define(['exports'], function (exports) {
       }
       [1 * PI / 2, 2 * PI / 2, 3 * PI / 2, 4 * PI / 2].forEach(function (a) {
         if (eAngle > a && a > sAngle) {
-          points.push({ x: cx + r * cos(a), y: cy + r * sin(a), a: a });
+          angles.push(a);
         }
       });
 
       //removing the duplicated points
-      relevantPoints.push(points.pop());
-      while (points.length > 0) {
-        var point = points.pop(),
-            found = relevantPoints.find(function (p) {
-          return almostEqual(point.x, p.x) && almostEqual(point.y, p.y);
+      relevantAngles.push(angles.pop());
+      while (angles.length > 0) {
+        var angle = angles.pop(),
+            found = relevantAngles.find(function (a) {
+          return almostEqual(angle, a) || almostEqual(angle - 2 * PI, a) || almostEqual(angle, a - 2 * PI);
         });
-        if (!found) {
-          relevantPoints.push(point);
+        if (found === undefined) {
+          relevantAngles.push(angle);
         }
       }
 
-      return relevantPoints;
+      return relevantAngles;
     },
 
 
