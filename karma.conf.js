@@ -14,6 +14,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
+      'node_modules/phantomjs-polyfill-find/find-polyfill.js',
 
       // This has to be loaded with requirejs
       {pattern: 'node_modules/Canteen/build/canteen.min.js', included: false, served: true, watched: true, nocache: true},
