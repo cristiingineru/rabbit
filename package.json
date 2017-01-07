@@ -2,7 +2,7 @@
   "name": "rabbit.canvas",
   "version": "0.2.0",
   "description": "A JavaScript library for writing tests for code drawing on canvas",
-  "main": "rabbit.js",
+  "main": "src/rabbit.js",
   "scripts": {
     "test": "node node_modules/karma/bin/karma start --single-run",
     "clean": "node node_modules/gulp-cli/bin/gulp.js clean",
