@@ -611,13 +611,13 @@ define(['exports'], function (exports) {
         relevantArcAngles = function relevantArcAngles(sAngle, eAngle, counterclockwise) {
       //
       //  The function is returning the specified sAngle and eAngle and
-      //all the multiple of PI/2. The results doesn't contain duplications.
+      //all the multiple of PI/2. The result doesn't contain duplications.
       //  Example: For sAngle = PI/6 and eAngle = 7*PI/6,
       // When counterclockwise = false the result is: [PI/6, 7*PI/6, PI/2, 2*PI/2]
       // When counterclockwise = true the result is: [PI/6, 7*PI/6, 3*PI/2, 4*PI/2]
       //
       var angles = [],
-          relevantAngles = [];
+          uniqueAngles = [];
       angles.push(sAngle);
       angles.push(eAngle);
       if (counterclockwise) {
@@ -632,18 +632,18 @@ define(['exports'], function (exports) {
       });
 
       //removing the duplicated points
-      relevantAngles.push(angles.pop());
+      uniqueAngles.push(angles.pop());
       while (angles.length > 0) {
         var angle = angles.pop(),
-            found = relevantAngles.find(function (a) {
+            found = uniqueAngles.find(function (a) {
           return almostEqual(angle, a) || almostEqual(angle - 2 * PI, a) || almostEqual(angle, a - 2 * PI);
         });
         if (found === undefined) {
-          relevantAngles.push(angle);
+          uniqueAngles.push(angle);
         }
       }
 
-      return relevantAngles;
+      return uniqueAngles;
     },
 
 

@@ -638,12 +638,12 @@ export function Geometry() {
   relevantArcAngles = (sAngle, eAngle, counterclockwise) => {
     //
     //  The function is returning the specified sAngle and eAngle and
-    //all the multiple of PI/2. The results doesn't contain duplications.
+    //all the multiple of PI/2. The result doesn't contain duplications.
     //  Example: For sAngle = PI/6 and eAngle = 7*PI/6,
     // When counterclockwise = false the result is: [PI/6, 7*PI/6, PI/2, 2*PI/2]
     // When counterclockwise = true the result is: [PI/6, 7*PI/6, 3*PI/2, 4*PI/2]
     //
-    var angles = [], relevantAngles = [];
+    var angles = [], uniqueAngles = [];
     angles.push(sAngle);
     angles.push(eAngle);
     if (counterclockwise) {
@@ -658,19 +658,19 @@ export function Geometry() {
     });
 
     //removing the duplicated points
-    relevantAngles.push(angles.pop());
+    uniqueAngles.push(angles.pop());
     while(angles.length > 0) {
       var angle = angles.pop(),
-          found = relevantAngles.find((a) =>
+          found = uniqueAngles.find((a) =>
             almostEqual(angle, a) ||
             almostEqual(angle - 2*PI, a) ||
             almostEqual(angle, a - 2*PI));
       if (found === undefined) {
-        relevantAngles.push(angle);
+        uniqueAngles.push(angle);
       }
     }
 
-    return relevantAngles;
+    return uniqueAngles;
   },
 
   // http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
