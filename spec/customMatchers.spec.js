@@ -52,6 +52,82 @@ describe('customMatchers', () => {
       expect(result.pass).toBe(false);
     });
 
+    it('should ignore the arguments of a call by default', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(11, 22, 33, 44);
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should ignore the value of an attribute change by default', () => {
+      ctxA.lineWidth = 2;
+      ctxE.lineWidth = 3;
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should ignore the arguments of a call when specified so', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(11, 22, 33, 44);
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack(), {ignoreArguments: true});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should ignore the value of an attribute change when specified so', () => {
+      ctxA.lineWidth = 2;
+      ctxE.lineWidth = 3;
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack(), {ignoreArguments: true});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should not ignore the arguments of a call when specified so', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(11, 22, 33, 44);
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack(), {ignoreArguments: false});
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should not ignore the value of an attribute change when specified so', () => {
+      ctxA.lineWidth = 2;
+      ctxE.lineWidth = 3;
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack(), {ignoreArguments: false});
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should use the specified precision when comparing the number values of the argument calls', () => {
+      ctxA.strokeRect(10.001, 20.002, 30.003, 40.004);
+      ctxE.strokeRect(10.002, 20.003, 30.004, 40.002);
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack(), {
+        ignoreArguments: false,
+        precision: 2});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should use the specified precision when comparing the number values of the attributes', () => {
+      ctxA.lineWidth = 2.001;
+      ctxE.lineWidth = 2.002;
+
+      var result = toBePartOf(ctxA.stack(), ctxE.stack(), {
+        ignoreArguments: false,
+        precision: 2});
+
+      expect(result.pass).toBe(true);
+    });
+
   });
 
 
