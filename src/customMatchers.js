@@ -36,14 +36,23 @@ export function CustomMatchers(geometry) {
 
   toBeInsideTheAreaOf = (util, customEqualityTesters) => {
     return {
-      compare: (actual, expected) => {
-        var smallShape = actual,
+      compare: (actual, expected, opt) => {
+        opt = Object.assign({
+          checkTheCenterOnly: false
+        }, opt || {});
+        var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
+          smallShape = actual,
           bigShape = expected,
           bigShapeBBox = geometry.getBBox(bigShape),
           smallShapeBBox = geometry.getBBox(smallShape),
+          smallShapeCorners = cornersOfABox(smallShapeBBox),
+          isAnyCornerOutside = smallShapeCorners
+            .reduce((prev, corner) => prev |= !geometry.isPointInsideRectangle(corner, bigShapeBBox), false),
           center = {x: smallShapeBBox.x + smallShapeBBox.width / 2, y: smallShapeBBox.y + smallShapeBBox.height / 2},
           isCenterInside = geometry.isPointInsideRectangle(center, bigShapeBBox),
-          result = isCenterInside ? {pass: true} : {pass: false, message: 'Shape is not inside the area of'};
+          result = validArguments && (!isAnyCornerOutside || (opt.checkTheCenterOnly && isCenterInside))
+            ? {pass: true}
+            : {pass: false, message: 'Shape is not inside the area of'};
         return result;
       }
     }
@@ -124,6 +133,15 @@ export function CustomMatchers(geometry) {
       }
     }
     return same;
+  },
+
+  cornersOfABox = (box) => {
+    return [
+      {x: box.x, y: box.y},
+      {x: box.x + box.width, y: box.y},
+      {x: box.x + box.width, y: box.y + box.height},
+      {x: box.x, y: box.y + box.height}
+    ];
   };
 
 
