@@ -135,7 +135,7 @@ describe('customMatchers', () => {
       expect(result.pass).toBe(true);
     });
 
-    it('should use zero decimal precision by default when comparing the number values', () => {
+    it('should use zero decimal precision by default when comparing the numeric values', () => {
       ctxA.lineWidth = 2.8;
       ctxA.strokeRect(10.2, 20.3, 30.4, 40.2);
       ctxE.lineWidth = 2.7;
@@ -242,6 +242,160 @@ describe('customMatchers', () => {
 
       expect(result.pass).toBe(false);
     });
+  });
+
+  describe('toHaveTheSamePositionWith', () => {
+
+    var toHaveTheSamePositionWith;
+
+    beforeAll(() => {
+      toHaveTheSamePositionWith = customMatchers.toHaveTheSamePositionWith().compare;
+    });
+
+    it('should fail when actual and expected are empty', () => {
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when actual is empty and expected is not empty', () => {
+      ctxE.strokeRect(10, 20, 30, 40);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when actual is not empty and expected is empty', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should pass when the x and y of the bounding box of the actual are the same with the x and y of the expected', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(10, 20, 50, 60);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should fail when the x of the bounding box of the actual is not the same with the x of the expected', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(11, 20, 50, 60);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when the y of the bounding box of the actual is not the same with the y of the expected', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(10, 21, 50, 60);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should use the specified precision when comparing the x and y', () => {
+      ctxA.strokeRect(10.001, 20.008, 30, 40);
+      ctxE.strokeRect(10.002, 20.009, 50, 60);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack(), {precision: 2});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should use zero decimal precision by default when comparing the x and y', () => {
+      ctxA.strokeRect(10.1, 20.8, 30, 40);
+      ctxE.strokeRect(10.2, 20.9, 50, 60);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
+  });
+
+  describe('toHaveTheSameSizeWith', () => {
+
+    var toHaveTheSameSizeWith;
+
+    beforeAll(() => {
+      toHaveTheSameSizeWith = customMatchers.toHaveTheSameSizeWith().compare;
+    });
+
+    it('should fail when actual and expected are empty', () => {
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when actual is empty and expected is not empty', () => {
+      ctxE.strokeRect(10, 20, 30, 40);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when actual is not empty and expected is empty', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should pass when the width and height of the bounding box of the actual are the same with the width and height of the expected', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(50, 60, 30, 40);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should fail when the width of the bounding box of the actual is not the same with the width of the expected', () => {
+      ctxA.strokeRect(10, 20, 31, 40);
+      ctxE.strokeRect(50, 60, 30, 40);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when the height of the bounding box of the actual is not the same with the height of the expected', () => {
+      ctxA.strokeRect(10, 20, 30, 41);
+      ctxE.strokeRect(50, 60, 30, 40);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should use the specified precision when comparing the width and height', () => {
+      ctxA.strokeRect(10, 20, 30.001, 40.008);
+      ctxE.strokeRect(50, 60, 30.002, 40.009);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack(), {precision: 2});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should use zero decimal precision by default when comparing the width and height', () => {
+      ctxA.strokeRect(10, 20, 30.1, 40.8);
+      ctxE.strokeRect(50, 60, 30.2, 40.9);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
   });
 
 });

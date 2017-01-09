@@ -60,11 +60,17 @@ export function CustomMatchers(geometry) {
 
   toHaveTheSamePositionWith = (util, customEqualityTesters) => {
     return {
-      compare: (actual, expected) => {
-        var actualBBox = geometry.getBBox(actual),
+      compare: (actual, expected, opt) => {
+        opt = Object.assign({
+          precision: 0
+        }, opt || {});
+        var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
+          actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSamePosition = actualBBox.x === expectedBBox.x && actualBBox.y === expectedBBox.y,
-          result = haveTheSamePosition ? {pass: true} : {pass: false, message: 'Shapes don`t have the same position'};
+          haveTheSamePosition = sameValues(actualBBox.x, expectedBBox.x, opt.precision) && sameValues(actualBBox.y, expectedBBox.y, opt.precision),
+          result = validArguments && haveTheSamePosition
+            ? {pass: true}
+            : {pass: false, message: 'Shapes don`t have the same position'};
         return result;
       }
     }
@@ -72,11 +78,17 @@ export function CustomMatchers(geometry) {
 
   toHaveTheSameSizeWith = (util, customEqualityTesters) => {
     return {
-      compare: (actual, expected) => {
-        var actualBBox = geometry.getBBox(actual),
+      compare: (actual, expected, opt) => {
+        opt = Object.assign({
+          precision: 0
+        }, opt || {});
+        var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
+          actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSameSize = actualBBox.width === expectedBBox.width && actualBBox.height === expectedBBox.height,
-          result = haveTheSameSize ? {pass: true} : {pass: false, message: 'Shapes don`t have the same size'};
+          haveTheSameSize = sameValues(actualBBox.width, expectedBBox.width, opt.precision) && sameValues(actualBBox.height, expectedBBox.height, opt.precision),
+          result = validArguments && haveTheSameSize
+            ? {pass: true}
+            : {pass: false, message: 'Shapes don`t have the same size'};
         return result;
       }
     }
