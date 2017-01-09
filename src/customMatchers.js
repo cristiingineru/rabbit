@@ -96,11 +96,28 @@ export function CustomMatchers(geometry) {
 
   toBeHorizontallyAlignWith = (util, customEqualityTesters) => {
     return {
-      compare: (actual, expected) => {
-        var actualBBox = geometry.getBBox(actual),
+      compare: (actual, expected, opt) => {
+        opt = Object.assign({
+          compare: 'top',
+          precision: 0
+        }, opt || {});
+        var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
+          actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSameAlignment = actualBBox.y === expectedBBox.y,
-          result = haveTheSameAlignment ? {pass: true} : {pass: false, message: 'Shapes don`t have the same horizontal position'};
+          y1 = opt.compare === 'top'
+            ? actualBBox.y
+            : (opt.compare === 'bottom'
+              ? actualBBox.y + actualBBox.height
+              : (actualBBox.y + actualBBox.height) / 2),
+          y2 = opt.compare === 'top'
+            ? expectedBBox.y
+            : (opt.compare === 'bottom'
+              ? expectedBBox.y + expectedBBox.height
+              : (expectedBBox.y + expectedBBox.height) / 2),
+          haveTheSameAlignment = sameValues(y1, y2),
+          result = validArguments && haveTheSameAlignment
+            ? {pass: true}
+            : {pass: false, message: 'Shapes don`t have the same horizontal position'};
         return result;
       }
     }

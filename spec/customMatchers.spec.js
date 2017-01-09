@@ -398,4 +398,108 @@ describe('customMatchers', () => {
 
   });
 
+  describe('toBeHorizontallyAlignWith', () => {
+
+    var toBeHorizontallyAlignWith;
+
+    beforeAll(() => {
+      toBeHorizontallyAlignWith = customMatchers.toBeHorizontallyAlignWith().compare;
+    });
+
+    it('should fail when actual and expected are empty', () => {
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when actual is empty and expected is not empty', () => {
+      ctxE.strokeRect(10, 20, 30, 40);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should fail when actual is not empty and expected is empty', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should pass when the top of bounding box of the actual and expected are the same', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(50, 20, 70, 80);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should fail when the top of bounding box of the actual and expected are not the same', () => {
+      ctxA.strokeRect(10, 20, 30, 40);
+      ctxE.strokeRect(50, 21, 70, 80);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should use the specified precision when comparing the horizontal positions', () => {
+      ctxA.strokeRect(10, 20.001, 30, 40);
+      ctxE.strokeRect(50, 20.002, 70, 80);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack(), {precision: 2});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should use zero decimal precision by default when comparing the horizontal positions', () => {
+      ctxA.strokeRect(10, 20.1, 30, 40);
+      ctxE.strokeRect(50, 20.2, 70, 80);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should pass when the middle of the bounding box of the actual and expected are the same and requested to compare the middles', () => {
+      ctxA.strokeRect(10, 20, 30, 80);
+      ctxE.strokeRect(50, 40, 70, 60);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack(), {compare: 'middle'});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should fail when the top of the bounding box of the actual and expected are not the same', () => {
+      ctxA.strokeRect(10, 20, 30, 80);
+      ctxE.strokeRect(50, 40, 70, 61);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack(), {compare: 'middle'});
+
+      expect(result.pass).toBe(false);
+    });
+
+    it('should pass when the bottoms of the bounding box of the actual and expected are the same and requested to compare the middles', () => {
+      ctxA.strokeRect(10, 20, 50, 30);
+      ctxE.strokeRect(20, 10, 40, 40);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack(), {compare: 'bottom'});
+
+      expect(result.pass).toBe(true);
+    });
+
+    it('should fail when the bottoms of the bounding box of the actual and expected are not the same', () => {
+      ctxA.strokeRect(10, 20, 50, 30);
+      ctxE.strokeRect(20, 10, 40, 31);
+
+      var result = toBeHorizontallyAlignWith(ctxA.stack(), ctxE.stack(), {compare: 'bottom'});
+
+      expect(result.pass).toBe(false);
+    });
+
+  });
+
 });
