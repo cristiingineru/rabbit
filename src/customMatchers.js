@@ -115,9 +115,11 @@ export function CustomMatchers(geometry) {
               ? expectedBBox.y + expectedBBox.height
               : (expectedBBox.y + expectedBBox.height) / 2),
           haveTheSameAlignment = sameValues(y1, y2),
-          result = validArguments && haveTheSameAlignment
-            ? {pass: true}
-            : {pass: false, message: 'Shapes don`t have the same horizontal position'};
+          result = !validArguments
+            ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
+            : (haveTheSameAlignment
+              ? {pass: true}
+              : {pass: false, message: 'Not the same horizontal ' + opt.compare + ' alignment: ' + y1 + ' and ' + y2 + ' comparing with precision: ' + opt.precision});
         return result;
       }
     }
@@ -125,11 +127,30 @@ export function CustomMatchers(geometry) {
 
   toBeVerticallyAlignWith = (util, customEqualityTesters) => {
     return {
-      compare: (actual, expected) => {
-        var actualBBox = geometry.getBBox(actual),
+      compare: (actual, expected, opt) => {
+        opt = Object.assign({
+          compare: 'left',
+          precision: 0
+        }, opt || {});
+        var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
+          actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSameAlignment = actualBBox.x === expectedBBox.x,
-          result = haveTheSameAlignment ? {pass: true} : {pass: false, message: 'Shapes don`t have the same vertical position'};
+          x1 = opt.compare === 'left'
+            ? actualBBox.x
+            : (opt.compare === 'right'
+              ? actualBBox.x + actualBBox.width
+              : (actualBBox.x + actualBBox.width) / 2),
+          x2 = opt.compare === 'left'
+            ? expectedBBox.x
+            : (opt.compare === 'right'
+              ? expectedBBox.x + expectedBBox.width
+              : (expectedBBox.x + expectedBBox.width) / 2),
+          haveTheSameAlignment = sameValues(x1, x2),
+          result = !validArguments
+            ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
+            : (haveTheSameAlignment
+              ? {pass: true}
+              : {pass: false, message: 'Not the same vertical ' + opt.compare + ' alignment: ' + x1 + ' and ' + x2 + ' comparing with precision: ' + opt.precision});
         return result;
       }
     }
