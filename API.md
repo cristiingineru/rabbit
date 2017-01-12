@@ -45,7 +45,7 @@ The Canvas functions and properties supported by the **getBBox** function:
 |scale|✓| |
 |setLineDash| | |
 |setTransform| | |
-|stroke|✓| |
+|stroke|✓|Only the 'miter' corner style is supported. The 'round' and 'bevel' styles will be ignored.|
 |strokeRect|✓| |
 |strokeText| | |
 |transform| | |
