@@ -50,9 +50,12 @@ export function CustomMatchers(geometry) {
             .reduce((prev, corner) => prev |= !geometry.isPointInsideRectangle(corner, bigShapeBBox), false),
           center = {x: smallShapeBBox.x + smallShapeBBox.width / 2, y: smallShapeBBox.y + smallShapeBBox.height / 2},
           isCenterInside = geometry.isPointInsideRectangle(center, bigShapeBBox),
-          result = validArguments && (!isAnyCornerOutside || (opt.checkTheCenterOnly && isCenterInside))
-            ? {pass: true}
-            : {pass: false, message: 'Shape is not inside the area of'};
+          what = opt.checkTheCenterOnly ? 'center' : 'corners',
+          result = !validArguments
+            ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
+            : (!isAnyCornerOutside || (opt.checkTheCenterOnly && isCenterInside)
+              ? {pass: true}
+              : {pass: false, message: 'The ' + what + ' of the ' + JSON.stringify(smallShapeBBox) + ' not inside ' + JSON.stringify(bigShapeBBox)});
         return result;
       }
     }
@@ -67,10 +70,18 @@ export function CustomMatchers(geometry) {
         var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
           actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSamePosition = sameValues(actualBBox.x, expectedBBox.x, opt.precision) && sameValues(actualBBox.y, expectedBBox.y, opt.precision),
-          result = validArguments && haveTheSamePosition
-            ? {pass: true}
-            : {pass: false, message: 'Shapes don`t have the same position'};
+          haveTheSameX = sameValues(actualBBox.x, expectedBBox.x, opt.precision),
+          haveTheSameY = sameValues(actualBBox.y, expectedBBox.y, opt.precision),
+          haveTheSamePosition = haveTheSameX && haveTheSameY,
+          result = !validArguments
+            ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
+            : (haveTheSamePosition
+              ? {pass: true}
+              : (!haveTheSameX && !haveTheSameY
+                ? {pass: false, message: 'Not the same x and y: ' + actualBBox.x + 'x' + actualBBox.y + ' vs. ' + expectedBBox.x + 'x' + expectedBBox.y + ' comparing with precision: ' + opt.precision}
+                : (!haveTheSameX
+                  ? {pass: false, message: 'Not the same x: ' + actualBBox.x + ' vs. ' + expectedBBox.x + ' comparing with precision: ' + opt.precision}
+                  : {pass: false, message: 'Not the same y: ' + actualBBox.y + ' vs. ' + expectedBBox.y + ' comparing with precision: ' + opt.precision})));
         return result;
       }
     }
@@ -85,10 +96,18 @@ export function CustomMatchers(geometry) {
         var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
           actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSameSize = sameValues(actualBBox.width, expectedBBox.width, opt.precision) && sameValues(actualBBox.height, expectedBBox.height, opt.precision),
-          result = validArguments && haveTheSameSize
-            ? {pass: true}
-            : {pass: false, message: 'Shapes don`t have the same size'};
+          haveTheSameWidth = sameValues(actualBBox.width, expectedBBox.width, opt.precision),
+          haveTheSameHeight = sameValues(actualBBox.height, expectedBBox.height, opt.precision),
+          haveTheSameSizes = haveTheSameWidth && haveTheSameHeight,
+          result = !validArguments
+            ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
+            : (haveTheSameSizes
+              ? {pass: true}
+              : (!haveTheSameWidth && !haveTheSameHeight
+                ? {pass: false, message: 'Not the same width and height: ' + actualBBox.width + 'x' + actualBBox.height + ' vs. ' + expectedBBox.width + 'x' + expectedBBox.height + ' comparing with precision: ' + opt.precision}
+                : (!haveTheSameWidth
+                  ? {pass: false, message: 'Not the same width: ' + actualBBox.width + ' vs. ' + expectedBBox.width + ' comparing with precision: ' + opt.precision}
+                  : {pass: false, message: 'Not the same height: ' + actualBBox.height + ' vs. ' + expectedBBox.height + ' comparing with precision: ' + opt.precision})));
         return result;
       }
     }

@@ -161,6 +161,7 @@ describe('customMatchers', () => {
       var result = toBeInsideTheAreaOf(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is empty and expected is not empty', () => {
@@ -169,6 +170,7 @@ describe('customMatchers', () => {
       var result = toBeInsideTheAreaOf(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is not empty and expected is empty', () => {
@@ -177,6 +179,7 @@ describe('customMatchers', () => {
       var result = toBeInsideTheAreaOf(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should pass when the actual is inside the bounding box of the expected', () => {
@@ -255,6 +258,7 @@ describe('customMatchers', () => {
       var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is empty and expected is not empty', () => {
@@ -263,6 +267,7 @@ describe('customMatchers', () => {
       var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is not empty and expected is empty', () => {
@@ -271,6 +276,7 @@ describe('customMatchers', () => {
       var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should pass when the x and y of the bounding box of the actual are the same with the x and y of the expected', () => {
@@ -289,6 +295,9 @@ describe('customMatchers', () => {
       var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('x');
+      expect(result.message).toContain(10);
+      expect(result.message).toContain(11);
     });
 
     it('should fail when the y of the bounding box of the actual is not the same with the y of the expected', () => {
@@ -298,6 +307,24 @@ describe('customMatchers', () => {
       var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('y');
+      expect(result.message).toContain(20);
+      expect(result.message).toContain(21);
+    });
+
+    it('should fail when the x and y of the bounding box of the actual are not the same with the x and y of the expected', () => {
+      ctxA.strokeRect(11, 20, 30, 40);
+      ctxE.strokeRect(10, 21, 50, 60);
+
+      var result = toHaveTheSamePositionWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+      expect(result.message).toContain('x');
+      expect(result.message).toContain(11);
+      expect(result.message).toContain(10);
+      expect(result.message).toContain('y');
+      expect(result.message).toContain(20);
+      expect(result.message).toContain(21);
     });
 
     it('should use the specified precision when comparing the x and y', () => {
@@ -332,6 +359,7 @@ describe('customMatchers', () => {
       var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is empty and expected is not empty', () => {
@@ -340,6 +368,7 @@ describe('customMatchers', () => {
       var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is not empty and expected is empty', () => {
@@ -348,6 +377,7 @@ describe('customMatchers', () => {
       var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should pass when the width and height of the bounding box of the actual are the same with the width and height of the expected', () => {
@@ -366,6 +396,9 @@ describe('customMatchers', () => {
       var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('width');
+      expect(result.message).toContain(30);
+      expect(result.message).toContain(31);
     });
 
     it('should fail when the height of the bounding box of the actual is not the same with the height of the expected', () => {
@@ -375,6 +408,24 @@ describe('customMatchers', () => {
       var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('height');
+      expect(result.message).toContain(40);
+      expect(result.message).toContain(41);
+    });
+
+    it('should fail when the width and height of the bounding box of the actual are not the same with the width and height of the expected', () => {
+      ctxA.strokeRect(10, 20, 30, 41);
+      ctxE.strokeRect(50, 60, 31, 40);
+
+      var result = toHaveTheSameSizeWith(ctxA.stack(), ctxE.stack());
+
+      expect(result.pass).toBe(false);
+      expect(result.message).toContain('width');
+      expect(result.message).toContain(30);
+      expect(result.message).toContain(31);
+      expect(result.message).toContain('height');
+      expect(result.message).toContain(41);
+      expect(result.message).toContain(40);
     });
 
     it('should use the specified precision when comparing the width and height', () => {
