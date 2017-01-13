@@ -701,7 +701,7 @@ export function Geometry() {
         D = A * point.x + B * point.y + C;
         return D;
     }).every((D) => {
-      return D > 0;
+      return D >= 0;
     });
 
     return isInside;

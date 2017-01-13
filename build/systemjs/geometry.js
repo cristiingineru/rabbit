@@ -673,7 +673,7 @@ System.register([], function (_export, _context) {
             D = A * point.x + B * point.y + C;
         return D;
       }).every(function (D) {
-        return D > 0;
+        return D >= 0;
       });
 
       return isInside;

@@ -184,8 +184,8 @@ var go = function() {
           var leftEye = foundEyeStacks.shift(),
             rightEye = foundEyeStacks.shift();
 
-          expect(leftEye).not.toHaveTheSamePositionWith(lastLeftEye);
-          expect(rightEye).not.toHaveTheSamePositionWith(lastRightEye);
+          expect(leftEye).not.toHaveTheSamePositionWith(lastLeftEye, {precision: 4});
+          expect(rightEye).not.toHaveTheSamePositionWith(lastRightEye, {precision: 4});
 
           lastLeftEye = leftEye;
           lastRightEye = rightEye;
