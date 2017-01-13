@@ -675,7 +675,7 @@ define(['exports'], function (exports) {
             D = A * point.x + B * point.y + C;
         return D;
       }).every(function (D) {
-        return D > 0;
+        return D >= 0;
       });
 
       return isInside;
