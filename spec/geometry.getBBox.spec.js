@@ -2,14 +2,13 @@
 /* jshint browser: true*/
 
 import { Geometry } from '../src/geometry.js'
-import { Rabbit } from '../src/rabbit.js'
 import '../node_modules/Canteen/build/canteen.min'
 
 
 describe('Rabbit', () => {
     'use strict';
 
-    var rabbit,
+    var getBBox,
         resetCanvas = (ctx) => {
           ctx.clearRect(0, 0, ctx.context.canvas.width, ctx.context.canvas.height);
           ctx.setTransform(1,0,0,1,0,0);
@@ -18,7 +17,7 @@ describe('Rabbit', () => {
         };
 
     beforeAll(() => {
-      rabbit = new Rabbit();
+      getBBox = (new Geometry()).getBBox;
     });
 
     describe('getBBox', () => {
@@ -34,7 +33,7 @@ describe('Rabbit', () => {
       });
 
       it('should return {x: NaN, y: NaN, width: NaN, height: NaN} for an empty canvas', () => {
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -45,7 +44,7 @@ describe('Rabbit', () => {
       it('should return {x: NaN, y: NaN, width: NaN, height: NaN} when using unsupported canvas functions', () => {
           ctx.bezierCurveTo(1, 2, 3, 4, 5, 6);
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -59,7 +58,7 @@ describe('Rabbit', () => {
           var cx = 11, cy = 12, r = 13, sAngle, eAngle, counterclockwise;
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -72,7 +71,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+          var box = getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe(cx - r);
           expect(box.y).toBe(cy - r);
@@ -87,7 +86,7 @@ describe('Rabbit', () => {
           ctx.fill();
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+          var box = getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -102,7 +101,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+          var box = getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe(cx - r - lineWidth / 2);
           expect(box.y).toBe(cy - r - lineWidth / 2);
@@ -118,7 +117,7 @@ describe('Rabbit', () => {
           ctx.lineWidth = lineWidth;
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(cx - r - lineWidth / 2 * xScale);
           expect(box.y).toBe(cy - r - lineWidth / 2 * yScale);
@@ -142,7 +141,7 @@ describe('Rabbit', () => {
           ctx.restore();
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(cx - r - lineWidth2 / 2);
           expect(box.y).toBe(cy - r - lineWidth2 / 2);
@@ -167,7 +166,7 @@ describe('Rabbit', () => {
             ctx.arc(tc.cx, tc.cy, tc.r, tc.sAngle, tc.eAngle, tc.counterclockwise);
             ctx.stroke();
 
-            var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+            var box = getBBox(ctx.stack({decimalPoints: 20}));
 
             expect(box.x).toEqual(NaN);
             expect(box.y).toEqual(NaN);
@@ -199,7 +198,7 @@ describe('Rabbit', () => {
             ctx.arc(tc.cx, tc.cy, tc.r, tc.sAngle, tc.eAngle, tc.counterclockwise);
             ctx.stroke();
 
-            var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+            var box = getBBox(ctx.stack({decimalPoints: 20}));
 
             expect(box.x).toBeCloseTo(tc.box.x, 8);
             expect(box.y).toBeCloseTo(tc.box.y, 8);
@@ -239,7 +238,7 @@ describe('Rabbit', () => {
             ctx.arc(tc.cx, tc.cy, tc.r, tc.sAngle, tc.eAngle, tc.counterclockwise);
             ctx.stroke();
 
-            var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+            var box = getBBox(ctx.stack({decimalPoints: 20}));
 
             expect(box.x).toBeCloseTo(tc.box.x, 8);
             expect(box.y).toBeCloseTo(tc.box.y, 8);
@@ -258,7 +257,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(cx - r);
           expect(box.y).toBe(cy - r);
@@ -273,7 +272,7 @@ describe('Rabbit', () => {
           ctx.arc(cx + toRightShift, cy + toBottomShift, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(cx - r);
           expect(box.y).toBe(cy - r);
@@ -288,7 +287,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(cx - r + xTranslate);
           expect(box.y).toBe(cy - r + yTranslate);
@@ -305,7 +304,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(cx - r);
           expect(box.y).toBe(cy - r);
@@ -320,7 +319,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+          var box = getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe((cx - r) * xScale);
           expect(box.y).toBe((cy - r) * yScale);
@@ -337,7 +336,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(cx - r);
           expect(box.y).toBe(cy - r);
@@ -353,7 +352,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+          var box = getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe((cx - r + xTranslate) * xScale);
           expect(box.y).toBe((cy - r + yTranslate) * yScale);
@@ -370,7 +369,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+          var box = getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe((cx - r + xTranslate) * xScale1 * xScale2);
           expect(box.y).toBe((cy - r + yTranslate) * yScale1 * yScale2);
@@ -389,7 +388,7 @@ describe('Rabbit', () => {
           ctx.arc(cx, cy, r, sAngle, eAngle, counterclockwise);
           ctx.fill();
 
-          var box = rabbit.getBBox(ctx.stack({decimalPoints: 20}));
+          var box = getBBox(ctx.stack({decimalPoints: 20}));
 
           expect(box.x).toBe(xTranslate1 * xScale1 + (cx - r + xTranslate2) * xScale1 * xScale2);
           expect(box.y).toBe(yTranslate1 * yScale1 + (cy - r + yTranslate2) * yScale1 * yScale2);
@@ -418,7 +417,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe(x);
             expect(box.y).toBe(y);
@@ -433,7 +432,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x + toRightShift, y + toBottomShift, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe(x);
             expect(box.y).toBe(y);
@@ -448,7 +447,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe(x + xTranslate);
             expect(box.y).toBe(y + yTranslate);
@@ -465,7 +464,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe(x);
             expect(box.y).toBe(y);
@@ -480,7 +479,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe(x * xScale);
             expect(box.y).toBe(y * yScale);
@@ -497,7 +496,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe(x);
             expect(box.y).toBe(y);
@@ -513,7 +512,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe((x + xTranslate) * xScale);
             expect(box.y).toBe((y + yTranslate) * yScale);
@@ -531,7 +530,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe((x + xTranslate) * xScale1 * xScale2);
             expect(box.y).toBe((y + yTranslate) * yScale1 * yScale2);
@@ -550,7 +549,7 @@ describe('Rabbit', () => {
             ctx[testCase.shape](x, y, width, height);
             if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-            var box = rabbit.getBBox(ctx.stack());
+            var box = getBBox(ctx.stack());
 
             expect(box.x).toBe(xTranslate1 * xScale1 + (x + xTranslate2) * xScale1 * xScale2);
             expect(box.y).toBe(yTranslate1 * yScale1 + (y + yTranslate2) * yScale1 * yScale2);
@@ -565,7 +564,7 @@ describe('Rabbit', () => {
               ctx[testCase.shape](x, y, width, height);
               if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-              var box = rabbit.getBBox(ctx.stack());
+              var box = getBBox(ctx.stack());
 
               expect(box.x).toBe(x - lineWidth / 2);
               expect(box.y).toBe(y - lineWidth / 2);
@@ -581,7 +580,7 @@ describe('Rabbit', () => {
               ctx[testCase.shape](x, y, width, height);
               if (testCase.drawFunction) ctx[testCase.drawFunction]();
 
-              var box = rabbit.getBBox(ctx.stack());
+              var box = getBBox(ctx.stack());
 
               expect(box.x).toBe((x - lineWidth / 2) * xScale);
               expect(box.y).toBe((y - lineWidth / 2) * yScale);
@@ -602,7 +601,7 @@ describe('Rabbit', () => {
           ctx.moveTo(x, y);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -616,7 +615,7 @@ describe('Rabbit', () => {
           ctx.moveTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -634,7 +633,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x, y);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -648,7 +647,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2),
             minY = Math.min(y1, y2),
@@ -667,7 +666,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x3, y3);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2, x3),
             minY = Math.min(y1, y2, y3),
@@ -687,7 +686,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2),
             minY = Math.min(y1, y2),
@@ -707,7 +706,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2),
             minY = Math.min(y1, y2),
@@ -727,7 +726,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2),
             minY = Math.min(y1, y2),
@@ -749,7 +748,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2),
             minY = Math.min(y1, y2),
@@ -773,7 +772,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2),
             minY = Math.min(y1, y2),
@@ -796,7 +795,7 @@ describe('Rabbit', () => {
           ctx.lineTo(x2, y2);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var minX = Math.min(x1, x2),
             minY = Math.min(y1, y2),
@@ -826,7 +825,7 @@ describe('Rabbit', () => {
             ctx.strokeStyle = 'purple';
             ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           var maxWidth = Math.max(width1, width2, width3);
           expect(box.x).toEqual(x1 - maxWidth / 2);
@@ -845,7 +844,7 @@ describe('Rabbit', () => {
           ctx.arcTo(x1, y1, x2, y2, r);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(NaN);
           expect(box.y).toEqual(NaN);
@@ -859,7 +858,7 @@ describe('Rabbit', () => {
           ctx.lineTo(6, 1);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(5);
           expect(box.y).toEqual(0);
@@ -873,7 +872,7 @@ describe('Rabbit', () => {
           ctx.arcTo(x1, y1, x2, y2, r);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(5);
           expect(box.y).toBe(0);
@@ -888,7 +887,7 @@ describe('Rabbit', () => {
           ctx.lineTo(3, 4);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toEqual(3);
           expect(box.y).toEqual(0);
@@ -902,7 +901,7 @@ describe('Rabbit', () => {
           ctx.arcTo(x1, y1, x2, y2, r);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(5);
           expect(box.y).toBe(0);
@@ -917,7 +916,7 @@ describe('Rabbit', () => {
           ctx.lineTo(3, 4);
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(3);
           expect(box.y).toBe(0);
@@ -932,7 +931,7 @@ describe('Rabbit', () => {
           ctx.lineWidth = 4;
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(3);
           expect(box.y).toBe(-2);
@@ -949,7 +948,7 @@ describe('Rabbit', () => {
           ctx.lineWidth = 4;
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(3 + tx);
           expect(box.y).toBe(-2 + ty);
@@ -967,7 +966,7 @@ describe('Rabbit', () => {
           ctx.lineWidth = lineWidth;
           ctx.stroke();
 
-          var box = rabbit.getBBox(ctx.stack());
+          var box = getBBox(ctx.stack());
 
           expect(box.x).toBe(x1*sx - lineWidth*sx/2);
           expect(box.y).toBe(y0*sy - lineWidth*sy/2);
