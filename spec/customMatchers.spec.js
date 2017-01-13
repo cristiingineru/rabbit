@@ -41,6 +41,7 @@ describe('customMatchers', () => {
       var result = toBePartOf(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is empty and expected is not empty', () => {
@@ -49,6 +50,7 @@ describe('customMatchers', () => {
       var result = toBePartOf(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should fail when actual is not empty and expected is empty', () => {
@@ -57,6 +59,7 @@ describe('customMatchers', () => {
       var result = toBePartOf(ctxA.stack(), ctxE.stack());
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('Invalid');
     });
 
     it('should ignore the arguments of a call by default', () => {
@@ -102,6 +105,7 @@ describe('customMatchers', () => {
       var result = toBePartOf(ctxA.stack(), ctxE.stack(), {ignoreArguments: false});
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('comparing the arguments');
     });
 
     it('should not ignore the value of an attribute change when specified so', () => {
@@ -111,6 +115,7 @@ describe('customMatchers', () => {
       var result = toBePartOf(ctxA.stack(), ctxE.stack(), {ignoreArguments: false});
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('comparing the arguments');
     });
 
     it('should use the specified precision when comparing the number values of the argument calls', () => {
@@ -215,6 +220,15 @@ describe('customMatchers', () => {
         var result = toBeInsideTheAreaOf(ctxA.stack(), ctxE.stack());
 
         expect(result.pass).toBe(false);
+        expect(result.message).toContain('corners');
+        expect(result.message).toContain(tc.x);
+        expect(result.message).toContain(tc.y);
+        expect(result.message).toContain(tc.width);
+        expect(result.message).toContain(tc.height);
+        expect(result.message).toContain(0);
+        expect(result.message).toContain(0);
+        expect(result.message).toContain(6);
+        expect(result.message).toContain(6);
       });
     });
 
@@ -243,6 +257,15 @@ describe('customMatchers', () => {
       var result = toBeInsideTheAreaOf(ctxA.stack(), ctxE.stack(), {checkTheCenterOnly: true});
 
       expect(result.pass).toBe(false);
+      expect(result.message).toContain('center');
+      expect(result.message).toContain(1);
+      expect(result.message).toContain(3);
+      expect(result.message).toContain(8);
+      expect(result.message).toContain(9);
+      expect(result.message).toContain(1);
+      expect(result.message).toContain(1);
+      expect(result.message).toContain(3);
+      expect(result.message).toContain(3);
     });
   });
 

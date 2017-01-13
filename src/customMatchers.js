@@ -28,7 +28,13 @@ export function CustomMatchers(geometry) {
             break;
           }
         }
-        var result = match ? {pass: true} : {pass: false, message: 'Shape not part of'};
+        var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
+          how = opt.ignoreArguments ? 'ignoring the arguments' : 'comparing the arguments with precision ' + opt.precision,
+          result = !validArguments
+            ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
+            : (match
+              ? {pass: true}
+              : {pass: false, message: 'Shape of length ' + actual.length + ' not part of shape of length ' + expected.length + ' ' + how});
         return result;
       }
     }
