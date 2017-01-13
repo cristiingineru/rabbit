@@ -1,6 +1,6 @@
 {
   "name": "rabbit.canvas",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A JavaScript library for writing tests for code drawing on canvas",
   "main": "src/rabbit.js",
   "scripts": {
