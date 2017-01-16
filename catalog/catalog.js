@@ -196,6 +196,13 @@ function runExamples() {
   });
 }
 
+function keyUp(e) {
+  var F4 = 115;
+  if (e.keyCode === F4) {
+    runExamples();
+  }
+}
+
 
 requirejs.config({
   baseUrl: '../build/amd',
@@ -210,6 +217,7 @@ requirejs(['lib/domReady', 'lib/canteen.min', '../build/amd/rabbit.js'], functio
   rabbit = new RabbitModule.Rabbit();
 
   createTextAreasWithExamples();
+  document.addEventListener('keyup', keyUp, false);
   runExamples();
 
 });
