@@ -22,7 +22,7 @@ describe('customMatchers', () => {
   beforeEach(() => {
     fixture = setFixtures('<div id="demo-container" style="width: 400px;height: 300px">').find('#demo-container').get(0);
 
-    placeholder = $('<canvas id="placeholderActual"  /><canvas id="placeholderExpected"  />');
+    placeholder = $('<canvas id="placeholderActual" /><canvas id="placeholderExpected" />');
     placeholder.appendTo(fixture);
     ctxA = placeholder[0].getContext('2d');
     ctxE = placeholder[1].getContext('2d');

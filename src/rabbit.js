@@ -26,17 +26,19 @@ export function Rabbit(geometry, matchers) {
   findShapeIgnoringArguments = (shape, where, startIndex) => {
     startIndex = startIndex || 0;
     var match = false, index = -1;
-    for (var i = startIndex; i <= where.length - shape.length; i++) {
-      match = true;
-      for (var j = 0; j < shape.length; j++) {
-        if (where[i + j].method !== shape[j].method) {
-          match = false;
+    if (Array.isArray(shape) && shape.length > 0 && Array.isArray(where) && where.length > 0) {
+      for (var i = startIndex; i <= where.length - shape.length; i++) {
+        match = true;
+        for (var j = 0; j < shape.length; j++) {
+          if (where[i + j].method !== shape[j].method) {
+            match = false;
+            break;
+          }
+        }
+        if (match === true) {
+          index = i;
           break;
         }
-      }
-      if (match === true) {
-        index = i;
-        break;
       }
     }
     return index;

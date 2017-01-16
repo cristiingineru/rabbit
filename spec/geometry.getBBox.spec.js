@@ -5,7 +5,7 @@ import { Geometry } from '../src/geometry.js'
 import '../node_modules/Canteen/build/canteen.min'
 
 
-describe('Rabbit', () => {
+describe('Geometry', () => {
     'use strict';
 
     var getBBox,
