@@ -8,13 +8,13 @@ import '../node_modules/Canteen/build/canteen.min'
 describe('Rabbit', () => {
     'use strict';
 
-    var findAllShapesIgnoringArguments;
+    var findShapes;
 
     beforeAll(() => {
-      findAllShapesIgnoringArguments = (new Rabbit()).findAllShapesIgnoringArguments;
+      findShapes = (new Rabbit()).findShapes;
     });
 
-    describe('findAllShapesIgnoringArguments', () => {
+    describe('findShapes', () => {
 
       var fixture, placeholder, ctxS, ctxW, stackS, stackW;
 
@@ -44,11 +44,71 @@ describe('Rabbit', () => {
           {stackS: undefined, stackW: null},
           {stackS: null, stackW: undefined},
         ].forEach((tc) => {
-          var result = findAllShapesIgnoringArguments(tc.stackS, tc.stackW);
+          var result = findShapes(tc.stackS, tc.stackW);
 
           expect(Array.isArray(result)).toBe(true);
           expect(result.length).toBe(0);
         });
+      });
+
+      it('should ignore the arguments of the calls and attributes by default', () => {
+        ctxS.lineWidth = 10;
+        ctxS.strokeRect(10, 20, 30, 40);
+
+        ctxW.lineWidth = 12;
+        ctxW.strokeRect(12, 22, 32, 42);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack());
+
+        expect(result.length).toBe(1);
+      });
+
+      it('should ignore the arguments of the calls and attributes when requested so', () => {
+        ctxS.lineWidth = 10;
+        ctxS.strokeRect(10, 20, 30, 40);
+
+        ctxW.lineWidth = 12;
+        ctxW.strokeRect(12, 22, 32, 42);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack(), {ignoreArguments: true});
+
+        expect(result.length).toBe(1);
+      });
+
+      it('should not ignore the arguments of the calls and attributes when requested so', () => {
+        ctxS.lineWidth = 10;
+        ctxS.strokeRect(10, 20, 30, 40);
+
+        ctxW.lineWidth = 12;
+        ctxW.strokeRect(12, 22, 32, 42);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack(), {ignoreArguments: false});
+
+        expect(result.length).toBe(0);
+      });
+
+      it('should use the specified precision when comparing the arguments of the calls and attributes', () => {
+        ctxS.lineWidth = 10.002;
+        ctxS.strokeRect(10.008, 20.003, 30.006, 40.003);
+
+        ctxW.lineWidth = 10.001;
+        ctxW.strokeRect(10.007, 20.004, 30.007, 40.001);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack(), {ignoreArguments: false, precision: 2});
+
+        expect(result.length).toBe(1);
+      });
+
+      it('should use zero decimal precision when comparing the arguments of the calls and attributes', () => {
+        ctxS.lineWidth = 10.2;
+        ctxS.strokeRect(10.8, 20.3, 30.6, 40.3);
+
+        ctxW.lineWidth = 10.1;
+        ctxW.strokeRect(10.7, 20.4, 30.7, 40.1);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack(), {ignoreArguments: false});
+
+        expect(result.length).toBe(1);
       });
 
     });

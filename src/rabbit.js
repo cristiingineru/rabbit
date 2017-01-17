@@ -2,19 +2,24 @@
 
 import { Geometry } from './geometry.js'
 import { CustomMatchers } from './customMatchers.js'
+import { Comparators } from './comparators.js'
 
 
-export function Rabbit(geometry, matchers) {
+export function Rabbit(geometry, matchers, comparators) {
 
-  var that = this,
-    geometry = geometry || new Geometry(),
-    matchers = matchers || new CustomMatchers();
+  geometry = geometry || new Geometry();
+  matchers = matchers || new CustomMatchers();
+  comparators = comparators || new Comparators();
 
 
-  var findAllShapesIgnoringArguments = (shape, where) => {
+  var findShapes = (shape, where, opt) => {
+    opt = Object.assign({
+      ignoreArguments: true,
+      precision: 0
+    }, opt || {});
     var found = [], index = 0;
     do {
-      index = that.findShapeIgnoringArguments(shape, where, index);
+      index = findShape(shape, where, index, opt);
       if (index !== -1) {
         found.push(where.slice(index, index + shape.length));
         index += shape.length;
@@ -23,14 +28,14 @@ export function Rabbit(geometry, matchers) {
     return found;
   },
 
-  findShapeIgnoringArguments = (shape, where, startIndex) => {
+  findShape = (shape, where, startIndex, opt) => {
     startIndex = startIndex || 0;
     var match = false, index = -1;
     if (Array.isArray(shape) && shape.length > 0 && Array.isArray(where) && where.length > 0) {
       for (var i = startIndex; i <= where.length - shape.length; i++) {
         match = true;
         for (var j = 0; j < shape.length; j++) {
-          if (where[i + j].method !== shape[j].method) {
+          if (!comparators.sameCalls(where[i + j], shape[j], opt.ignoreArguments, opt.precision)) {
             match = false;
             break;
           }
@@ -49,7 +54,7 @@ export function Rabbit(geometry, matchers) {
     shapes.forEach((shape) => {
       var index = -1;
       do {
-        index = that.findShapeIgnoringArguments(shape, copy);
+        index = findShape(shape, copy);
         if (index !== -1) {
           copy.splice(index, shape.length);
         }
@@ -61,8 +66,7 @@ export function Rabbit(geometry, matchers) {
 
   this.getBBox = geometry.getBBox;
   this.customMatchers = matchers;
-  this.findAllShapesIgnoringArguments = findAllShapesIgnoringArguments;
-  this.findShapeIgnoringArguments = findShapeIgnoringArguments;
+  this.findShapes = findShapes;
   this.removeShapes = removeShapes;
 
 }

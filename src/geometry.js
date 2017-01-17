@@ -3,8 +3,7 @@
 
 export function Geometry() {
 
-  var that = this,
-      EPSILON = Number.EPSILON || 2.220446049250313e-16,
+  var EPSILON = Number.EPSILON || 2.220446049250313e-16,
       PI = Math.PI,
       sin = Math.sin,
       cos = Math.cos;
