@@ -186,7 +186,7 @@ export function CustomMatchers(geometry) {
     if (typeof val1 === 'number' && typeof val2 === 'number') {
       same = val1.toFixed(precision) === val2.toFixed(precision);
     } else {
-      same = val1 == val2;
+      same = val1 === val2;
     }
     return same;
   },

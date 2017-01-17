@@ -573,7 +573,8 @@ export function Geometry() {
     //                                            *                    *
     //                                                  *         *
     //
-    var na = a % (2*PI); //normalized angle
+    var aa, //adjusted angle
+        na = a % (2*PI); //normalized angle
     if (sx === sy) {
       return r * sx;
     } else if (almostEqual(na, 0) || almostEqual(na, PI)) {
@@ -581,16 +582,16 @@ export function Geometry() {
     } else if (almostEqual(na, PI/2) || almostEqual(na, 3*PI/2)) {
       return r * sy;
     } else if (na < 1*PI/2) {
-      var aa = na; //adjusted angle
+      aa = na;
       return r * (sx * (PI/2-aa)/(PI/2) + sy * (aa)/(PI/2));
     } else if (na < 2*PI/2) {
-      var aa = na - 1*PI/2; //adjusted angle
+      aa = na - 1*PI/2;
       return r * (sx * (aa)/(PI/2) + sy * (PI/2-aa)/(PI/2));
     } else if (na < 3*PI/2) {
-      var aa = na - 2*PI/2; //adjusted angle
+      aa = na - 2*PI/2;
       return r * (sx * (PI/2-aa)/(PI/2) + sy * (aa)/(PI/2));
     } else if (na < 4*PI/2) {
-      var aa = na - 3*PI/2; //adjusted angle
+      aa = na - 3*PI/2;
       return r * (sx * (aa)/(PI/2) + sy * (PI/2-aa)/(PI/2));
     }
   },
