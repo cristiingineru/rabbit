@@ -17,11 +17,13 @@ export function Rabbit(geometry, matchers, comparators) {
       ignoreArguments: true,
       precision: 0
     }, opt || {});
-    var found = [], index = 0;
+    var found = [], index = 0, styles, foundShape;
     do {
       index = findShape(shape, where, index, opt);
       if (index !== -1) {
-        found.push(where.slice(index, index + shape.length));
+        styles = collectStyles(where, index - 1);
+        foundShape = where.slice(index, index + shape.length);
+        found.push(foundShape.concat(styles));
         index += shape.length;
       }
     } while (index !== -1 && index < where.length);
@@ -47,6 +49,22 @@ export function Rabbit(geometry, matchers, comparators) {
       }
     }
     return index;
+  },
+
+  collectStyles = (stack, lastIndex) => {
+    var styles = [], call;
+    for(var i = 0; i <= lastIndex; i++) {
+      call = stack[i];
+      if (isStyle(call)) {
+        styles.push(call);
+      }
+    }
+    return styles;
+  },
+
+  isStyle = (call) => {
+    var styleNames = ['lineWidth', 'strokeStyle'];
+    return styleNames.indexOf(call.attr) !== -1 ? true : false;
   },
 
   removeShapes = (shapes, from) => {

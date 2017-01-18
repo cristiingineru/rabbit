@@ -111,6 +111,20 @@ describe('Rabbit', () => {
         expect(result.length).toBe(1);
       });
 
+      it('should return all previouse styles set before the found shape', () => {
+        ctxS.strokeRect(10, 20, 30, 40);
+
+        ctxW.strokeStyle = '#0000AA';
+        ctxW.lineWidth = 12;
+        ctxW.strokeRect(10, 20, 30, 40);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack());
+
+        expect(result.length).toBe(1);
+        expect(result[0].length).toBe(3);
+      });
+
+
     });
 
 });
