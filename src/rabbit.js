@@ -17,14 +17,14 @@ export function Rabbit(geometry, matchers, comparators) {
       ignoreArguments: true,
       precision: 0
     }, opt || {});
-    var found = [], index = 0, styles, foundShape;
+    var found = [], index = 0, header, foundShape;
     do {
       index = findShape(shape, where, index, opt);
       if (index !== -1) {
-        styles = collectStyles(where, index - 1);
+        header = collectHeader(where, index - 1);
         foundShape = where.slice(index, index + shape.length);
-        found.push(styles.concat(foundShape));
-        index += styles.length + shape.length;
+        found.push(header.concat(foundShape));
+        index += header.length + shape.length;
       }
     } while (index !== -1 && index < where.length);
     return found;
@@ -51,7 +51,7 @@ export function Rabbit(geometry, matchers, comparators) {
     return index;
   },
 
-  collectStyles = (stack, lastIndex) => {
+  collectHeader = (stack, lastIndex) => {
     var styles = [], call;
     for(var i = 0; i <= lastIndex; i++) {
       call = stack[i];
@@ -74,7 +74,8 @@ export function Rabbit(geometry, matchers, comparators) {
 
   isTransform = (call) => {
     var transformNames = [
-      'scale', 'translate', 'rotate', 'transform', 'setTransform'
+      'scale', 'translate', 'rotate', 'transform', 'setTransform',
+      'save', 'restore'
     ];
     return transformNames.indexOf(call.method) !== -1 ? true : false;
   },
