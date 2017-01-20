@@ -23,8 +23,8 @@ export function Rabbit(geometry, matchers, comparators) {
       if (index !== -1) {
         styles = collectStyles(where, index - 1);
         foundShape = where.slice(index, index + shape.length);
-        found.push(foundShape.concat(styles));
-        index += shape.length;
+        found.push(styles.concat(foundShape));
+        index += styles.length + shape.length;
       }
     } while (index !== -1 && index < where.length);
     return found;
@@ -55,7 +55,7 @@ export function Rabbit(geometry, matchers, comparators) {
     var styles = [], call;
     for(var i = 0; i <= lastIndex; i++) {
       call = stack[i];
-      if (isStyle(call)) {
+      if (isStyle(call) || isTransform(call)) {
         styles.push(call);
       }
     }
@@ -63,8 +63,20 @@ export function Rabbit(geometry, matchers, comparators) {
   },
 
   isStyle = (call) => {
-    var styleNames = ['lineWidth', 'strokeStyle'];
+    var styleNames = [
+      'fillStyle', 'strokeStyle', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY',
+      'lineCap', 'lineJoin', 'lineWidth', 'miterLimit',
+      'font', 'textAlign', 'textBaseline',
+      'globalAlpha', 'globalCompositeOperation'
+    ];
     return styleNames.indexOf(call.attr) !== -1 ? true : false;
+  },
+
+  isTransform = (call) => {
+    var transformNames = [
+      'scale', 'translate', 'rotate', 'transform', 'setTransform'
+    ];
+    return transformNames.indexOf(call.method) !== -1 ? true : false;
   },
 
   removeShapes = (shapes, from) => {

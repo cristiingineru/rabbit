@@ -111,7 +111,7 @@ describe('Rabbit', () => {
         expect(result.length).toBe(1);
       });
 
-      it('should return all previouse styles set before the found shape', () => {
+      it('should return all the previouse styles set before the found shape', () => {
         ctxS.strokeRect(10, 20, 30, 40);
 
         ctxW.strokeStyle = '#0000AA';
@@ -122,6 +122,66 @@ describe('Rabbit', () => {
 
         expect(result.length).toBe(1);
         expect(result[0].length).toBe(3);
+        expect(result[0][0].attr).toBe('strokeStyle');
+        expect(result[0][0].val).toBe('#0000AA');
+        expect(result[0][2].method).toBe('strokeRect');
+      });
+
+      it('should return all the previouse transforms set before the found shape', () => {
+        ctxS.strokeRect(10, 20, 30, 40);
+
+        ctxW.scale(1, 2);
+        ctxW.translate(3, 4);
+        ctxW.rotate(6);
+        ctxW.transform(7, 8, 9, 10, 11, 12);
+        ctxW.setTransform(13, 14, 15, 16, 17, 18);
+        ctxW.strokeRect(10, 20, 30, 40);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack());
+
+        expect(result.length).toBe(1);
+        expect(result[0].length).toBe(6);
+        expect(result[0][0].method).toBe('scale');
+        expect(result[0][0].arguments[0]).toBe(1);
+        expect(result[0][0].arguments[1]).toBe(2);
+        expect(result[0][5].method).toBe('strokeRect');
+      });
+
+      it('should not return styles or transforms set after the found shape', () => {
+        ctxS.strokeRect(10, 20, 30, 40);
+
+        ctxW.lineWidth = 12;
+        ctxW.translate(3, 4);
+        ctxW.strokeRect(10, 20, 30, 40);
+        ctxW.lineWidth = 56;
+        ctxW.translate(7, 8);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack());
+
+        expect(result.length).toBe(1);
+        expect(result[0].length).toBe(3);
+        expect(result[0][0].attr).toBe('lineWidth');
+        expect(result[0][0].val).toBe(12);
+        expect(result[0][1].method).toBe('translate');
+        expect(result[0][1].arguments[0]).toBe(3);
+        expect(result[0][1].arguments[1]).toBe(4);
+      });
+
+      it('should return the previouse styles or transforms set even before other shapes in front of the found one', () => {
+        ctxS.strokeRect(10, 20, 30, 40);
+
+        ctxW.lineWidth = 12;
+        ctxW.translate(3, 4);
+        ctxW.fillRect(10, 20, 30, 40);
+        ctxW.strokeRect(10, 20, 30, 40);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack());
+
+        expect(result.length).toBe(1);
+        expect(result[0].length).toBe(3);
+        expect(result[0][0].attr).toBe('lineWidth');
+        expect(result[0][1].method).toBe('translate');
+        expect(result[0][2].method).toBe('strokeRect');
       });
 
 
