@@ -44,7 +44,7 @@ var referenceCanvasStack = referenceCanvas.getContext('2d').stack();
 ```
 * Use Rabbit to find whether the canvas under test contains the reference:
 ```js
-var found = rabbit.findAllShapesIgnoringArguments(referenceCanvasStack, canvasUnderTestStack);
+var found = rabbit.findShapes(referenceCanvasStack, canvasUnderTestStack);
 expect(found.length).toBe(1);
 ```
 * Or just use a custom matcher:
