@@ -14,8 +14,10 @@ export function Comparators() {
     return same;
   },
 
-  sameCalls = (call1, call2, ignoreArguments, precision) => {
-    var same;
+  sameCalls = (call1, call2, opt) => {
+    var ignoreArguments = opt.ignoreArguments,
+        precision = opt.precision,
+        same;
     if ((call1.method && call2.method && call1.method === call2.method) ||
         (call1.attr && call2.attr && call1.attr === call2.attr)) {
       if (ignoreArguments) {

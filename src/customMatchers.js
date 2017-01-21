@@ -21,7 +21,7 @@ export function CustomMatchers(geometry, comparators) {
         for (var i = 0; i < expected.length - actual.length + 1; i++) {
           match = actual.length > 0;
           for (var j = 0; j < actual.length; j++) {
-            if (!comparators.sameCalls(expected[i + j], actual[j], opt.ignoreArguments, opt.precision)) {
+            if (!comparators.sameCalls(expected[i + j], actual[j], opt)) {
               match = false;
               break;
             }

@@ -15,7 +15,8 @@ export function Rabbit(geometry, matchers, comparators) {
   var findShapes = (shape, where, opt) => {
     opt = Object.assign({
       ignoreArguments: true,
-      precision: 0
+      precision: 0,
+      comparator: undefined
     }, opt || {});
     var found = [], index = 0, header, foundShape;
     do {
@@ -32,12 +33,15 @@ export function Rabbit(geometry, matchers, comparators) {
 
   findShape = (shape, where, startIndex, opt) => {
     startIndex = startIndex || 0;
-    var match = false, index = -1;
+    var match = false,
+        index = -1,
+        defaultComparator = comparators.sameCalls,
+        comparator = opt.comparator || defaultComparator;
     if (Array.isArray(shape) && shape.length > 0 && Array.isArray(where) && where.length > 0) {
       for (var i = startIndex; i <= where.length - shape.length; i++) {
         match = true;
         for (var j = 0; j < shape.length; j++) {
-          if (!comparators.sameCalls(where[i + j], shape[j], opt.ignoreArguments, opt.precision)) {
+          if (!comparator(shape[j], where[i + j], opt, defaultComparator)) {
             match = false;
             break;
           }

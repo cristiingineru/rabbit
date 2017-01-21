@@ -184,6 +184,37 @@ describe('Rabbit', () => {
         expect(result[0][2].method).toBe('strokeRect');
       });
 
+      it('should use a custom comparator when specified', () => {
+
+        var valueOfInterest = 10,
+            comparator = (smallCall, whereCall, opt, defaultComparator) => {
+              var result = whereCall.attr === 'lineWidth'
+                  ? whereCall.val === valueOfInterest
+                  : defaultComparator(smallCall, whereCall, opt);
+              return result;
+            };
+
+        ctxS.lineWidth = 1;
+        ctxS.strokeRect(1, 2, 3, 4);
+
+        ctxW.lineWidth = 1;
+        ctxW.strokeRect(1, 2, 3, 4);
+        ctxW.lineWidth = valueOfInterest;
+        ctxW.strokeRect(1, 2, 3, 4);
+        ctxW.lineWidth = 1;
+        ctxW.strokeRect(1, 2, 3, 4);
+
+        var result = findShapes(ctxS.stack(), ctxW.stack(), {comparator: comparator});
+
+        expect(result.length).toBe(1);
+        expect(result[0].length).toBe(3);
+        expect(result[0][0].attr).toBe('lineWidth'); // header
+        expect(result[0][0].val).toBe(1);
+        expect(result[0][1].attr).toBe('lineWidth'); // shape
+        expect(result[0][1].val).toBe(valueOfInterest);
+        expect(result[0][2].method).toBe('strokeRect');
+      });
+
 
     });
 
