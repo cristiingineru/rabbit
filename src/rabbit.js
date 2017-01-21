@@ -25,7 +25,7 @@ export function Rabbit(geometry, matchers, comparators) {
         header = collectHeader(where, index - 1);
         foundShape = where.slice(index, index + shape.length);
         found.push(header.concat(foundShape));
-        index += header.length + shape.length;
+        index += shape.length;
       }
     } while (index !== -1 && index < where.length);
     return found;
@@ -33,6 +33,7 @@ export function Rabbit(geometry, matchers, comparators) {
 
   findShape = (shape, where, startIndex, opt) => {
     startIndex = startIndex || 0;
+    opt = opt || {};
     var match = false,
         index = -1,
         defaultComparator = comparators.sameCalls,

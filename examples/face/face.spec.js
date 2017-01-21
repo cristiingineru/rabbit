@@ -42,10 +42,10 @@ var go = function() {
 
           var eyeCtx = newCtx();
           new Eye(eyeCtx).draw();
-          var found = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+          var found = rabbit.findShapes(eyeCtx.stack(), ctx.stack());
 
           expect(found.length).toBe(2);
-          //expect(found[0]).toHaveTheSameSizeWith(found[1]);
+          expect(found[0]).toHaveTheSameSizeWith(found[1]);
       });
 
       it('should have the eyes aligned', function () {
@@ -53,7 +53,7 @@ var go = function() {
 
           var eyeCtx = newCtx();
           new Eye(eyeCtx).draw();
-          var found = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+          var found = rabbit.findShapes(eyeCtx.stack(), ctx.stack());
 
           expect(found[0]).toBeHorizontallyAlignWith(found[1]);
       });
@@ -63,7 +63,7 @@ var go = function() {
 
           var eyeCtx = newCtx();
           new Eye(eyeCtx).draw();
-          var foundEyes = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
+          var foundEyes = rabbit.findShapes(eyeCtx.stack(), ctx.stack());
 
           var justTheFaceShape = rabbit.removeShapes(foundEyes, ctx.stack())
           foundEyes.forEach(function(foundEye) {
@@ -76,9 +76,8 @@ var go = function() {
 
           var mouthCtx = newCtx();
           new Mouth(mouthCtx).draw();
-          var found = rabbit.findAllShapesIgnoringArguments(mouthCtx.stack(), ctx.stack());
 
-          expect(found.length).toBe(1);
+          expect(mouthCtx.stack()).toBePartOf(ctx.stack());
       });
 
     });
@@ -92,9 +91,8 @@ var go = function() {
 
             var eyeCtx = newCtx();
             new Eye(eyeCtx).draw();
-            var foundEyes = rabbit.findAllShapesIgnoringArguments(eyeCtx.stack(), ctx.stack());
 
-            expect(foundEyes.length).toBe(1);
+            expect(eyeCtx.stack()).toBePartOf(ctx.stack());
         });
       });
 
@@ -172,7 +170,7 @@ var go = function() {
         face.draw({mood: 'crazy'});
 
         rafMock.step();
-        var foundEyeStacks = rabbit.findAllShapesIgnoringArguments(eyeStack, ctx.stack()),
+        var foundEyeStacks = rabbit.findShapes(eyeStack, ctx.stack()),
           lastLeftEye = foundEyeStacks.shift(),
           lastRightEye = foundEyeStacks.shift();
 
@@ -180,7 +178,7 @@ var go = function() {
           ctx.clear();
           rafMock.step();
 
-          foundEyeStacks = rabbit.findAllShapesIgnoringArguments(eyeStack, ctx.stack());
+          foundEyeStacks = rabbit.findShapes(eyeStack, ctx.stack());
           var leftEye = foundEyeStacks.shift(),
             rightEye = foundEyeStacks.shift();
 
@@ -207,7 +205,7 @@ var go = function() {
           ctx.clear();
           rafMock.step();
 
-          var foundEyeStacks = rabbit.findAllShapesIgnoringArguments(eyeStack, ctx.stack()),
+          var foundEyeStacks = rabbit.findShapes(eyeStack, ctx.stack()),
             justTheFaceShape = rabbit.removeShapes(foundEyeStacks, ctx.stack()),
             leftEye = foundEyeStacks.shift(),
             rightEye = foundEyeStacks.shift();
