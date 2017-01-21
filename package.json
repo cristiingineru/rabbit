@@ -7,7 +7,8 @@
     "test": "node node_modules/karma/bin/karma start --single-run",
     "clean": "node node_modules/gulp-cli/bin/gulp.js clean",
     "build": "node node_modules/gulp-cli/bin/gulp.js build",
-    "testExamples": "node node_modules/gulp-cli/bin/gulp.js testExamples"
+    "testExamples": "node node_modules/gulp-cli/bin/gulp.js testExamples",
+    "preversion": "node node_modules/gulp-cli/bin/gulp.js testExamples"
   },
   "repository": {
     "type": "git",
