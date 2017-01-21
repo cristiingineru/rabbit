@@ -1,11 +1,13 @@
 "use strict";
 
 import { Geometry } from './geometry.js'
+import { Comparators } from './comparators.js'
 
 
-export function CustomMatchers(geometry) {
+export function CustomMatchers(geometry, comparators) {
 
   geometry = geometry || new Geometry();
+  comparators = comparators || new Comparators()
 
 
   var toBePartOf = (util, customEqualityTesters) => {
@@ -19,7 +21,7 @@ export function CustomMatchers(geometry) {
         for (var i = 0; i < expected.length - actual.length + 1; i++) {
           match = actual.length > 0;
           for (var j = 0; j < actual.length; j++) {
-            if (!sameCalls(expected[i + j], actual[j], opt.ignoreArguments, opt.precision)) {
+            if (!comparators.sameCalls(expected[i + j], actual[j], opt)) {
               match = false;
               break;
             }
@@ -76,8 +78,8 @@ export function CustomMatchers(geometry) {
         var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
           actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSameX = sameValues(actualBBox.x, expectedBBox.x, opt.precision),
-          haveTheSameY = sameValues(actualBBox.y, expectedBBox.y, opt.precision),
+          haveTheSameX = comparators.sameValues(actualBBox.x, expectedBBox.x, opt.precision),
+          haveTheSameY = comparators.sameValues(actualBBox.y, expectedBBox.y, opt.precision),
           haveTheSamePosition = haveTheSameX && haveTheSameY,
           result = !validArguments
             ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
@@ -102,8 +104,8 @@ export function CustomMatchers(geometry) {
         var validArguments = actual && actual.length > 0 && expected && expected.length > 0,
           actualBBox = geometry.getBBox(actual),
           expectedBBox = geometry.getBBox(expected),
-          haveTheSameWidth = sameValues(actualBBox.width, expectedBBox.width, opt.precision),
-          haveTheSameHeight = sameValues(actualBBox.height, expectedBBox.height, opt.precision),
+          haveTheSameWidth = comparators.sameValues(actualBBox.width, expectedBBox.width, opt.precision),
+          haveTheSameHeight = comparators.sameValues(actualBBox.height, expectedBBox.height, opt.precision),
           haveTheSameSizes = haveTheSameWidth && haveTheSameHeight,
           result = !validArguments
             ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
@@ -139,7 +141,7 @@ export function CustomMatchers(geometry) {
             : (opt.compare === 'bottom'
               ? expectedBBox.y + expectedBBox.height
               : (expectedBBox.y + expectedBBox.height) / 2),
-          haveTheSameAlignment = sameValues(y1, y2),
+          haveTheSameAlignment = comparators.sameValues(y1, y2),
           result = !validArguments
             ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
             : (haveTheSameAlignment
@@ -170,7 +172,7 @@ export function CustomMatchers(geometry) {
             : (opt.compare === 'right'
               ? expectedBBox.x + expectedBBox.width
               : (expectedBBox.x + expectedBBox.width) / 2),
-          haveTheSameAlignment = sameValues(x1, x2),
+          haveTheSameAlignment = comparators.sameValues(x1, x2),
           result = !validArguments
             ? {pass: false, message: 'Invalid shape(s): ' + actual + ' and ' + expected}
             : (haveTheSameAlignment
@@ -179,35 +181,6 @@ export function CustomMatchers(geometry) {
         return result;
       }
     }
-  },
-
-  sameValues = (val1, val2, precision) => {
-    var same = false;
-    if (typeof val1 === 'number' && typeof val2 === 'number') {
-      same = val1.toFixed(precision) === val2.toFixed(precision);
-    } else {
-      same = val1 == val2;
-    }
-    return same;
-  },
-
-  sameCalls = (call1, call2, ignoreArguments, precision) => {
-    var same;
-    if ((call1.method && call2.method) || (call1.attr && call2.attr)) {
-      if (ignoreArguments) {
-        same = true;
-      } else {
-        if (call1.attr) {
-          same = sameValues(call1.val, call2.val, precision);
-        } else {
-          same = call1.arguments.length === call2.arguments.length;
-          same &= call1.arguments.reduce(
-            (prev, arg, index) => prev && sameValues(arg, call2.arguments[index], precision),
-            true);
-        }
-      }
-    }
-    return same;
   },
 
   cornersOfABox = (box) => {

@@ -1,53 +1,86 @@
-define(['exports', './geometry.js', './customMatchers.js'], function (exports, _geometry, _customMatchers) {
+define(['exports', './geometry.js', './customMatchers.js', './comparators.js'], function (exports, _geometry, _customMatchers, _comparators) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   exports.Rabbit = Rabbit;
-  function Rabbit(geometry, matchers) {
+  function Rabbit(geometry, matchers, comparators) {
 
-    var that = this,
-        geometry = geometry || new _geometry.Geometry(),
-        matchers = matchers || new _customMatchers.CustomMatchers();
+    geometry = geometry || new _geometry.Geometry();
+    matchers = matchers || new _customMatchers.CustomMatchers();
+    comparators = comparators || new _comparators.Comparators();
 
-    var findAllShapesIgnoringArguments = function findAllShapesIgnoringArguments(shape, where) {
+    var findShapes = function findShapes(shape, where, opt) {
+      opt = Object.assign({
+        ignoreArguments: true,
+        precision: 0,
+        comparator: undefined
+      }, opt || {});
       var found = [],
-          index = 0;
+          index = 0,
+          header,
+          foundShape;
       do {
-        index = that.findShapeIgnoringArguments(shape, where, index);
+        index = findShape(shape, where, index, opt);
         if (index !== -1) {
-          found.push(where.slice(index, index + shape.length));
+          header = collectHeader(where, index - 1);
+          foundShape = where.slice(index, index + shape.length);
+          found.push(header.concat(foundShape));
           index += shape.length;
         }
       } while (index !== -1 && index < where.length);
       return found;
     },
-        findShapeIgnoringArguments = function findShapeIgnoringArguments(shape, where, startIndex) {
+        findShape = function findShape(shape, where, startIndex, opt) {
       startIndex = startIndex || 0;
+      opt = opt || {};
       var match = false,
-          index = -1;
-      for (var i = startIndex; i <= where.length - shape.length; i++) {
-        match = true;
-        for (var j = 0; j < shape.length; j++) {
-          if (where[i + j].method !== shape[j].method) {
-            match = false;
+          index = -1,
+          defaultComparator = comparators.sameCalls,
+          comparator = opt.comparator || defaultComparator;
+      if (Array.isArray(shape) && shape.length > 0 && Array.isArray(where) && where.length > 0) {
+        for (var i = startIndex; i <= where.length - shape.length; i++) {
+          match = true;
+          for (var j = 0; j < shape.length; j++) {
+            if (!comparator(shape[j], where[i + j], opt, defaultComparator)) {
+              match = false;
+              break;
+            }
+          }
+          if (match === true) {
+            index = i;
             break;
           }
         }
-        if (match === true) {
-          index = i;
-          break;
-        }
       }
       return index;
+    },
+        collectHeader = function collectHeader(stack, lastIndex) {
+      var styles = [],
+          call;
+      for (var i = 0; i <= lastIndex; i++) {
+        call = stack[i];
+        if (isStyle(call) || isTransform(call)) {
+          styles.push(call);
+        }
+      }
+      return styles;
+    },
+        isStyle = function isStyle(call) {
+      var styleNames = ['fillStyle', 'strokeStyle', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'lineCap', 'lineJoin', 'lineWidth', 'miterLimit', 'font', 'textAlign', 'textBaseline', 'globalAlpha', 'globalCompositeOperation'];
+      return styleNames.indexOf(call.attr) !== -1 ? true : false;
+    },
+        isTransform = function isTransform(call) {
+      var transformNames = ['scale', 'translate', 'rotate', 'transform', 'setTransform', 'save', 'restore'];
+      return transformNames.indexOf(call.method) !== -1 ? true : false;
     },
         removeShapes = function removeShapes(shapes, from) {
       var copy = from.slice(0, from.length);
       shapes.forEach(function (shape) {
         var index = -1;
         do {
-          index = that.findShapeIgnoringArguments(shape, copy);
+          index = findShape(shape, copy);
           if (index !== -1) {
             copy.splice(index, shape.length);
           }
@@ -58,8 +91,7 @@ define(['exports', './geometry.js', './customMatchers.js'], function (exports, _
 
     this.getBBox = geometry.getBBox;
     this.customMatchers = matchers;
-    this.findAllShapesIgnoringArguments = findAllShapesIgnoringArguments;
-    this.findShapeIgnoringArguments = findShapeIgnoringArguments;
+    this.findShapes = findShapes;
     this.removeShapes = removeShapes;
   }
 });

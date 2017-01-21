@@ -1,6 +1,5 @@
 
-# findAllShapesIgnoringArguments
-# findShapeIgnoringArguments
+# findShapes
 # removeShapes
 # getBBox
 

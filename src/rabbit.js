@@ -2,44 +2,87 @@
 
 import { Geometry } from './geometry.js'
 import { CustomMatchers } from './customMatchers.js'
+import { Comparators } from './comparators.js'
 
 
-export function Rabbit(geometry, matchers) {
+export function Rabbit(geometry, matchers, comparators) {
 
-  var that = this,
-    geometry = geometry || new Geometry(),
-    matchers = matchers || new CustomMatchers();
+  geometry = geometry || new Geometry();
+  matchers = matchers || new CustomMatchers();
+  comparators = comparators || new Comparators();
 
 
-  var findAllShapesIgnoringArguments = (shape, where) => {
-    var found = [], index = 0;
+  var findShapes = (shape, where, opt) => {
+    opt = Object.assign({
+      ignoreArguments: true,
+      precision: 0,
+      comparator: undefined
+    }, opt || {});
+    var found = [], index = 0, header, foundShape;
     do {
-      index = that.findShapeIgnoringArguments(shape, where, index);
+      index = findShape(shape, where, index, opt);
       if (index !== -1) {
-        found.push(where.slice(index, index + shape.length));
+        header = collectHeader(where, index - 1);
+        foundShape = where.slice(index, index + shape.length);
+        found.push(header.concat(foundShape));
         index += shape.length;
       }
     } while (index !== -1 && index < where.length);
     return found;
   },
 
-  findShapeIgnoringArguments = (shape, where, startIndex) => {
+  findShape = (shape, where, startIndex, opt) => {
     startIndex = startIndex || 0;
-    var match = false, index = -1;
-    for (var i = startIndex; i <= where.length - shape.length; i++) {
-      match = true;
-      for (var j = 0; j < shape.length; j++) {
-        if (where[i + j].method !== shape[j].method) {
-          match = false;
+    opt = opt || {};
+    var match = false,
+        index = -1,
+        defaultComparator = comparators.sameCalls,
+        comparator = opt.comparator || defaultComparator;
+    if (Array.isArray(shape) && shape.length > 0 && Array.isArray(where) && where.length > 0) {
+      for (var i = startIndex; i <= where.length - shape.length; i++) {
+        match = true;
+        for (var j = 0; j < shape.length; j++) {
+          if (!comparator(shape[j], where[i + j], opt, defaultComparator)) {
+            match = false;
+            break;
+          }
+        }
+        if (match === true) {
+          index = i;
           break;
         }
       }
-      if (match === true) {
-        index = i;
-        break;
-      }
     }
     return index;
+  },
+
+  collectHeader = (stack, lastIndex) => {
+    var styles = [], call;
+    for(var i = 0; i <= lastIndex; i++) {
+      call = stack[i];
+      if (isStyle(call) || isTransform(call)) {
+        styles.push(call);
+      }
+    }
+    return styles;
+  },
+
+  isStyle = (call) => {
+    var styleNames = [
+      'fillStyle', 'strokeStyle', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY',
+      'lineCap', 'lineJoin', 'lineWidth', 'miterLimit',
+      'font', 'textAlign', 'textBaseline',
+      'globalAlpha', 'globalCompositeOperation'
+    ];
+    return styleNames.indexOf(call.attr) !== -1 ? true : false;
+  },
+
+  isTransform = (call) => {
+    var transformNames = [
+      'scale', 'translate', 'rotate', 'transform', 'setTransform',
+      'save', 'restore'
+    ];
+    return transformNames.indexOf(call.method) !== -1 ? true : false;
   },
 
   removeShapes = (shapes, from) => {
@@ -47,7 +90,7 @@ export function Rabbit(geometry, matchers) {
     shapes.forEach((shape) => {
       var index = -1;
       do {
-        index = that.findShapeIgnoringArguments(shape, copy);
+        index = findShape(shape, copy);
         if (index !== -1) {
           copy.splice(index, shape.length);
         }
@@ -59,8 +102,7 @@ export function Rabbit(geometry, matchers) {
 
   this.getBBox = geometry.getBBox;
   this.customMatchers = matchers;
-  this.findAllShapesIgnoringArguments = findAllShapesIgnoringArguments;
-  this.findShapeIgnoringArguments = findShapeIgnoringArguments;
+  this.findShapes = findShapes;
   this.removeShapes = removeShapes;
 
 }
