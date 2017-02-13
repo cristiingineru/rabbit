@@ -1,12 +1,11 @@
 [![Build Status](https://travis-ci.org/cristiingineru/rabbit.svg?branch=master)](https://travis-ci.org/cristiingineru/rabbit)
 [![Code Climate](https://codeclimate.com/github/cristiingineru/rabbit/badges/gpa.svg)](https://codeclimate.com/github/cristiingineru/rabbit)
 [![Test Coverage](https://codeclimate.com/github/cristiingineru/rabbit/badges/coverage.svg)](https://codeclimate.com/github/cristiingineru/rabbit/coverage)
+[![Greenkeeper badge](https://badges.greenkeeper.io/cristiingineru/rabbit.svg)](https://greenkeeper.io/)
 [![dependencies Status](https://david-dm.org/cristiingineru/rabbit/status.svg)](https://david-dm.org/cristiingineru/rabbit)
 [![devDependencies Status](https://david-dm.org/cristiingineru/rabbit/dev-status.svg)](https://david-dm.org/cristiingineru/rabbit?type=dev)
 
 # Overview
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/cristiingineru/rabbit.svg)](https://greenkeeper.io/)
 
 Rabbit is a JavaScript library for writing tests for code drawing on canvas.
 
