@@ -6,6 +6,8 @@
 
 # Overview
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/cristiingineru/rabbit.svg)](https://greenkeeper.io/)
+
 Rabbit is a JavaScript library for writing tests for code drawing on canvas.
 
 It's using [Canteen](https://github.com/platfora/Canteen) to spy all the calls to a canvas and provides higher level abstraction functions and Jasmine checkers for finding and inspecting the shapes being drawn.
