@@ -37,7 +37,7 @@
     "browserify": "^14.4.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
+    "gulp-babel": "^7.0.0",
     "gulp-cli": "^1.2.2",
     "gulp-sequence": "^0.4.6",
     "jasmine-core": "^2.5.0",
