@@ -41,7 +41,7 @@
     "gulp-cli": "^1.2.2",
     "gulp-sequence": "^0.4.6",
     "jasmine-core": "^2.5.0",
-    "karma": "^1.3.0",
+    "karma": "^2.0.0",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
