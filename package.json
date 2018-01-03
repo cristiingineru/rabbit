@@ -56,6 +56,6 @@
     "phantomjs-polyfill-object-assign": "0.0.2",
     "requirejs": "^2.3.2",
     "requirejs-babel": "0.0.9",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^2.0.0"
   }
 }
