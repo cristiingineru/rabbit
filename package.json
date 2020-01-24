@@ -51,7 +51,7 @@
     "karma-jasmine-jquery": "^0.1.1",
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-requirejs": "^1.1.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.0",
     "phantomjs-polyfill-find": "github:ptim/phantomjs-polyfill-find",
     "phantomjs-polyfill-object-assign": "0.0.2",
     "requirejs": "^2.3.2",
